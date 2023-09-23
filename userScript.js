@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         Search Chat
+// @name         ПоискЧата
 // @namespace    http://tampermonkey.net/
 // @description  Поисковик бесед ВКонтакте в Вашем браузере
 // @author       Alexander Stoyak
@@ -12,7 +12,6 @@
 // @connect      login.vk.com
 // @connect      oauth.vk.com
 // @connect      api.vk.com
-// @connect      localhost
 // @connect      api.search-for-chats-of-vk.ru
 
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/main.js
@@ -31,5 +30,5 @@
 // @grant        GM_setValue
 // @grant        GM_addStyle
 // @grant        GM_xmlhttpRequest
-// @version      0.0.1
+// @version      1.0.0@alpha
 // ==/UserScript==
