@@ -1,5 +1,5 @@
 let xhr = GM_xmlhttpRequest;
-GM_xmlhttpRequest = function (url, data = false) {
+GM_xmlhttpRequest = function (url, data = {}) {
     let object = {
         method: 'POST',
     };

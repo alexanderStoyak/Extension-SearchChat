@@ -1,28 +1,82 @@
 
 let offset = 0;
+let isLoad = false;
 const onClickForButtonInProfiles = async () => {
-    const user = await getUserOrGroupId(window.location.href);
+    if (isLoad) {
+        return;
+    } else {
+        isLoad = true;
+    };
+
+    const [user] = await getUsersOrGroups([window.location.href]);
 
     const foundChats = await SCAPI.call({
         parameters: { userId: user.id, offset }
     });
 
-    if(!foundChats.found) {
-        return notifiers(`Похоже что ${user.first_name} ${user.last_name} нигде не сидит :(`);
+    if (!foundChats.found) {
+        return notifiers(`Не смог найти чаты где мог бы быть <a style="font-weight: bold;" href="${window.location.href}"> ${user.first_name} ${user.last_name} </a>`);
     }
 
-    const modalPage = newModalPage(`Чаты в которых находиться ${user.first_name} ${user.last_name} (${foundChats.found})`);
+    const creators = await getUsersOrGroups(
+        foundChats.chats.map(chat => chat.creator)
+    );
 
-    let listChatsHTML = foundChats.chats.map(chat => {
-        const photo = chat.photo ? chat.photo['200'] || chat.photo['150'] || chat.photo['50'] : '';
-        const creatorUrl = chat.creator > 0 ? `https://vk.com/id${chat.creator}` : `https://vk.com/club${-chat.creator}`;
+    if (modalPage && modalPage.isVisible()) {
+        modalPage.hide();
+    };
 
-        return blankChat({ chat, photo, creatorUrl });
+    newModalPage(`Чаты в которых находится <a style="font-weight: bold;" href="${window.location.href}"> ${user.first_name} ${user.last_name} </a> (${foundChats.found.toLocaleString('ru-RU')}шт.)`);
+
+    let listChatsHTML = foundChats.chats.map((chat, index) => {
+        const photo = chat.photo
+            ? chat.photo['200'] || chat.photo['150'] || chat.photo['50']
+            : '';
+
+        return blankChat({ chat, photo, creator: creators[index] });
     }).join('');
 
+    listChatsHTML += `<div style="display: flex; justify-content: flex-end; gap: 5px">`;
+    listChatsHTML += `<span style="padding-right: 25px"> Страница ${offset / 15 !== 0 ? offset / 15 + 1 : 1}/${Math.ceil(foundChats.found / 10 || 1)} </span>`;
     
+    if (foundChats.found > 15) {
+        if (offset > 0) {
+            listChatsHTML += `
+                <a id="previousPageButton" 
+                    style="text-decoration: none; font-weight: bold;"> 
+                    Назад
+                </a>
+                •
+            `;
+        };
+
+        listChatsHTML += `
+            <a id="nextPageButton" 
+                style="padding-right: 10px; text-decoration: none; font-weight: bold;"> 
+                Далее
+            </a>
+        `;
+    };
+    listChatsHTML += `</div>`;
+
     modalPage.content(listChatsHTML);
+
     modalPage.show();
+
+    const nextPageButton = document.getElementById('nextPageButton');
+    const previousPageButton = document.getElementById('previousPageButton');
+    if (nextPageButton) {
+        nextPageButton.onclick = () => {
+            onClickForButtonInProfiles(offset += 15);
+        };
+    };
+    if (previousPageButton) {
+        previousPageButton.onclick = () => {
+            onClickForButtonInProfiles(offset -= 15);
+        };
+    };
+
+    isLoad = false;
 };
 
 function buttonInProfiles(buttonsElement) {
