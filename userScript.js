@@ -17,18 +17,19 @@
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/main.js
 
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/handlers/buttonInProfiles.js
+// @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/handlers/buttonInMessages.js
 
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/utils/API.js
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/utils/blanksHTML.js
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/utils/request.js
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/utils/services.js
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/utils/styles.js
-// @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/utils/VKFunctions.js
+// @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/utils/functions.js
 
 // @run-at       document-start
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_addStyle
 // @grant        GM_xmlhttpRequest
-// @version      1.1.0@alpha
+// @version      1.2.0@alpha
 // ==/UserScript==

@@ -11,9 +11,9 @@ const VKAPI = {
 
         const { response, error } = JSON.parse(responseString);
 
-        if (error && !['groups.join'].includes(method)) {
+        if (error) {
             notifiers('<span style="color: red; font-weight: bold;">Error from VK API: </span>' + JSON.stringify(error, null, "<br/>"));
-        }
+        };
 
 
         return response;
@@ -81,7 +81,6 @@ async function vkAuth() {
     GM_setValue('access_token', access_token);
     GM_setValue('VKMainUser', user);
     notifiers(`<span style="color: green; font-weight: bold;">Авторизованный, VK токен получен (Kate Mobile)\nДобро пожаловать в ПоискЧата, ${user.first_name}!</span>`);
-    VKAPI.call('groups.join', {group_id: services.mainGroup.id});
 
     return true;
 }

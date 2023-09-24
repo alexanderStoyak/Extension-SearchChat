@@ -25,13 +25,22 @@ const observeChange = async () => {
                     continue;
                 }
 
+
+                if(node.classList.contains('im-mess--check') || node.classList.contains('_sticker_hints')) {
+                    const message = document.querySelector('._im_peer_history');
+
+                    return buttonInMessages(message);
+                };
+
                 if (node.classList.contains('Profile')) {
                     const profileHeaderActions = document.getElementsByClassName('ProfileHeaderButton');
 
-                    buttonInProfiles(profileHeaderActions);
-                }
-            }
-        }
+                    return buttonInProfiles(profileHeaderActions);
+                };
+
+
+            };
+        };
     });
 
     observer.observe(body, { childList: true, subtree: true });
