@@ -37,7 +37,7 @@ const onClickForButtonInProfiles = async () => {
     }).join('');
 
     listChatsHTML += `<div style="display: flex; justify-content: flex-end; gap: 5px">`;
-    listChatsHTML += `<span style="padding-right: 25px"> Страница ${offset / 15 !== 0 ? offset / 15 + 1 : 1}/${Math.ceil(foundChats.found / 10 || 1)} </span>`;
+    listChatsHTML += `<span style="padding-right: 25px"> Страница ${offset / 15 !== 0 ? offset / 15 + 1 : 1}/${Math.ceil(foundChats.found / 15 || 1)} </span>`;
     
     if (foundChats.found > 15) {
         if (offset > 0) {
