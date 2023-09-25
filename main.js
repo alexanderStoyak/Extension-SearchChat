@@ -1,11 +1,10 @@
 const observeChange = async () => {
-
     if (!services.access_token) {
-        const response = await vkAuth();
-
-        if(!response) {
-            return;
+        if(services.timeStampAuthModalPage < +new Date) {
+            authModalPage();
         }
+        
+        return;
     };
 
     const body = document.querySelector("body");
@@ -26,7 +25,7 @@ const observeChange = async () => {
                 }
 
 
-                if(node.classList.contains('im-mess--check') || node.classList.contains('_sticker_hints')) {
+                if(node.classList.contains('im-mess--check') || node.classList.contains('_sticker_hints') || node.classList.contains('im-page--title')) {
                     const message = document.querySelector('._im_peer_history');
 
                     return buttonInMessages(message);

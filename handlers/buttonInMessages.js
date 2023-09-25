@@ -11,7 +11,7 @@ async function buttonInMessages(buttonsElement) {
 
             button.onclick = () => onClickButtonForChats(href, 0);
 
-            button.innerHTML = '<span style="font-weight: 500; color: #99a2ad"> Чаты </span>';
+            button.innerHTML = '<span style="font-weight: 500;"> Чаты </span>';
 
             message.appendChild(button);
         };

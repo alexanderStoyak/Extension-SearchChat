@@ -12,7 +12,7 @@ const VKAPI = {
         const { response, error } = JSON.parse(responseString);
 
         if (error) {
-            notifiers('<span style="color: red; font-weight: bold;">Error from VK API: </span>' + JSON.stringify(error, null, "<br/>"));
+            notifiers('<span style="color: #FD324A; font-weight: bold;">Error from VK API: </span>' + JSON.stringify(error, null, "<br/>"));
         };
 
 
@@ -38,7 +38,7 @@ const SCAPI = {
         const { response: { response, error } } = await GM_xmlhttpRequest(`${this.url}/${method}`, parameters);
 
         if (error) {
-            notifiers('<span style="color: red; font-weight: bold;">Error from SC API: </span>' + JSON.stringify(error, null, "<br/>"));
+            notifiers('<span style="color: #FD324A; font-weight: bold;">Error from SC API: </span>' + JSON.stringify(error, null, "<br/>"));
         }
 
 
@@ -56,7 +56,7 @@ async function vkAuth() {
     const [url, url2] = response.match(/https:\/\/[^"]+\.vk\.com\/[^"]+grant_access[^"]+/g);
 
     if ((!url && !url2) || url.indexOf('cancel') !== -1) {
-        return notifiers('<span style="color: green; font-weight: bold;">VK authorization failed.</span>');
+        return notifiers('<span style="color: #FD324A; font-weight: bold;">Ошибка авторизации ВКонтакте</span>');
     };
 
     const { finalUrl } = await GM_xmlhttpRequest(url);
@@ -71,16 +71,15 @@ async function vkAuth() {
 
 
     if (!user) {
-        notifiers('<span style="color: green; font-weight: bold;">VK authorization failed.</span>');
+        notifiers('<span style="color: #FD324A; font-weight: bold;">Ошибка авторизации ВКонтакте</span>');
         GM_setValue('access_token', '');
         return false;
     };
 
-    services.access_token = access_token;
-    services.VKMainUser = user;
-    GM_setValue('access_token', access_token);
-    GM_setValue('VKMainUser', user);
-    notifiers(`<span style="color: green; font-weight: bold;">Авторизованный, VK токен получен (Kate Mobile)\nДобро пожаловать в ПоискЧата, ${user.first_name}!</span>`);
+
+    GM_setValue('access_token', services.access_token = access_token);
+    GM_setValue('VKMainUser', services.VKMainUser = user);
+    notifiers(`<span style="color:  #A8E4A0; font-weight: bold;">Авторизованный, VK токен получен (Kate Mobile)\nДобро пожаловать в ПоискЧата, ${user.first_name}!</span>`);
 
     return true;
 }

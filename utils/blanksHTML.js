@@ -51,7 +51,7 @@ function blankChat({ chat, photo, creator }) {
                     </div>
                 </div>
 
-                <div style="display: flex; gap: 10px; style="font-weight: 500;"">
+                <div style="display: flex; gap: 5px; font-weight: 500;">
                     Создатель
                     <a target="_blank" href="${creatorUrl}">
                         ${name}

@@ -91,14 +91,29 @@ const onClickButtonForChats = async (link, offset) => {
         isLoad = true;
     };
 
-    const [user] = await getUsersOrGroups([link]);
+
+    const [object] = await getUsersOrGroups([link]);
+
+    const typeMention = object?.last_name ? 'id' : 'club';
+    const objectName = typeMention === 'id'
+        ? `${object.first_name} ${object.last_name}`
+        : `группа «${object.name}»`;
+
+    newModalPage(`Чаты, в которых находится <a style="font-weight: bold;" href="${link}">${objectName}</a>`);
+    modalPage.content(`<div class="spinner" style="padding: 50px;"> <span class="spinner__animation"> </span></div>`);
+    modalPage.show();
 
     const foundChats = await SCAPI.call({
-        parameters: { userId: user.id, offset }
+        parameters: {
+            userId: typeMention === 'id' ? object.id : -object.id,
+            offset
+        }
     });
 
     if (!foundChats.found) {
-        return notifiers(`Не смог найти чаты в которых мог бы быть <a style="font-weight: bold;" href="${link}"> ${user.first_name} ${user.last_name} </a>`);
+        isLoad = false;
+        modalPage.hide();
+        return notifiers(`Не смог найти чаты в которых мог(ла) бы быть <a style="font-weight: bold;" href="${link}">${objectName}</a>`);
     }
 
     const creators = await getUsersOrGroups(
@@ -109,7 +124,9 @@ const onClickButtonForChats = async (link, offset) => {
         modalPage.hide();
     };
 
-    newModalPage(`Чаты, в которых находится <a style="font-weight: bold;" href="${link}"> ${user.first_name} ${user.last_name} </a> (${foundChats.found.toLocaleString('ru-RU')}шт.)`);
+
+    newModalPage(`Чаты, в которых находится <a style="font-weight: bold;" href="${link}">${objectName}</a> (${foundChats.found.toLocaleString('ru-RU')}шт.)`);
+
 
     let listChatsHTML = foundChats.chats.map((chat, index) => {
         const photo = chat.photo
@@ -119,27 +136,36 @@ const onClickButtonForChats = async (link, offset) => {
         return blankChat({ chat, photo, creator: creators[index] });
     }).join('');
 
+    const curentPage = offset / 15 !== 0 ? offset / 15 + 1 : 1;
+    const totalPage = Math.ceil(foundChats.found / 15 || 1);
+
     listChatsHTML += `<div style="display: flex; justify-content: flex-end; gap: 5px">`;
-    listChatsHTML += `<span style="padding-right: 25px"> Страница ${offset / 15 !== 0 ? offset / 15 + 1 : 1}/${Math.ceil(foundChats.found / 15 || 1)} </span>`;
-    
+    listChatsHTML += `<span style="padding-right: 10px"> Страница ${curentPage}/${totalPage} </span>`;
+
     if (foundChats.found > 15) {
         if (offset > 0) {
             listChatsHTML += `
                 <a id="previousPageButton" 
                     style="text-decoration: none; font-weight: bold;"> 
-                    Назад
+                    < Назад
                 </a>
-                •
             `;
         };
 
-        listChatsHTML += `
-            <a id="nextPageButton" 
-                style="padding-right: 10px; text-decoration: none; font-weight: bold;"> 
-                Далее
-            </a>
-        `;
+        if (curentPage < totalPage && offset > 0) {
+            listChatsHTML += '|';
+        }
+
+        if (curentPage < totalPage) {
+            listChatsHTML += `
+                <a id="nextPageButton" 
+                    style="padding-right: 10px; text-decoration: none; font-weight: bold;"> 
+                    Далее >
+                </a>
+            `;
+        }
     };
+
     listChatsHTML += `</div>`;
 
     modalPage.content(listChatsHTML);
@@ -160,4 +186,42 @@ const onClickButtonForChats = async (link, offset) => {
     };
 
     isLoad = false;
+};
+
+
+
+async function authModalPage() {
+    newModalPage(`<span style="font-size: 20px; display: flex; join-content: center; font-weight: bold;"> Добро пожаловать в ПоискЧата!</span>`);
+
+    const Html = `
+            <div class="ProfileModalInfoHeadline" style="padding: 10px;">
+                <span style="font-size: 13px; display: inline; gap: 5px; font-weight: 600; jostify-content: center; align-items: center;">
+                    Расширение «ПоискЧата» представляет собой инструмент для поиска чатов во ВКонтакте. В настоящее время доступен только просмотр чатов пользователей ВКонтакте или групп. Возможность поиска чатов по названию будет добавлена позже, когда разработка расширения будет завершена. Некоторые функции, включая просмотр чатов пользователей, могут потребовать платной подписки в любой момент.
+                    <br/><br/>
+
+                    <span style="color: #FD324A;"> 
+                        Для использования расширения необходима авторизация, которая будет выполняться путем получения вашего токена ВКонтакте с помощью приложения <a target="_blank" href="${services.urlByGetToken}">Kate Mobile</a>.
+                    </span>
+
+                    <br/><br/> 
+                    Пожалуйста, нажмите на кнопку: <a id="buttonAuthForModalPage"> подтвердить регистрацию.</a> В противном случае функционал расширения не будет работать.
+                    
+                    <br/><br/>
+                    Ваш токен будет сохранен только на вашем компьютере (локально)
+                </span>
+            </div>
+    `;
+
+    modalPage.content(Html);
+    modalPage.show();
+
+    const buttonAuthForModalPage = document.getElementById('buttonAuthForModalPage');
+    buttonAuthForModalPage.onclick = async () => {
+        await vkAuth();
+        modalPage.hide();
+        notifiers('Через 5 секунд эта страничка будет перезагружена для начала работы расширения');
+        setTimeout(() => location.reload(), 5_000);
+    };
+
+    GM_setValue('timeStampAuthModalPage', services.timeStampAuthModalPage = Infinity);
 };
