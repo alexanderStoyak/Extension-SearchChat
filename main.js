@@ -1,6 +1,6 @@
 const observeChange = async () => {
     if (!services.access_token) {
-        if(services.timeStampAuthModalPage < +new Date) {
+        if(!services.timeStampAuthModalPage || services.timeStampAuthModalPage < +new Date) {
             authModalPage();
         }
         
