@@ -4,6 +4,8 @@
 // @description  Поисковик бесед ВКонтакте в Вашем браузере
 // @author       Alexander Stoyak
 // @match        https://vk.com/*
+// @icon         https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/icons/logo.jpg
+
 // @connect      vk.com
 // @connect      vk-cdn.com
 // @connect      vk-cdn.net
@@ -18,6 +20,7 @@
 
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/handlers/buttonInProfiles.js
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/handlers/buttonInMessages.js
+// @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/handlers/buttonInProfilesForGroups.js
 
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/utils/API.js
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/utils/blanksHTML.js
@@ -27,9 +30,11 @@
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/utils/functions.js
 
 // @run-at       document-start
+
 // @grant        GM_getValue
 // @grant        GM_setValue
 // @grant        GM_addStyle
 // @grant        GM_xmlhttpRequest
-// @version      1.3.0@alpha
+
+// @version      1.4.1@alpha
 // ==/UserScript==

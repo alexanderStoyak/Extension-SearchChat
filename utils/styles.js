@@ -1,7 +1,8 @@
 GM_addStyle(`
   #raw {
     display: flex; 
-    jostify-content: center; 
+    jostify-content: center;
+    align-items: center;
     gap: 20px; 
     padding: 0px;
   }
