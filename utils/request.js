@@ -21,7 +21,7 @@ GM_xmlhttpRequest = function (url, data = {}) {
             responseType: 'json',
             ...object
         };
-    };
+    }
 
     return new Promise(resolve =>
         xhr({

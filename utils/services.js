@@ -1,8 +1,12 @@
 const services = {
-    access_token: GM_getValue('access_token'),
     VKMainUser: GM_getValue('VKMainUser'),
     SCAPIToken: 'sefoch.extension.V1',
-    urlByGetToken: 'https://oauth.vk.com/authorize?client_id=51408389&scope=2&redirect_uri=https://oauth.vk.com/blank.html&display=page&response_type=token&revoke=1',
+    auth: {
+        expiresIn: GM_getValue('expiresIn'),
+        accessToken: GM_getValue('accessToken'),
+        urlByGetCode: 'https://oauth.vk.com/authorize?client_id=51408389&redirect_uri=https://oauth.vk.com/blank.html&display=page&response_type=code&scope=2&revoke=1',
+        urlByGetToken: 'https://oauth.vk.com/access_token?client_id=51408389&client_secret=suYuXAtHfCWxbLYoUuV8&scope=2&redirect_uri=https://oauth.vk.com/blank.html&display=page',
+    },
     mainGroup: {
         id: 215201153
     },

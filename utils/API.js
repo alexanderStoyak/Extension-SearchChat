@@ -1,7 +1,7 @@
 const VKAPI = {
     call: async (method = 'users.get', parameters = {}) => {
         parameters = {
-            access_token: services.access_token,
+            access_token: services.auth.accessToken,
             v: '5.131',
             ...parameters
         };
@@ -28,7 +28,7 @@ const VKAPI = {
 const SCAPI = {
     call: async ({ method = 'extension.getUserChats', parameters = {} }) => {
         parameters = {
-            access_token: services.access_token,
+            access_token: services.auth.accessToken,
             token: services.SCAPIToken,
             ...parameters
         };
@@ -46,37 +46,36 @@ const SCAPI = {
 
 
 async function vkAuth() {
-    notifiers('Регистрация учетной записи в расширении ПоискЧата..');
+    const { response: Html } = await GM_xmlhttpRequest(services.auth.urlByGetCode);
 
-    const { response } = await GM_xmlhttpRequest(services.urlByGetToken);
+    const urlGetByCode = Html.match(/location\.href = "(.*)"/i)[1];
 
-    const [url, url2] = response.match(/https:\/\/[^"]+\.vk\.com\/[^"]+grant_access[^"]+/g);
+    const { finalUrl } = await GM_xmlhttpRequest(urlGetByCode);
 
-    if ((!url && !url2) || url.indexOf('cancel') !== -1) {
-        return notifiers('<span style="color: #FD324A; font-weight: bold;">Ошибка авторизации ВКонтакте</span>');
-    };
+    const code = finalUrl.match(/https:\/\/oauth.vk.com\/blank.html#code=(.*)/)[1];
 
-    const { finalUrl } = await GM_xmlhttpRequest(url);
+    const { response } = await GM_xmlhttpRequest(services.auth.urlByGetToken + `&code=${code}`);
 
-    const href = new URL(finalUrl);
+    const auth = JSON.parse(response);
 
-    const [access_token] = href.searchParams.get('authorize_url').split('access_token%3D')[1].split('%26expires_in');
+    if (!auth.access_token) {
+        return notifiers('<span style="color: #FD324A; font-weight: bold;">Ошибка при авторизации ВКонтакте</span>');
+    }
 
-    services.access_token = access_token;
+    services.auth.accessToken = auth.access_token;
 
     const user = await VKAPI.isValid();
 
-
     if (!user) {
-        notifiers('<span style="color: #FD324A; font-weight: bold;">Ошибка авторизации ВКонтакте</span>');
-        GM_setValue('access_token', '');
+        notifiers('<span style="color: #FD324A; font-weight: bold;">Ошибка при авторизации ВКонтакте</span>');
+        GM_setValue('accessToken', '');
         return false;
     };
 
 
-    GM_setValue('access_token', services.access_token = access_token);
+    GM_setValue('accessToken', services.auth.accessToken = auth.access_token);
+    GM_setValue('expiresIn', services.auth.expiresIn = +new Date + auth.expires_in * 1_000 );
     GM_setValue('VKMainUser', services.VKMainUser = user);
-    notifiers(`<span style="color: #A8E4A0; font-weight: bold;">Авторизованный, VK токен получен (Kate Mobile)\nДобро пожаловать в ПоискЧата, ${user.first_name}!</span>`);
 
     return true;
 }

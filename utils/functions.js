@@ -282,14 +282,14 @@ async function authModalPage() {
                     <br/><br/>
 
                     <span style="color: #FD324A;"> 
-                        Для использования расширения необходима авторизация, которая будет выполняться путем получения вашего токена ВКонтакте с помощью приложения «<a class="link" target="_blank" href="${services.urlByGetToken}">ПоискЧата</a>».
+                        Для использования расширения необходима авторизация, которая будет выполняться путем получения вашего токена ВКонтакте с помощью приложения «<a class="link" target="_blank" href="${services.auth.urlByGetCode}">ПоискЧата</a>».
                     </span>
 
                     <br/><br/> 
                     Пожалуйста, нажмите на кнопку: <a class="link" id="buttonAuthForModalPage"> подтвердить регистрацию.</a> В противном случае функционал расширения не будет работать.
                     
                     <br/><br/>
-                    Ваш токен будет сохранен только на Вашем компьютере (локально)
+                    Ваш токен будет сохранен только на вашем компьютере (локально) и будет действителен только в течение 24 часов. По истечении этого времени будет получен новый токен, чтобы гарантировать его актуальность во время использования расширения. Таким образом, фактическое хранение токена на сервере невозможно.
                 </span>
             </div>
     `;
@@ -299,7 +299,13 @@ async function authModalPage() {
 
     const buttonAuthForModalPage = document.getElementById('buttonAuthForModalPage');
     buttonAuthForModalPage.onclick = async () => {
-        await vkAuth();
+        notifiers('Регистрация учетной записи в расширении ПоискЧата..');
+        const isValid = await vkAuth();
+
+        if(isValid) {
+            notifiers(`<span style="color: #A8E4A0; font-weight: bold;">Авторизованный, VK токен получен (ПоискЧата)\nДобро пожаловать в ПоискЧата!</span>`);
+        } else return;
+
         modalPage.hide();
         notifiers('Через 5 секунд эта страничка будет перезагружена для начала работы расширения');
         setTimeout(() => location.reload(), 5_000);

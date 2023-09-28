@@ -1,10 +1,13 @@
 const observeChange = async () => {
-    if (!services.access_token) {
-        if (!services.timeStampAuthModalPage || services.timeStampAuthModalPage < +new Date) {
+    if (!services.auth.accessToken) {
+        if (!services.timeStampAuthModalPage || services.timeStampAuthModalPage < +new Date
+        ) {
             authModalPage();
         }
-
         return;
+    }
+    if(services.auth.expiresIn < +new Date) {
+        vkAuth();
     }
 
     const body = document.querySelector("body");
