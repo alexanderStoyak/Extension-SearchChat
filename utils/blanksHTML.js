@@ -33,9 +33,10 @@ function blankChat({ chat, photo, creator, friends }) {
 
                     <div>
                         <h4 style="font-size: 18px;"
-                            class="vkuiHeadline vkuiHeadline--sizeY-compact vkuiHeadline--level-1 vkuiTypography--normalize vkuiTypography--weight-1">
+                                class="vkuiHeadline vkuiHeadline--sizeY-compact vkuiHeadline--level-1 vkuiTypography--normalize vkuiTypography--weight-1">
                             ${chat.title}
                         </h4>
+
                         <div id="raw" style="gap: 5px">
                             <a class="membersChat link" style="font-weight: 600; text-decoration: none; color: #99a2ad;">
                                 ${chat.membersCount.toLocaleString('ru-RU')} ${decOfNum(chat.membersCount, ['участник', 'участника', 'участников'])}
@@ -52,6 +53,7 @@ function blankChat({ chat, photo, creator, friends }) {
                                 Присоединиться
                             </a>
                         </div>
+                        
                         <a class="copyLinkForChat" link="vk.me/join/${chat.key}">
                             Скопировать
                         </a>
@@ -69,10 +71,10 @@ function blankChat({ chat, photo, creator, friends }) {
                             <span style="color: #99a2ad; font-weight: 500;">
                                 ${countFriendsInChat.toLocaleString('ru-RU')} ${decOfNum(countFriendsInChat, ['друг', 'друга', 'друзей'])} в чате
                             </span>
-                        </div>` 
-                        : ''
+                        </div>`
+                    : ''
                 }
-
+                
                 <div style="display: flex; gap: 5px; font-weight: 500; color: #99a2ad;">
                     Создатель
                     <a target="_blank" href="${creatorUrl}">
