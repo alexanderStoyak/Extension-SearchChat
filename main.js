@@ -53,21 +53,27 @@ const observeChange = async () => {
                 ) {
                     const [peerHistory] = document.getElementsByClassName('_im_peer_history');
 
-                    return buttonInMessages(peerHistory);
+                    if(peerHistory) {
+                        buttonInMessages(peerHistory);
+                    }
                 }
 
 
                 if (node.classList.contains('post_field_warning')) {
                     const pageActions = document.getElementById('page_actions');
 
-                    return buttonInProfilesForGroups(pageActions);
+                    if(pageActions) {
+                        buttonInProfilesForGroups(pageActions);
+                    }
                 }
 
 
                 if (node.classList.contains('Profile')) {
                     const [profileHeaderActions] = document.getElementsByClassName('ProfileHeaderButton');
 
-                    return buttonInProfiles(profileHeaderActions);
+                    if(profileHeaderActions) {
+                        buttonInProfiles(profileHeaderActions);
+                    }
                 }
             }
         }
