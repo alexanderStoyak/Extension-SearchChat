@@ -273,23 +273,41 @@ async function onClickButtonForChats(link, offset, isCurrent = false) {
 
 
 async function authModalPage() {
-    newModalPage(`<span style="font-size: 20px; display: flex; font-weight: bold;"> Добро пожаловать в ПоискЧата!</span>`);
+    newModalPage(`<span style="font-size: 20px; display: flex; font-weight: bold;"> Авторизация </span>`);
 
     const Html = `
             <div class="ProfileModalInfoHeadline" style="padding: 10px;">
-                <span style="font-size: 13px; display: inline; gap: 5px; font-weight: 600; align-items: center;">
+                <span style="display: block; gap: 5px; text-align: center;">
                     Расширение «ПоискЧата» представляет собой инструмент для поиска чатов во ВКонтакте. В настоящее время доступен только просмотр чатов пользователей ВКонтакте или групп. Возможность поиска чатов по названию будет добавлена позже, когда разработка расширения будет завершена. Некоторые функции, включая просмотр чатов пользователей, могут потребовать платной подписки в любой момент.
-                    <br/><br/>
 
-                    <span style="color: #FD324A;"> 
-                        Для использования расширения необходима авторизация, которая будет выполняться путем получения вашего токена ВКонтакте с помощью приложения «<a class="link" target="_blank" href="${services.auth.urlByGetCode}">ПоискЧата</a>».
+                    <hr style="margin-top: 30px"  class="separator" data-content="Получение Вашего токена">
+                    <span style="color: #f6c254;"> 
+                        Для использования расширения необходима авторизация, которая будет выполняться путем получения вашего токена ВКонтакте с помощью приложения «<a style="color: #71aaeb;" target="_blank" href="${services.auth.urlByGetCode}">ПоискЧата</a>».
                     </span>
-
-                    <br/><br/> 
-                    Пожалуйста, нажмите на кнопку: <a class="link" id="buttonAuthForModalPage"> подтвердить регистрацию.</a> В противном случае функционал расширения не будет работать.
+          
+                    <hr style="margin-top: 25px" class="separator" data-content="Важно">
+                    <span> 
+                        Ваш токен будет сохранен только на вашем компьютере (локально) и будет действителен только в течение 24 часов. По истечении этого времени будет получен новый токен, чтобы гарантировать его актуальность во время использования расширения. Таким образом, фактическое хранение токена на сервере невозможно. 
+                    </span>
                     
-                    <br/><br/>
-                    Ваш токен будет сохранен только на вашем компьютере (локально) и будет действителен только в течение 24 часов. По истечении этого времени будет получен новый токен, чтобы гарантировать его актуальность во время использования расширения. Таким образом, фактическое хранение токена на сервере невозможно.
+                    <hr style="margin-top: 25px" class="separator" data-content="Авторизация">
+                    Пожалуйста, нажмите на кнопку: 
+                    <a style="
+                        display: inline-block; 
+                        font-weight: 500; 
+                        padding: 0 .5em; 
+                        line-height: 1.5em; 
+                        max-width: max-content; 
+                        background-color: var(--vkui--color_icon_secondary); 
+                        border-radius: 50px;
+                        color: var(--vkui--color_text_contrast)
+                        text-align: center; 
+                        text-decoration: none"
+                        id="buttonAuthForModalPage"
+                    >
+                        Подтвердить регистрацию
+                    </a> 
+                    <br/>В ином случае функционал расширения не будет работать.
                 </span>
             </div>
     `;
