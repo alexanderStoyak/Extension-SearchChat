@@ -1,6 +1,9 @@
 const observeChange = async () => {
     if (!services.auth.accessToken) {
-        if (!services.timeStampAuthModalPage || services.timeStampAuthModalPage < +new Date
+        if (
+            !services.auth.accessToken
+            || !services.timeStampAuthModalPage
+            || services.timeStampAuthModalPage < +new Date
         ) {
             authModalPage();
         }
@@ -14,6 +17,7 @@ const observeChange = async () => {
 
     const [profileHeaderActions] = document.getElementsByClassName('ProfileHeaderButton');
     const pageActions = document.getElementById('page_actions');
+    const topProfileMenu = document.getElementById('top_profile_menu');
 
 
     if (profileHeaderActions) {
@@ -22,9 +26,14 @@ const observeChange = async () => {
 
 
     if (pageActions) {
-        const pageActions = document.getElementById('page_actions');
+        const pageActions = document.getElementById('top_support_link');
 
-        return buttonInProfilesForGroups(pageActions);
+        buttonInProfilesForGroups(pageActions);
+    }
+
+
+    if(topProfileMenu) {
+        buttonIntopProfileMenu(topProfileMenu);
     }
 
     
@@ -36,7 +45,6 @@ const observeChange = async () => {
                 if (!(node instanceof HTMLElement)) {
                     continue;
                 }
-
 
                 if (
                     node.classList.contains('im-mess--check')
