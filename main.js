@@ -17,7 +17,7 @@ const observeChange = async () => {
 
     const [profileHeaderActions] = document.getElementsByClassName('ProfileHeaderButton');
     const pageActions = document.getElementById('page_actions');
-    const topProfileMenu = document.getElementById('top_profile_menu');
+    // const topProfileMenu = document.getElementById('top_profile_menu');
 
 
     if (profileHeaderActions) {
@@ -28,9 +28,9 @@ const observeChange = async () => {
         buttonInProfilesForGroups(pageActions);
     }
 
-    if (topProfileMenu) {
-        buttonsInTopProfileMenu(topProfileMenu);
-    }
+    // if (topProfileMenu) {
+    //     buttonsInTopProfileMenu(topProfileMenu);
+    // }
 
 
     const observer = new MutationObserver(mutations => {
