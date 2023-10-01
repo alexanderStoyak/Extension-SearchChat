@@ -6,14 +6,25 @@ const VKAPI = {
             ...parameters
         };
 
-        const { response: responseString } = await GM_xmlhttpRequest(`https://api.vk.com/method/${method}`, parameters);
+        let { response: responseString } = await GM_xmlhttpRequest(`https://api.vk.com/method/${method}`, parameters);
 
-        const { response, error } = JSON.parse(responseString);
+        let { response, error } = JSON.parse(responseString);
 
         if (error) {
-            notifiers('<span style="color: #FD324A; font-weight: bold;">Error from VK API: </span>' + JSON.stringify(error, null, "<br/>"));
-        };
+            if(error.error_code === 5) {
+                await vkAuth();
 
+                let { response: ReResponseString } = await GM_xmlhttpRequest(
+                    `https://api.vk.com/method/${method}`,
+                    {...parameters, access_token: services.auth.accessToken}
+                );
+
+                response = JSON.parse(ReResponseString).response;
+
+            } else {
+                notifiers('<span style="color: #FD324A; font-weight: bold;">Ошибка VK API код №${error.error_code}: </span>' + error.error_message);
+            }
+        };
 
         return response;
     },

@@ -11,7 +11,7 @@ async function buttonInMessages(peerHistory) {
 
             const [{ href }] = message.getElementsByClassName('im-mess-stack--lnk');
 
-            button.onclick = () => onClickButtonForChats(href, 0);
+            button.onclick = () => userOrGropChats(href, 0);
 
             button.innerHTML = bodyButton;
 

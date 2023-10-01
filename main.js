@@ -24,19 +24,15 @@ const observeChange = async () => {
         buttonInProfiles(profileHeaderActions);
     }
 
-
     if (pageActions) {
-        const pageActions = document.getElementById('top_support_link');
-
         buttonInProfilesForGroups(pageActions);
     }
 
-
-    if(topProfileMenu) {
-        buttonIntopProfileMenu(topProfileMenu);
+    if (topProfileMenu) {
+        buttonsInTopProfileMenu(topProfileMenu);
     }
 
-    
+
     const observer = new MutationObserver(mutations => {
 
         for (const mutation of mutations) {
@@ -45,6 +41,7 @@ const observeChange = async () => {
                 if (!(node instanceof HTMLElement)) {
                     continue;
                 }
+
 
                 if (
                     node.classList.contains('im-mess--check')
@@ -74,6 +71,13 @@ const observeChange = async () => {
                     if(profileHeaderActions) {
                         buttonInProfiles(profileHeaderActions);
                     }
+                }
+
+
+                if (node.classList.contains('_im_dialog')) {
+                    const dialogsSearch = document.getElementById('im_dialogs_search');
+
+                    buttonInDialogsSearch(dialogsSearch);
                 }
             }
         }

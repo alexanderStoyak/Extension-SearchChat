@@ -62,9 +62,11 @@ GM_addStyle(`
         position: relative;
         display: inline-block;
         color: black;
+        font-weight: 500;
         padding: 0 .5em;
         line-height: 1.5em;
         background-color: #818078;
         border-radius: 50px;
     }
+    
 `);

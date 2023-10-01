@@ -3,7 +3,7 @@ function buttonInProfiles(elementButtons) {
 
     newButton.className = 'ProfileHeaderButton';
 
-    newButton.onclick = () => onClickButtonForChats(window.location.href, 0);
+    newButton.onclick = () => userOrGropChats(window.location.href, 0);
 
     newButton.innerHTML = `
         <a class="vkuiButton vkuiButton--size-m vkuiButton--mode-secondary vkuiButton--appearance-accent vkuiButton--align-center vkuiTappable vkuiInternalTappable vkuiTappable--hasHover vkuiTappable--hasActive">

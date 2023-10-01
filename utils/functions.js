@@ -140,7 +140,7 @@ const load = {
     chats: false
 };
 let currentChats = {};
-async function onClickButtonForChats(link, offset, isCurrent = false) {
+async function userOrGropChats(link, offset = 0, isCurrent = false) {
     if (load.chats) return;
     else load.chats = true;
 
@@ -245,19 +245,151 @@ async function onClickButtonForChats(link, offset, isCurrent = false) {
 
     if (nextPageButton) {
         nextPageButton.onclick = () => {
-            onClickButtonForChats(link, offset += 15);
+            userOrGropChats(link, offset += 15);
         };
     }
 
     if (previousPageButton) {
         previousPageButton.onclick = () => {
-            onClickButtonForChats(link, offset -= 15);
+            userOrGropChats(link, offset -= 15);
         };
     }
 
     const buttonMembers = document.getElementsByClassName('membersChat');
 
-    buttonMembers.forEach((button, index) => button.onclick = () => showUsersChat(index, friends));
+    buttonMembers.forEach((button, index) => button.onclick = () => showUsersChat(index, friends, userOrGropChats));
+
+    let linksChats = document.getElementsByClassName('copyLinkForChat');
+
+    for (const link of linksChats) {
+        link.onclick = () => {
+            copy(link.getAttribute('link'));
+            notifiers(`Ссылка на чат скопирована`);
+        }
+    }
+
+    load.chats = false;
+}
+
+
+async function searchChats(title, offset = 0, isCurrent = false) {
+    if (load.chats) return;
+    else load.chats = true;
+
+
+    newModalPage(`Чаты по запросу «<span style="color: #71aaeb; font-weight: bold;">${title}</span>»`)
+        .content(`<div class="spinner" style="padding: 50px;"> <span class="spinner__animation"></span></div>`)
+        .show();
+
+
+    let foundChats;
+
+    if (!isCurrent) {
+        foundChats = await SCAPI.call({
+            method: 'extension.getChats',
+            parameters: {
+                title,
+                offset
+            }
+        });
+
+
+        currentChats = {
+            foundChats,
+            offset,
+            title
+        };
+    } else {
+        foundChats = currentChats.foundChats;
+    }
+
+
+    if (!foundChats.found) {
+        load.chats = false;
+        modalPage.hide();
+        return notifiers(`Извините, но не один чат, соответствующий Вашему запросу, не найден`);
+    }
+
+    const [creators, friends] = await Promise.all([
+        getUsersOrGroups(
+            foundChats.chats.map(chat => chat.creator),
+            true
+        ),
+        getFriends()
+    ]);
+
+
+    newModalPage(`
+        Чаты по запросу «<span style="color: #71aaeb; font-weight: bold;">${title}</span>»
+        <span style="color: #828282; font-weight: 500;"> 
+            ${foundChats.found.toLocaleString('ru-RU')}шт. 
+        </span>
+    `);
+
+    let listChatsHTML = foundChats.chats.map(chat => {
+        const photo = chat.photo
+            ? chat.photo['200'] || chat.photo['150'] || chat.photo['50']
+            : '';
+
+        return blankChat({ chat, photo, friends, creator: creators.find(creator => creator.id === Math.abs(chat.creator)) });
+    }).join('');
+
+
+    const currentPage = offset / 15 !== 0 ? offset / 15 + 1 : 1;
+    const totalPage = Math.ceil(foundChats.found / 15 || 1);
+
+
+    listChatsHTML += `<div style="display: flex; justify-content: flex-end; gap: 5px">`;
+    listChatsHTML += `<span style="padding-right: 10px; color: #99a2ad; font-weight: 500;"> Страница ${currentPage}/${totalPage} </span>`;
+
+
+    if (foundChats.found > 15) {
+        if (offset > 0) {
+            listChatsHTML += `
+                <a id="previousPageButton" 
+                    style="${!(currentPage < totalPage) ? 'padding-right: 15px;' : ''} text-decoration: none; font-weight: bold; color: #71aaeb;"> 
+                    < Назад
+                </a>
+            `;
+        }
+
+        if (currentPage < totalPage && offset > 0) {
+            listChatsHTML += '<span style="font-weight: bold;">|</span>';
+        }
+
+        if (currentPage < totalPage) {
+            listChatsHTML += `
+                <a id="nextPageButton" 
+                    style="padding-right: 15px; text-decoration: none; font-weight: bold; color: #71aaeb;"> 
+                    Далее >
+                </a>
+            `;
+        }
+    }
+
+
+    listChatsHTML += `</div>`;
+
+    modalPage.content(listChatsHTML).show();
+
+    const nextPageButton = document.getElementById('nextPageButton');
+    const previousPageButton = document.getElementById('previousPageButton');
+
+    if (nextPageButton) {
+        nextPageButton.onclick = () => {
+            searchChats(title, offset += 15);
+        };
+    }
+
+    if (previousPageButton) {
+        previousPageButton.onclick = () => {
+            searchChats(title, offset -= 15);
+        };
+    }
+
+    const buttonMembers = document.getElementsByClassName('membersChat');
+
+    buttonMembers.forEach((button, index) => button.onclick = () => showUsersChat(index, friends, searchChats));
 
     let linksChats = document.getElementsByClassName('copyLinkForChat');
 
@@ -333,7 +465,7 @@ async function authModalPage() {
 }
 
 
-async function showUsersChat(indexChat, friends) {
+async function showUsersChat(indexChat, friends, backFunction) {
     const chat = currentChats.foundChats.chats[indexChat];
 
     const header = `
@@ -368,7 +500,7 @@ async function showUsersChat(indexChat, friends) {
     const backButton = document.getElementById('backButton');
 
     backButton.onclick = () => {
-        onClickButtonForChats(currentChats.link, currentChats.offset, true);
+        backFunction(currentChats.link ?? currentChats.title, currentChats.offset, true);
     };
 }
 
@@ -428,4 +560,28 @@ async function getFriends() {
     `;
 
     return await VKAPI.call('execute', {code});
+}
+
+// https://angel-rs.github.io/css-color-filter-generator/
+const iconColors = {
+    accent: 'brightness(0) saturate(100%) invert(66%) sepia(13%) saturate(1970%) hue-rotate(180deg) brightness(98%) contrast(88%);',
+    secondary: 'brightness(0) saturate(100%) invert(55%) sepia(0%) saturate(1%) hue-rotate(295deg) brightness(94%) contrast(96%);'
+}
+function icons({name, realSize = 24, size = realSize, fill = 'accent'}) {
+
+    return `
+        <svg 
+            fill="currentColor" 
+            stroke="currentColor"
+            width="${size}" 
+            height="${size}"
+            style="filter: ${iconColors[fill]}"
+        >
+            <image
+                width="${size}"
+                height="${size}"
+                xlink:href="https://raw.githubusercontent.com/VKCOM/icons/master/packages/icons/src/svg/${realSize}/${name}_${realSize}.svg" 
+            />
+        </svg>
+    `;
 }

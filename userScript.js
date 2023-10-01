@@ -21,6 +21,7 @@
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/handlers/buttonInProfiles.js
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/handlers/buttonInMessages.js
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/handlers/buttonInProfilesForGroups.js
+// @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/handlers/buttonInDialogsSearch.js
 
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/utils/API.js
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/utils/blanksHTML.js
@@ -36,5 +37,5 @@
 // @grant        GM_addStyle
 // @grant        GM_xmlhttpRequest
 
-// @version      1.4.4@alpha
+// @version      1.5.6@alpha
 // ==/UserScript==

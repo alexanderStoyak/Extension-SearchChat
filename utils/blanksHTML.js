@@ -21,7 +21,7 @@ function blankChat({ chat, photo, creator, friends }) {
 
         <section class="vkuiInternalGroup vkuiGroup vkuiGroup--mode-plain vkuiInternalGroup--mode-plain vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo">
             
-            <div class="ProfileModalInfoHeadline" style="padding-top: 0px; padding-bottom: 0px; padding-left: 10px;">
+            <div class="ProfileModalInfoHeadline" style="padding-top: 0px; padding-bottom: 0px; padding-left: 10px; padding-right: 10px;">
             
                 <div id="raw" style="margin-bottom: 15px; gap: 15px">
 
@@ -32,8 +32,7 @@ function blankChat({ chat, photo, creator, friends }) {
                     </div>
 
                     <div>
-                        <h4 style="font-size: 18px;"
-                                class="vkuiHeadline vkuiHeadline--sizeY-compact vkuiHeadline--level-1 vkuiTypography--normalize vkuiTypography--weight-1">
+                        <h4 title="${chat.title}" class="vkuiHeadline vkuiHeadline--sizeY-compact vkuiHeadline--level-1 vkuiTypography--normalize vkuiTypography--weight-1" style="font-size: 18px; max-width: 350px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
                             ${chat.title}
                         </h4>
 
@@ -54,7 +53,7 @@ function blankChat({ chat, photo, creator, friends }) {
                             </a>
                         </div>
                         
-                        <a class="copyLinkForChat" link="vk.me/join/${chat.key}">
+                        <a title="vk.me/join/${chat.key}" class="copyLinkForChat" link="vk.me/join/${chat.key}">
                             Скопировать
                         </a>
                     </div>
@@ -75,14 +74,13 @@ function blankChat({ chat, photo, creator, friends }) {
                     : ''
                 }
                 
-                <div style="display: flex; gap: 5px; font-weight: 500; color: #99a2ad;">
+                <div style=" display: flex; gap: 5px; font-weight: 500; color: #99a2ad;">
                     Создатель
-                    <a target="_blank" href="${creatorUrl}">
+                    <a title="${name}" target="_blank" href="${creatorUrl}" style="max-width: 300px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
                         ${name}
                     </a>
                     <div style="width: 20px; height: 20px;" 
-                        class="vkuiAvatar vkuiImageBase vkuiImageBase--size-20 vkuiImageBase--loaded" 
-                            role="img">
+                        class="vkuiAvatar vkuiImageBase vkuiImageBase--size-20 vkuiImageBase--loaded" role="img">
                         <img class="vkuiImageBase__img" src="${creator.photo_100 || ''}">
                     </div>
                 </div>

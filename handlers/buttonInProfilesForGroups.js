@@ -3,7 +3,7 @@ function buttonInProfilesForGroups(pageActions) {
 
     newButton.className = 'FlatButton FlatButton--secondary FlatButton--size-m redesigned-group-action';
 
-    newButton.onclick = () => onClickButtonForChats(window.location.href, 0);
+    newButton.onclick = () => userOrGropChats(window.location.href, 0);
 
     newButton.innerHTML = `
          <span class="FlatButton__in">
