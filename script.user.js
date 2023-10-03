@@ -3,8 +3,8 @@
 // @namespace    http://tampermonkey.net/
 // @description  Поисковик бесед ВКонтакте в Вашем браузере
 // @author       Alexander Stoyak
+// @license      MIT
 // @match        https://vk.com/*
-// @icon         https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/icons/logo.jpg
 
 // @connect      vk.com
 // @connect      vk-cdn.com
@@ -38,6 +38,5 @@
 // @grant        GM_xmlhttpRequest
 
 // @version      1.7.0@alpha
-// @license      MIT
 
 // ==/UserScript==
