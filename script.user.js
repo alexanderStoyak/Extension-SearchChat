@@ -38,4 +38,6 @@
 // @grant        GM_xmlhttpRequest
 
 // @version      1.7.0@alpha
+// @license      MIT
+
 // ==/UserScript==
