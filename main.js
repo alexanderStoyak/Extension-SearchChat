@@ -1,3 +1,5 @@
+
+let appearance = '';
 const observeChange = async () => {
     if (!services.auth.accessToken) {
         if (
@@ -13,7 +15,14 @@ const observeChange = async () => {
         vkAuth();
     }
 
-    const body = document.querySelector("body");
+    const body = document.querySelector('body');
+
+    if(body.className.includes('vkui--vkBase--dark')) {
+        appearance = 'dark';
+    }
+    if(body.className.includes('vkui--vkBase--light')) {
+        appearance = 'light';
+    }
 
     const [profileHeaderActions] = document.getElementsByClassName('ProfileHeaderButton');
     const pageActions = document.getElementById('page_actions');
@@ -56,7 +65,11 @@ const observeChange = async () => {
                 }
 
 
-                if (node.classList.contains('post_field_warning')) {
+                if (
+                    node.classList.contains('post_field_warning')
+                    || node.classList.contains('chat_onl_wrap')
+                    || node.classList.contains('page_block')
+                ) {
                     const pageActions = document.getElementById('page_actions');
 
                     if(pageActions) {

@@ -16,8 +16,22 @@ function newModalPage(title) {
     return modalPage;
 }
 
+function deXSS (text) {
+    return text.replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/['"`]+/g,"");
+}
 
 function notifiers(text, title = 'ПоискЧата') {
+    title = `
+        <span style="
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+                    justify-content: flex-start;
+        "> 
+            ${icons({name: 'notification_outline', size: 20, fill: 'secondary'})} ${title}
+        </span>
+    `
+
     Notifier.showEvent({ title, text });
 }
 
@@ -67,12 +81,12 @@ async function getUsersOrGroups(links, explicitIds) {
     } else {
         idsOrSreensNames.push({
             type: 'user',
-            id: chunk(links.filter(id => +id > 0), 5_000)
+            id: chunk(links.filter(id => +id > 0), 1_000)
         });
 
         idsOrSreensNames.push({
             type: 'club',
-            id: chunk(links.filter(id => +id < 0).map(id => Math.abs(id)), 5_000)
+            id: chunk(links.filter(id => +id < 0).map(id => Math.abs(id)), 1_000)
         });
     }
 
@@ -86,18 +100,30 @@ async function getUsersOrGroups(links, explicitIds) {
             var info = idsOrSreensNames[i];
 
             if(info.type == "club") {
-                var groups = API.groups.getById({ group_ids: info.id[0] });
-                if(info.id[1]) {
-                    groups = groups + API.groups.getById({ group_ids: info.id[1] });
+                var i = 0;
+                var groups = API.groups.getById({ group_ids: info.id[i] });
+                
+                while(i < info.id.length) {
+                    i = i + 1;
+                    
+                    if(info.id[i]) {
+                        groups = groups + API.groups.getById({ group_ids: info.id[i] });
+                    };
                 };
                 
                 returns.push(groups);
             };
 
             if(info.type == "user") {
-                var users = API.users.get({ user_id: info.id[0], fields: 'photo_100,online,last_seen' });
-                if(info.id[1]) {
-                    users = users + API.users.get({ user_id: info.id[1], fields: 'photo_100,online,last_seen'});
+                var i = 0;
+                var users = API.users.get({ user_id: info.id[i], fields: 'photo_100,online,last_seen'});
+                
+                while(i < info.id.length) {
+                    i = i + 1;
+                    
+                    if(info.id[i]) {
+                        users = users + API.users.get({ user_id: info.id[i], fields: 'photo_100,online,last_seen'});
+                    };
                 };
                 
                 returns.push(users);
@@ -148,9 +174,11 @@ async function userOrGropChats(link, offset = 0, isCurrent = false) {
     const [object] = await getUsersOrGroups([link]);
 
     const typeMention = object?.first_name ? 'id' : 'club';
-    const objectName = typeMention === 'id'
-        ? `${object.first_name} ${object.last_name}`
-        : `группа «${object.name}»`;
+    const objectName = deXSS(
+        typeMention === 'id'
+            ? `${object.first_name} ${object.last_name}`
+            : `группа «${object.name}»`
+    );
 
     newModalPage(`Чаты, в которых находится <a style="color: #71aaeb; font-weight: bold;" href="${link}">${objectName}</a>`)
         .content(`<div class="spinner" style="padding: 50px;"> <span class="spinner__animation"> </span></div>`)
@@ -277,7 +305,7 @@ async function searchChats(title, offset = 0, isCurrent = false) {
     else load.chats = true;
 
 
-    newModalPage(`Чаты по запросу «<span style="color: #71aaeb; font-weight: bold;">${title}</span>»`)
+    newModalPage(`Чаты по запросу «<span style="color: #71aaeb; font-weight: bold;">${deXSS(title)}</span>»`)
         .content(`<div class="spinner" style="padding: 50px;"> <span class="spinner__animation"></span></div>`)
         .show();
 
@@ -472,7 +500,7 @@ async function showUsersChat(indexChat, friends, backFunction) {
         <a id="backButton" style="text-decoration: none; color: #99a2ad; font-weight: bold; padding-right: 10px"> Назад </a> 
             Участники чата 
         <span style="font-weight: bold; color: #71aaeb;"> 
-            ${chat.title}
+            ${deXSS(chat.title)}
         </span> 
         <span style="color: #99a2ad; font-weight: 500;"> 
             ${chat.membersCount.toLocaleString('ru-RU')} 
@@ -485,10 +513,26 @@ async function showUsersChat(indexChat, friends, backFunction) {
 
     const membersList = await getUsersOrGroups(chat.members, true);
 
+    const friendsIds = friends.map(friend => friend.id);
+    const creator = membersList.find(member => member.id === Math.abs(chat.creator));
+
+    membersList.splice(membersList.findIndex(member => member.id === Math.abs(chat.creator)), 1);
+
+    const sortedMembersList = membersList.filter(member => friendsIds.includes(member.id))
+        .concat(
+            membersList.filter(member => !member.first_name),
+            membersList.filter(member => !friendsIds.includes(member.id) && member.first_name)
+                .sort((a, b) => b.online - a.online)
+        );
+
     let html = '<div class="ChatSettings__pane"> <div class="ChatSettingsMembersWidget__list">';
 
-    for (const member of membersList.reverse()) {
-        html += blankMembersList({ member, creator: chat.creator, friends });
+    if (creator) {
+        html += blankMembersList({ member: creator, creator: creator.id, friends });
+    }
+
+    for (const member of sortedMembersList) {
+        html += blankMembersList({ member, creator: 0, friends });
     }
 
     html += '</div> </div>';
@@ -565,7 +609,9 @@ async function getFriends() {
 // https://angel-rs.github.io/css-color-filter-generator/
 const iconColors = {
     accent: 'brightness(0) saturate(100%) invert(66%) sepia(13%) saturate(1970%) hue-rotate(180deg) brightness(98%) contrast(88%);',
-    secondary: 'brightness(0) saturate(100%) invert(55%) sepia(0%) saturate(1%) hue-rotate(295deg) brightness(94%) contrast(96%);'
+    textAccentThemed: 'brightness(0) saturate(100%) invert(43%) sepia(35%) saturate(1094%) hue-rotate(172deg) brightness(83%) contrast(81%);',
+    secondary: 'brightness(0) saturate(100%) invert(55%) sepia(0%) saturate(1%) hue-rotate(295deg) brightness(94%) contrast(96%);',
+    white: 'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7500%) hue-rotate(203deg) brightness(112%) contrast(109%);'
 }
 function icons({name, realSize = 24, size = realSize, fill = 'accent'}) {
 
@@ -576,6 +622,8 @@ function icons({name, realSize = 24, size = realSize, fill = 'accent'}) {
             width="${size}" 
             height="${size}"
             style="filter: ${iconColors[fill]}"
+            class="vkuiIcon vkuiIcon--${size} vkuiIcon--w-${size} vkuiIcon--h-${size}"
+            display="block"
         >
             <image
                 width="${size}"

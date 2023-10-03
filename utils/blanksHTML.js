@@ -8,9 +8,12 @@ function blankChat({ chat, photo, creator, friends }) {
     const typeMention = creator?.first_name ? 'id' : 'club';
 
     const creatorUrl = `https://vk.com/${typeMention}${creator.id}`;
-    const name = typeMention === 'id'
+    const name = deXSS(typeMention === 'id'
         ? `${creator.first_name} ${creator.last_name}`
-        : `группа «${creator.name}»`;
+        : `группа «${creator.name}»`
+    );
+
+    chat.title = deXSS(chat.title);
 
     const photoFriends = friends.filter(friend => chat.members.includes(friend.id)).map(friend => friend.photo_100);
     const countFriendsInChat = photoFriends.length;
@@ -93,11 +96,13 @@ function blankChat({ chat, photo, creator, friends }) {
 function blankMembersList({ member, creator, friends }) {
     const typeMention = member?.first_name ? 'id' : 'club';
     const link = `https://vk.com/${typeMention}${member.id}`;
-    const memberName = typeMention === 'id'
+    const memberName = deXSS(typeMention === 'id'
         ? `${member.first_name} ${member.last_name}`
-        : `Группа «${member.name}»`;
+        : `Группа «${member.name}»`
+    );
 
     const isFriend = friends.filter(friend => member.id === friend.id).length !== 0;
+
 
     return `
         <li class="ListItem ListItem--can-be-hovered" style="padding-left: 10px">
@@ -108,11 +113,19 @@ function blankMembersList({ member, creator, friends }) {
                     </div>
 
                     <div class="Entity__main">
-                        <div class="Entity__title">
-                            <a target="_blank" href="${link}" ${isFriend ? 'style="color: #A8E4A0;"' : ''}>
+                        <div class="Entity__title" style="display: flex; flex-direction: row; align-items: center;">
+                            <a target="_blank" href="${link}" ${isFriend ? `style="color: ${appearance === 'dark' ? '#A8E4A0' : '#258b17'};"` : ''}>
                                 <span style="font-weight: bold;">${memberName}</span>
                             </a>
-                            ${Math.abs(creator) === member.id ? '<span style="color: #828282; padding-left: 12px" >Создатель</span>' : ''}
+                            ${
+                                Math.abs(creator) === member.id 
+                                    ? `    
+                                        <span style="color: #828282; padding-left: 5px;">
+                                            ${icons({name: 'crown_outline', size: 20, fill: 'secondary'})}
+                                        </span>
+                                      `
+                                    : ''
+                            }
                         </div>
                         <div class="Entity__description">
                             <span style="color: #828282;">

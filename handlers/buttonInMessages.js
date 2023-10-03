@@ -1,21 +1,26 @@
 async function buttonInMessages(peerHistory) {
 
-    const messages = peerHistory.getElementsByClassName('im-mess-stack--pname');
-
-    const bodyButton = `<a style="color: #71aaeb; font-weight: bold;"> Чаты </a>`;
-
+    const messages = peerHistory.getElementsByClassName('im-mess-stack _im_mess_stack');
 
     for (const message of messages) {
-        if (!message.innerHTML.includes(bodyButton)) {
-            const button = document.createElement('a');
+        const actions = message.getElementsByClassName('im-mess--actions');
 
-            const [{ href }] = message.getElementsByClassName('im-mess-stack--lnk');
+        for (const action of actions) {
 
-            button.onclick = () => userOrGropChats(href, 0);
+            if (!action.innerHTML.includes('id="buttonInMessages"')) {
+                const newAction = document.createElement('span');
 
-            button.innerHTML = bodyButton;
+                newAction.id = 'buttonInMessages';
+                newAction.className = 'im-mess--reaction'
+                newAction.onclick = () => userOrGropChats(href, 0);
+                newAction.role = 'link';
+                newAction.title = 'Просмотр чатов';
+                newAction.innerHTML = icons({name: 'chats', fill: 'secondary', size: 16});
 
-            message.appendChild(button);
+                const [{href}] = message.getElementsByClassName('im-mess-stack--lnk');
+
+                action.prepend(newAction);
+            }
         }
     }
 }
