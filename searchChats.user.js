@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         ПоискЧата
+// @name         searchChats
 // @namespace    http://tampermonkey.net/
 // @description  Поисковик бесед ВКонтакте в Вашем браузере
 // @author       Alexander Stoyak
