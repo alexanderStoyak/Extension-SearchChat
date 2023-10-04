@@ -18,11 +18,9 @@ function newModalPage(title) {
 
 
 function deXSS (text) {
-    function replaceFunc (match) {
-        return `​${match}​`;
-    }
-
-    return text.replace(/['"`]+|<|>/g, replaceFunc);
+    return text.replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/['"`]/g,"&quot;");
 }
 
 
