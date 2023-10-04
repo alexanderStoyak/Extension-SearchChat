@@ -16,7 +16,7 @@ async function buttonInMessages(peerHistory) {
                 newAction.title = 'Просмотр чатов';
                 newAction.innerHTML = icons({name: 'chats', fill: 'secondary', size: 16});
 
-                const [{href}] = message.getElementsByClassName('im-mess-stack--lnk');
+                const [{ href }] = message.getElementsByClassName('im-mess-stack--lnk');
                 newAction.onclick = () => userOrGropChats(href, 0);
 
                 action.prepend(newAction);

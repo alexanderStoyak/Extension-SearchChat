@@ -1,9 +1,10 @@
 // ==UserScript==
-// @name         searchChats
+// @name         ПоискЧата
 // @namespace    http://tampermonkey.net/
 // @description  Поисковик бесед ВКонтакте в Вашем браузере
 // @author       Alexander Stoyak
 // @license      MIT
+// @icon         https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/icons/logo.png
 // @match        https://vk.com/*
 
 // @connect      vk.com
@@ -37,6 +38,6 @@
 // @grant        GM_addStyle
 // @grant        GM_xmlhttpRequest
 
-// @version      1.7.0@alpha
+// @version      1.7.1@alpha
 
 // ==/UserScript==

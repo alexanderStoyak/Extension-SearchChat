@@ -16,9 +16,15 @@ function newModalPage(title) {
     return modalPage;
 }
 
+
 function deXSS (text) {
-    return text.replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/['"`]+/g,"");
+    function replaceFunc (match) {
+        return `​${match}​`;
+    }
+
+    return text.replace(/['"`]+|<|>/g, replaceFunc);
 }
+
 
 function notifiers(text, title = 'ПоискЧата') {
     title = `
@@ -28,7 +34,7 @@ function notifiers(text, title = 'ПоискЧата') {
                     gap: 5px;
                     justify-content: flex-start;
         "> 
-            ${icons({name: 'notification_outline', size: 20, fill: 'secondary'})} ${title}
+            ${icons({ name: 'notification_outline', size: 20, fill: 'secondary' })} ${title}
         </span>
     `
 
@@ -36,17 +42,17 @@ function notifiers(text, title = 'ПоискЧата') {
 }
 
 
-function chunk(array, offSet) {
+function chunk(array, offset) {
     let task = [];
     while (array.length) {
-        task.push(array.splice(0, offSet));
+        task.push(array.splice(0, offset));
     }
 
     return task;
 }
 
 
-async function getUsersOrGroups(links, explicitIds) {
+async function getUsersOrGroupsFromVK(links, explicitIds) {
     let idsOrSreensNames = [];
 
     if (!explicitIds) {
@@ -171,7 +177,7 @@ async function userOrGropChats(link, offset = 0, isCurrent = false) {
     else load.chats = true;
 
 
-    const [object] = await getUsersOrGroups([link]);
+    const [object] = await getUsersOrGroupsFromVK([link]);
 
     const typeMention = object?.first_name ? 'id' : 'club';
     const objectName = deXSS(
@@ -211,7 +217,7 @@ async function userOrGropChats(link, offset = 0, isCurrent = false) {
     }
 
     const [creators, friends] = await Promise.all([
-        getUsersOrGroups(
+        getUsersOrGroupsFromVK(
             foundChats.chats.map(chat => chat.creator),
             true
         ),
@@ -339,7 +345,7 @@ async function searchChats(title, offset = 0, isCurrent = false) {
     }
 
     const [creators, friends] = await Promise.all([
-        getUsersOrGroups(
+        getUsersOrGroupsFromVK(
             foundChats.chats.map(chat => chat.creator),
             true
         ),
@@ -511,7 +517,7 @@ async function showUsersChat(indexChat, friends, backFunction) {
         .content(`<div class="spinner" style="padding: 50px;"> <span class="spinner__animation"> </span></div>`)
         .show();
 
-    const membersList = await getUsersOrGroups(chat.members, true);
+    const membersList = await getUsersOrGroupsFromVK(chat.members, true);
 
     const friendsIds = friends.map(friend => friend.id);
     const creator = membersList.find(member => member.id === Math.abs(chat.creator));
