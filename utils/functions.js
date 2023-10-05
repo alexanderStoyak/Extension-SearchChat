@@ -17,10 +17,10 @@ function newModalPage(title) {
 }
 
 
-function deXSS (text) {
-    return text.replace(/</g,"&lt;")
-        .replace(/>/g,"&gt;")
-        .replace(/['"`]/g,"&quot;");
+function deXSS(text) {
+    return text.replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/['"`]/g, "&quot;");
 }
 
 
@@ -253,11 +253,12 @@ async function userOrGropChats(link, offset = 0, isCurrent = false) {
             `;
         }
 
-        if (currentPage < totalPage && offset > 0) {
-            listChatsHTML += '<span style="font-weight: bold;">|</span>';
-        }
 
         if (currentPage < totalPage) {
+            if(offset > 0) {
+                listChatsHTML += '<span style="font-weight: bold;">|</span>';
+            }
+                
             listChatsHTML += `
                 <a id="nextPageButton" 
                     style="padding-right: 15px; text-decoration: none; font-weight: bold; color: #71aaeb;"> 
@@ -307,6 +308,10 @@ async function userOrGropChats(link, offset = 0, isCurrent = false) {
 async function searchChats(title, offset = 0, isCurrent = false) {
     if (load.chats) return;
     else load.chats = true;
+
+    if(title.length > 150) {
+        return notifiers(`Название чата не должно превышать 150 символов`);
+    }
 
 
     newModalPage(`Чаты по запросу «<span style="color: #71aaeb; font-weight: bold;">${deXSS(title)}</span>»`)
@@ -437,24 +442,43 @@ async function searchChats(title, offset = 0, isCurrent = false) {
 
 
 async function authModalPage() {
-    newModalPage(`<span style="font-size: 20px; display: flex; font-weight: bold;"> Авторизация </span>`);
+    newModalPage(`
+        <div style="display: flex; flex-direction: row; align-items: center; gap: 10px;">
+            <svg
+                width="28" 
+                height="28"
+                class="vkuiIcon vkuiIcon--28 vkuiIcon--w-28 vkuiIcon--h-28"
+                display="block"
+                style="border-radius: 50%"
+            >
+                <image
+                    width="28"
+                    height="28"
+                    xlink:href="https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/icons/logo.png" 
+                />
+            </svg>
+            <span style="font-size: 20px; display: flex; font-weight: bold;"> 
+                Авторизация 
+            </span>
+        </div>
+    `);
 
     const Html = `
             <div class="ProfileModalInfoHeadline" style="padding: 10px;">
-                <span style="display: block; gap: 5px; text-align: center;">
-                    Расширение «ПоискЧата» представляет собой инструмент для поиска чатов во ВКонтакте. В настоящее время доступен только просмотр чатов пользователей ВКонтакте или групп. Возможность поиска чатов по названию будет добавлена позже, когда разработка расширения будет завершена. Некоторые функции, включая просмотр чатов пользователей, могут потребовать платной подписки в любой момент.
+                <span style="display: block; gap: 5px; text-align: center; font-size: 13px;">
+                    Расширение «ПоискЧата» представляет собой инструмент для поиска чатов во ВКонтакте. В настоящее время расширение находиться на стадии разработки, рекомендуем следить за всеми обновлениями в <a style="color: #71aaeb;" target="_blank" href="${services.telegramChannelURL}">нашем телеграм канале</a>. Некоторые функции, включая просмотр чатов пользователей, могут потребовать платной подписки в любой момент.
 
-                    <hr style="margin-top: 30px"  class="separator" data-content="Получение Вашего токена">
-                    <span style="color: #f6c254;"> 
-                        Для использования расширения необходима авторизация, которая будет выполняться путем получения вашего токена ВКонтакте с помощью приложения «<a style="color: #71aaeb;" target="_blank" href="${services.auth.urlByGetCode}">ПоискЧата</a>».
+                    <hr style="margin-top: 30px"  class="separator" data-content="Получение Вашего токена"/>
+                    <span style="color: ${appearance === 'dark' ? '#f6c254' : '#df9700'};">
+                        Для использования расширения необходима авторизация, которая будет выполняться путем получения Вашего токена ВКонтакте с помощью приложения «<a style="color: #71aaeb;" target="_blank" href="${services.auth.urlByGetCode}">ПоискЧата</a>».
                     </span>
           
-                    <hr style="margin-top: 25px" class="separator" data-content="Важно">
+                    <hr style="margin-top: 25px;" class="separator" data-content="Важно"/>
                     <span> 
-                        Ваш токен будет сохранен только на вашем компьютере (локально) и будет действителен только в течение 24 часов. По истечении этого времени будет получен новый токен, чтобы гарантировать его актуальность во время использования расширения. Таким образом, фактическое хранение токена на сервере невозможно. 
+                        Ваш токен будет сохранен только на Вашем компьютере (локально) и будет действителен только в течение 24 часов. По истечении этого времени будет получен новый токен, чтобы гарантировать его актуальность во время использования расширения. Таким образом, фактическое хранение токена на сервере невозможно. 
                     </span>
                     
-                    <hr style="margin-top: 25px" class="separator" data-content="Авторизация">
+                    <hr style="margin-top: 25px" class="separator" data-content="Авторизация"/>
                     Пожалуйста, нажмите на кнопку: 
                     <a style="
                         display: inline-block; 
@@ -462,15 +486,15 @@ async function authModalPage() {
                         padding: 0 .5em; 
                         line-height: 1.5em; 
                         max-width: max-content; 
-                        background-color: var(--vkui--color_icon_secondary); 
+                        background-color: ${appearance === 'dark' ? '#4b4b4b' : '#ebf2fa'}; 
                         border-radius: 50px;
-                        color: var(--vkui--color_text_contrast)
+                        color: ${appearance === 'dark' ? '#828282' : '#3770b1'};
                         text-align: center; 
                         text-decoration: none"
                         id="buttonAuthForModalPage"
                     >
                         Подтвердить регистрацию
-                    </a> 
+                    </a>
                     <br/>В ином случае функционал расширения не будет работать.
                 </span>
             </div>
@@ -484,7 +508,7 @@ async function authModalPage() {
         notifiers('Регистрация учетной записи в расширении ПоискЧата..');
         const isValid = await vkAuth();
 
-        if(isValid) {
+        if (isValid) {
             notifiers(`<span style="color: #A8E4A0; font-weight: bold;">Авторизованный, VK токен получен (ПоискЧата)\nДобро пожаловать в ПоискЧата!</span>`);
         } else return;
 
@@ -579,10 +603,9 @@ function usersStack(arrayLinks) {
     return arrayLinks.map((link, index) => {
         return `<svg xmlns="http://www.w3.org/2000/svg" className="UsersStack-module__photo--iCBco" aria-hidden="true" style="width: 24px; height: 24px">
         <defs>
-            ${
-                index === 0 
-                    ? `<circle cx="12" cy="12" r="12" id=":r0:${index}"/>` 
-                    : `<path d="M2,18.625A12 12 0 0 0 12 24A12 12 0 0 0 12 0A12 12 0 0 0 2 5.375A12 12 0 0 1 2,18.625" id=":r0:${index}"/>`
+            ${index === 0
+                ? `<circle cx="12" cy="12" r="12" id=":r0:${index}"/>`
+                : `<path d="M2,18.625A12 12 0 0 0 12 24A12 12 0 0 0 12 0A12 12 0 0 0 2 5.375A12 12 0 0 1 2,18.625" id=":r0:${index}"/>`
             }
         </defs>
         <clipPath id="UsersStackMask:r0:${index}">
@@ -607,8 +630,9 @@ async function getFriends() {
         return firstChunk + secondChunk;
     `;
 
-    return await VKAPI.call('execute', {code});
+    return await VKAPI.call('execute', { code });
 }
+
 
 // https://angel-rs.github.io/css-color-filter-generator/
 const iconColors = {
@@ -617,7 +641,7 @@ const iconColors = {
     secondary: 'brightness(0) saturate(100%) invert(55%) sepia(0%) saturate(1%) hue-rotate(295deg) brightness(94%) contrast(96%);',
     white: 'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7500%) hue-rotate(203deg) brightness(112%) contrast(109%);'
 }
-function icons({name, realSize = 24, size = realSize, fill = 'accent'}) {
+function icons({ name, realSize = 24, size = realSize, fill = 'accent' }) {
 
     return `
         <svg 

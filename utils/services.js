@@ -8,7 +8,8 @@ const services = {
         urlByGetToken: 'https://oauth.vk.com/access_token?client_id=51408389&client_secret=suYuXAtHfCWxbLYoUuV8&scope=2&redirect_uri=https://oauth.vk.com/blank.html&display=page',
     },
     mainGroup: {
-        id: 215201153
+        id: 222444978
     },
-    timeStampAuthModalPage: GM_getValue('timeStampAuthModalPage')
+    timeStampAuthModalPage: GM_getValue('timeStampAuthModalPage'),
+    telegramChannelURL: 'https://t.me/search_chats_for_VK'
 };

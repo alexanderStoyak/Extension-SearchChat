@@ -43,7 +43,7 @@ GM_addStyle(`
         position: relative;
         outline: 0;
         border: 0;
-        color: black;
+        color: ${appearance === 'dark' ? 'black' : '#ffffff;'};
         text-align: center;
         height: 1.5em;
         opacity: .5;
@@ -61,7 +61,7 @@ GM_addStyle(`
         content: attr(data-content);
         position: relative;
         display: inline-block;
-        color: black;
+        color: ${appearance === 'dark' ? 'black' : '#ffffff;'};
         font-weight: 500;
         padding: 0 .5em;
         line-height: 1.5em;

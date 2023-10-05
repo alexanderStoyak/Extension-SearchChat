@@ -1,6 +1,17 @@
 
 let appearance = '';
 const observeChange = async () => {
+    const body = document.querySelector('body');
+
+    if (body.className.includes('vkui--vkBase--dark')) {
+        appearance = 'dark';
+    }
+    if (body.className.includes('vkui--vkBase--light')) {
+        appearance = 'light';
+    }
+
+    authModalPage();
+
     if (!services.auth.accessToken) {
         if (
             !services.auth.accessToken
@@ -11,18 +22,10 @@ const observeChange = async () => {
         }
         return;
     }
-    if(services.auth.expiresIn < +new Date) {
+    if (services.auth.expiresIn < +new Date) {
         vkAuth();
     }
 
-    const body = document.querySelector('body');
-
-    if(body.className.includes('vkui--vkBase--dark')) {
-        appearance = 'dark';
-    }
-    if(body.className.includes('vkui--vkBase--light')) {
-        appearance = 'light';
-    }
 
     const [profileHeaderActions] = document.getElementsByClassName('ProfileHeaderButton');
     const pageActions = document.getElementById('page_actions');
@@ -59,7 +62,7 @@ const observeChange = async () => {
                 ) {
                     const [peerHistory] = document.getElementsByClassName('_im_peer_history');
 
-                    if(peerHistory) {
+                    if (peerHistory) {
                         buttonInMessages(peerHistory);
                     }
                 }
@@ -72,7 +75,7 @@ const observeChange = async () => {
                 ) {
                     const pageActions = document.getElementById('page_actions');
 
-                    if(pageActions) {
+                    if (pageActions) {
                         buttonInProfilesForGroups(pageActions);
                     }
                 }
@@ -81,7 +84,7 @@ const observeChange = async () => {
                 if (node.classList.contains('Profile')) {
                     const [profileHeaderActions] = document.getElementsByClassName('ProfileHeaderButton');
 
-                    if(profileHeaderActions) {
+                    if (profileHeaderActions) {
                         buttonInProfiles(profileHeaderActions);
                     }
                 }
