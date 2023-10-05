@@ -10,7 +10,6 @@ const observeChange = async () => {
         appearance = 'light';
     }
 
-    authModalPage();
 
     if (!services.auth.accessToken) {
         if (
