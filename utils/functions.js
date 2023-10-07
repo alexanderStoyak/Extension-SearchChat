@@ -639,7 +639,8 @@ const iconColors = {
     accent: 'brightness(0) saturate(100%) invert(66%) sepia(13%) saturate(1970%) hue-rotate(180deg) brightness(98%) contrast(88%);',
     textAccentThemed: 'brightness(0) saturate(100%) invert(43%) sepia(35%) saturate(1094%) hue-rotate(172deg) brightness(83%) contrast(81%);',
     secondary: 'brightness(0) saturate(100%) invert(55%) sepia(0%) saturate(1%) hue-rotate(295deg) brightness(94%) contrast(96%);',
-    white: 'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7500%) hue-rotate(203deg) brightness(112%) contrast(109%);'
+    white: 'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7500%) hue-rotate(203deg) brightness(112%) contrast(109%);',
+    iconsAccent: 'brightness(0) saturate(100%) invert(59%) sepia(9%) saturate(3344%) hue-rotate(175deg) brightness(75%) contrast(92%);'
 }
 function icons({ name, realSize = 24, size = realSize, fill = 'accent' }) {
 
@@ -660,4 +661,55 @@ function icons({ name, realSize = 24, size = realSize, fill = 'accent' }) {
             />
         </svg>
     `;
+}
+
+
+async function showStatistics () {
+    newModalPage(`
+        <div style="display: flex; flex-direction: row; align-items: center; gap: 10px;">
+            ${icons({ name: 'statistics_outline', fill: 'accent', realSize: 24, size: 34 })}
+            <span style="font-size: 20px; display: flex; font-weight: bold;"> 
+                Статистика хранилища
+            </span>
+        </div>
+    `).content(`<div class="spinner" style="padding: 50px;"> <span class="spinner__animation"> </span></div>`).show();
+
+
+    const stats = await SCAPI.call({method: 'extension.getStats'});
+
+
+    const html = `
+        <div style="display: flex; align-items: center; flex-direction: column; margin: 10px;">
+            <div style="display: flex; flex-direction: row; align-items: center;">
+ 
+                <span style="display: flex; align-items: center; font-weight: bold; font-size: 15px; flex-direction: column;"> 
+                    ${icons({name: 'data_stack_lock_outline', realSize: 56, size: 48})} Чаты
+                    <span style="font-size: 12px; padding-top: 5px;">
+                        ${stats.totalConversations.toLocaleString('ru-RU')}
+                    </span>
+                </span>
+
+                <p style="margin: 25px;"></p>
+
+                <span style="display: flex; align-items: center; font-weight: bold; font-size: 15px; flex-direction: column;"> 
+                    ${icons({name: 'users_outline', realSize: 20, size: 48})} Участники
+                    <span class="test" style="font-size: 12px; padding-top: 5px;">
+                        ${stats.totalMembers.toLocaleString('ru-RU')}
+                    </span>
+                </span>
+
+                <p style="margin: 25px;"></p>
+
+                <span style="display: flex; align-items: center; font-weight: bold; font-size: 15px; flex-direction: column;"> 
+                    ${icons({name: 'users_3_outline', realSize: 24, size: 48})} Группы
+                    <span style="font-size: 12px; padding-top: 5px;">
+                        ${stats.totalGroupsCount.toLocaleString('ru-RU')}
+                    </span>
+                </span>
+
+            </div>
+        </div>
+    `;
+
+    modalPage.content(html).show();
 }

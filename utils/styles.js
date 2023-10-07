@@ -68,5 +68,4 @@ GM_addStyle(`
         background-color: #818078;
         border-radius: 50px;
     }
-    
 `);

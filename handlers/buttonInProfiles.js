@@ -15,10 +15,10 @@ function buttonInProfiles(elementButtons) {
     newButton.onclick = () => userOrGropChats(window.location.href, 0);
 
     newButton.innerHTML = `
-         <a aria-label="Чаты пользователя" class="vkuiButton vkuiButton--size-m vkuiButton--mode-secondary vkuiButton--appearance-accent vkuiButton--align-center vkuiButton--with-icon vkuiButton--singleIcon vkuiTappable vkuiInternalTappable vkuiTappable--hasHover vkuiTappable--hasActive">
+         <a title="Чаты пользователя" class="vkuiButton vkuiButton--size-m vkuiButton--mode-secondary vkuiButton--appearance-accent vkuiButton--align-center vkuiButton--with-icon vkuiButton--singleIcon vkuiTappable vkuiInternalTappable vkuiTappable--hasHover vkuiTappable--hasActive">
                 <span class="vkuiButton__in">
                     <span class="vkuiButton__before" role="presentation">
-                        ${icons({name: 'chats_outline', realSize: 28, fill: appearance === 'dark' ? 'white' : 'textAccentThemed', size: 20})}
+                        ${icons({name: 'search_stars_outline', realSize: 24, fill: appearance === 'dark' ? 'white' : 'textAccentThemed', size: 20})}
                     </span>
                 </span>
             <div class="vkuiFocusVisible vkuiFocusVisible--mode-outside" aria-hidden="true"></div>
