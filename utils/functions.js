@@ -83,15 +83,22 @@ async function getUsersOrGroupsFromVK(links, explicitIds) {
             return idOrScreenName;
         });
     } else {
-        idsOrSreensNames.push({
-            type: 'user',
-            id: chunk(links.filter(id => +id > 0), 1_000)
-        });
 
-        idsOrSreensNames.push({
-            type: 'club',
-            id: chunk(links.filter(id => +id < 0).map(id => Math.abs(id)), 1_000)
-        });
+        const users = links.filter(id => +id > 0);
+        if (users.length) {
+            idsOrSreensNames.push({
+                type: 'user',
+                id: chunk(users, 1_000)
+            });
+        }
+
+        const groups = links.filter(id => +id < 0).map(id => Math.abs(id));
+        if (groups.length) {
+            idsOrSreensNames.push({
+                type: 'club',
+                id: chunk(groups, 1_000)
+            });
+        }
     }
 
 
@@ -525,14 +532,18 @@ async function showUsersChat(indexChat, friends, backFunction) {
     const chat = currentChats.foundChats.chats[indexChat];
 
     const header = `
-        <a id="backButton" style="text-decoration: none; color: #99a2ad; font-weight: bold; padding-right: 10px"> Назад </a> 
-            Участники чата 
-        <span style="font-weight: bold; color: #71aaeb;"> 
-            ${deXSS(chat.title)}
-        </span> 
-        <span style="color: #99a2ad; font-weight: 500;"> 
-            ${chat.membersCount.toLocaleString('ru-RU')} 
-        </span>
+        <div style="display: flex; flex-direction: row; align-items: center; gap: 10px;">
+            <a id="back-button-modal-page"> 
+                ${icons({name: 'browser_back', size: 20, fill: 'secondary'})} Назад 
+            </a> 
+                Участники чата 
+            <span style="font-weight: bold; color: #71aaeb;"> 
+                ${deXSS(chat.title)}
+            </span> 
+            <span style="color: #99a2ad; font-weight: 500;"> 
+                ${chat.membersCount.toLocaleString('ru-RU')} 
+            </span>
+       </div>
     `;
 
     newModalPage(header)
@@ -569,7 +580,7 @@ async function showUsersChat(indexChat, friends, backFunction) {
         .content(html)
         .show();
 
-    const backButton = document.getElementById('backButton');
+    const backButton = document.getElementById('back-button-modal-page');
 
     backButton.onclick = () => {
         backFunction(currentChats.link ?? currentChats.title, currentChats.offset, true);
@@ -640,7 +651,9 @@ const iconColors = {
     textAccentThemed: 'brightness(0) saturate(100%) invert(43%) sepia(35%) saturate(1094%) hue-rotate(172deg) brightness(83%) contrast(81%);',
     secondary: 'brightness(0) saturate(100%) invert(55%) sepia(0%) saturate(1%) hue-rotate(295deg) brightness(94%) contrast(96%);',
     white: 'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7500%) hue-rotate(203deg) brightness(112%) contrast(109%);',
-    iconsAccent: 'brightness(0) saturate(100%) invert(59%) sepia(9%) saturate(3344%) hue-rotate(175deg) brightness(75%) contrast(92%);'
+    iconsAccent: appearance === 'dark'
+        ? 'brightness(0) saturate(100%) invert(59%) sepia(9%) saturate(3344%) hue-rotate(175deg) brightness(75%) contrast(92%);'
+        : 'brightness(0) saturate(100%) invert(78%) sepia(22%) saturate(6954%) hue-rotate(184deg) brightness(100%) contrast(84%);'
 }
 function icons({ name, realSize = 24, size = realSize, fill = 'accent' }) {
 
@@ -667,9 +680,9 @@ function icons({ name, realSize = 24, size = realSize, fill = 'accent' }) {
 async function showStatistics () {
     newModalPage(`
         <div style="display: flex; flex-direction: row; align-items: center; gap: 10px;">
-            ${icons({ name: 'statistics_outline', fill: 'accent', realSize: 24, size: 34 })}
-            <span style="font-size: 20px; display: flex; font-weight: bold;"> 
-                Статистика хранилища
+            ${icons({ name: 'favorite_outline', fill: 'accent', realSize: 20, size: 28 })}
+            <span style="font-size: 18px; display: flex; font-weight: 500;"> 
+                Статистика хранилища и топ
             </span>
         </div>
     `).content(`<div class="spinner" style="padding: 50px;"> <span class="spinner__animation"> </span></div>`).show();
@@ -677,39 +690,148 @@ async function showStatistics () {
 
     const stats = await SCAPI.call({method: 'extension.getStats'});
 
+    const mediumCountMembersPerOneChat = Math.round(stats.totalMembers / stats.totalConversations);
+
+    const membersPerOneChat = Math.round(stats.totalMembers / stats.totalUsersCount);
 
     const html = `
         <div style="display: flex; align-items: center; flex-direction: column; margin: 10px;">
             <div style="display: flex; flex-direction: row; align-items: center;">
- 
-                <span style="display: flex; align-items: center; font-weight: bold; font-size: 15px; flex-direction: column;"> 
-                    ${icons({name: 'data_stack_lock_outline', realSize: 56, size: 48})} Чаты
-                    <span style="font-size: 12px; padding-top: 5px;">
-                        ${stats.totalConversations.toLocaleString('ru-RU')}
-                    </span>
-                </span>
-
-                <p style="margin: 25px;"></p>
-
-                <span style="display: flex; align-items: center; font-weight: bold; font-size: 15px; flex-direction: column;"> 
-                    ${icons({name: 'users_outline', realSize: 20, size: 48})} Участники
-                    <span class="test" style="font-size: 12px; padding-top: 5px;">
+            
+                 <span id="topUsers" class="group-stats" title="Топ пользователей по чатам"> 
+                    ${icons({name: 'users_outline', realSize: 20, size: 48})} 
+                    <span class="color-text-subhead" style="font-size: 12px">Топ</span>
+                    <span>Участники</span>
+                    <span class="button color-text-subhead" style="font-size: 12px; padding-top: 5px;">
                         ${stats.totalMembers.toLocaleString('ru-RU')}
                     </span>
                 </span>
 
                 <p style="margin: 25px;"></p>
 
-                <span style="display: flex; align-items: center; font-weight: bold; font-size: 15px; flex-direction: column;"> 
-                    ${icons({name: 'users_3_outline', realSize: 24, size: 48})} Группы
-                    <span style="font-size: 12px; padding-top: 5px;">
+                <span class="group-stats" style="background-color: transparent;"> 
+                    ${icons({name: 'data_stack_lock_outline', realSize: 56, size: 48})} Чаты
+                    <span class="color-text-subhead" style="font-size: 15px; padding-top: 5px;">
+                        ${stats.totalConversations.toLocaleString('ru-RU')}
+                    </span>
+                </span>
+
+                <p style="margin: 25px;"></p>
+
+                <span id="topGroups" class="group-stats" title="Топ групп по чатам">
+                    ${icons({name: 'users_3_outline', realSize: 24, size: 48})} 
+                    <span class="color-text-subhead" style="font-size: 12px">Топ</span>
+                    <span>Группы</span>
+                    <span class="button color-text-subhead" style="font-size: 12px; padding-top: 5px;">
                         ${stats.totalGroupsCount.toLocaleString('ru-RU')}
                     </span>
                 </span>
 
             </div>
+            
+            <p style="margin-bottom: 15px;"></p>
+            
+            <span style="
+                display: flex; 
+                flex-direction: row; 
+                font-weight: 500; 
+                margin-bottom: 3px; 
+                align-items: center; 
+                gap: 5px;
+                color: var(--vkui--color_text_subhead);
+            "> 
+                ${icons({name: 'smile_outline', size: 22, realSize: 24, fill: 'secondary'})}
+                В среднем на 1 чат приходиться ${mediumCountMembersPerOneChat} ${decOfNum(membersPerOneChat, ['участник', 'участников', 'участников'])}
+            </span>
+            <span style="
+                display: flex; 
+                flex-direction: row; 
+                font-weight: 500; 
+                align-items: center; 
+                gap: 5px;
+                color: var(--vkui--color_text_subhead);
+            ">
+                ${icons({name: 'globe_outline', size: 22, realSize: 24, fill: 'secondary'})}
+                Почти каждый участник есть хотя бы в ${membersPerOneChat} ${decOfNum(membersPerOneChat, ['чате', 'чатах', 'чатах'])}
+            </span>
         </div>
     `;
 
     modalPage.content(html).show();
+
+    document.getElementById('topUsers').onclick = showTopUsers;
+    document.getElementById('topGroups').onclick = showTopGroups;
+
+}
+
+
+async function showTopUsers () {
+    newModalPage(`
+        <div style="display: flex; flex-direction: row; align-items: center; gap: 10px;">
+            <a id="back-button-modal-page"> 
+                ${icons({name: 'browser_back', size: 20, fill: 'secondary'})} Назад 
+            </a> 
+            ${icons({name: 'users_outline', realSize: 20, size: 28})}
+            <span style="font-size: 18px; display: flex; font-weight: 500;"> 
+                Топ пользователей по чатам
+            </span>
+        </div>
+    `).content(`<div class="spinner" style="padding: 50px;"> <span class="spinner__animation"> </span></div>`).show();
+
+    const topUsers = await SCAPI.call({
+        method: 'extension.getUsersTop',
+        parameters: {
+            limit: 100
+        }
+    });
+
+    const usersFromVK = await getUsersOrGroupsFromVK(topUsers.map(user => user.id), true);
+
+    let html = '<div class="ChatSettings__pane"> <div class="ChatSettingsMembersWidget__list">';
+
+    html += topUsers.map((user, index) => {
+        return blankMembersTopList({ member: user, memberFromVK: usersFromVK[index], index });
+    }).join('');
+
+    html += '</div> </div>';
+
+    modalPage.content(html).show();
+
+    document.getElementById('back-button-modal-page').onclick = showStatistics;
+}
+
+
+async function showTopGroups () {
+    newModalPage(`
+        <div style="display: flex; flex-direction: row; align-items: center; gap: 10px;">
+            <a id="back-button-modal-page"> 
+                ${icons({name: 'browser_back', size: 20, fill: 'secondary'})} Назад 
+            </a> 
+            ${icons({name: 'users_3_outline', realSize: 24, size: 28})}
+            <span style="font-size: 18px; display: flex; font-weight: 500;"> 
+                Топ групп по чатам
+            </span>
+        </div>
+    `).content(`<div class="spinner" style="padding: 50px;"> <span class="spinner__animation"> </span></div>`).show();
+
+    const topGroups = await SCAPI.call({
+        method: 'extension.getGroupsTop',
+        parameters: {
+            limit: 100
+        }
+    });
+
+    const groupsFromVK = await getUsersOrGroupsFromVK(topGroups.map(group => group.id), true);
+
+    let html = '<div class="ChatSettings__pane"> <div class="ChatSettingsMembersWidget__list">';
+
+    html += topGroups.map((group, index) => {
+        return blankMembersTopList({ member: group, memberFromVK: groupsFromVK[index], index });
+    }).join('');
+
+    html += '</div> </div>';
+
+    modalPage.content(html).show();
+
+    document.getElementById('back-button-modal-page').onclick = showStatistics;
 }

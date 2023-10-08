@@ -68,4 +68,39 @@ GM_addStyle(`
         background-color: #818078;
         border-radius: 50px;
     }
+    
+    
+    .group-stats {
+        display: flex; 
+        align-items: center; 
+        font-weight: bold; 
+        font-size: 15px; 
+        flex-direction: column;
+        background-color: var(--vkui--color_background_secondary);
+        border-radius: 10px;
+        height: 105px; 
+        width: 95px;
+        justify-content: center;
+        transition: all 0.2s ease;
+        cursor: default;
+    }
+    
+    .color-text-subhead {
+        color: var(--vkui--color_text_subhead);
+    }
+    
+    .group-stats:hover:has(.button) {
+        background: var(--vkui--color_background_secondary--active);
+    }
+    
+    #back-button-modal-page {
+        display: flex; 
+        flex-direction: row; 
+        text-decoration: none; 
+        color: #99a2ad; 
+        font-weight: bold; 
+        padding-right: 10px; 
+        gap: 3px;
+        align-items: center;
+    }
 `);

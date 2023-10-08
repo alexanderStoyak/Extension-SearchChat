@@ -36,7 +36,7 @@ function buttonsInTopProfileMenu(topProfileMenu) {
             
             <a id="stats_searchChats" class="top_profile_mrow">
                 <span style="display: flex; align-items: center; gap: 5px;">
-                    ${icons({ name: 'statistics_outline', fill: 'iconsAccent', realSize: 24 ,size: 22 })} Статистика
+                    ${icons({ name: 'favorite_outline', fill: 'iconsAccent', realSize: 20 ,size: 22 })} Статистика и топ
                 </span>
             </a>
     `;

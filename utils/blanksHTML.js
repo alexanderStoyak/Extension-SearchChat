@@ -139,3 +139,52 @@ function blankMembersList({ member, creator, friends }) {
         </li>
     `;
 }
+
+
+function blankMembersTopList({ member, memberFromVK, index }) {
+    const typeMention = memberFromVK?.first_name ? 'id' : 'club';
+    const link = `https://vk.com/${typeMention}${memberFromVK.id}`;
+    const memberName = deXSS(typeMention === 'id'
+        ? `${memberFromVK.first_name} ${memberFromVK.last_name}`
+        : `${memberFromVK.name}`
+    );
+
+
+    return `
+        <li class="ListItem ListItem--can-be-hovered" style="padding-left: 10px">
+            <div class="ListItem__main" style="display: flex; flex-direction: row; align-items: center; gap: 12px">
+                <span style="
+                    display: flex;
+                    background-color: var(--vkui--color_background_secondary);
+                    border-radius: 10px;
+                    font-weight: bold;
+                    color: var(--vkui--color_text_subhead);
+                    padding: 5px;
+                    max-height: 10px;
+                    align-items: center;
+                    cursor: default;
+                ">
+                    # ${index + 1}
+                </span>
+                <div class="Entity">
+                    <div class="Entity__aside vkuiAvatar vkuiImageBase vkuiImageBase--size-48 vkuiImageBase--loaded">
+                        <img class="vkuiImageBase__img" target="_blank" src="${memberFromVK?.photo_100 || ''}" />
+                    </div>
+
+                    <div class="Entity__main">
+                        <div class="Entity__title" style="display: flex; flex-direction: row; align-items: center;">
+                            <a target="_blank" href="${link}">
+                                <span style="font-weight: bold;">${memberName}</span>
+                            </a>
+                        </div>
+                        
+                        <div class="Entity__description">
+                            ${member.count.toLocaleString('ru-RU')} ${decOfNum(member.count, ['чат', 'чата', 'чатов'])}
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </li>
+    `;
+}
