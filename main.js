@@ -1,4 +1,3 @@
-
 let appearance = '';
 const observeChange = async () => {
     const body = document.querySelector('body');

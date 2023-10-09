@@ -90,7 +90,12 @@ GM_addStyle(`
     }
     
     .group-stats:hover:has(.button) {
-        background: var(--vkui--color_background_secondary--active);
+        background-color: var(--vkui--color_background_secondary--active);
+    }
+    
+    .group-stats:active:has(.button) {
+        transition: all 0s ease;
+        background-color: var(--vkui--color_background_secondary);
     }
     
     #back-button-modal-page {
@@ -103,4 +108,49 @@ GM_addStyle(`
         gap: 3px;
         align-items: center;
     }
+    
+   .input-button {
+        display: flex;
+        align-items: center;
+        padding: 3px;
+        border-radius: 7px;
+        height: 30px;
+        width: 30px;
+        border: none;
+        justify-content: center;
+        box-shadow: none;
+        color: var(--vkui--color_text_subhead);
+        font-weight: 500;
+        background-color: var(--vkui--color_background_secondary);
+        transition: all 0.2s ease;
+   }
+   
+   .input-button:hover {
+        background-color: var(--vkui--color_background_secondary--active);
+   }
+   
+   .input-button:active {
+        transition: all 0s ease;
+        background-color: var(--vkui--color_background_secondary); 
+   }
+   
+   .input-text {
+        box-shadow: none;
+        outline: none;
+        width: 300px;
+        border: none;
+        border-radius: 7px;
+        align-items: center;
+        display: flex;
+        height: 25px;
+        padding: 3px;
+        padding-left: 5px;
+        font-weight: 400;
+        background-color: var(--vkui--color_background_secondary);
+        transition: all 0.2s ease;
+   }
+   
+   .input-text:hover {
+        background-color: var(--vkui--color_background_secondary--active);
+   }
 `);

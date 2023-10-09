@@ -700,7 +700,7 @@ async function showStatistics () {
             
                  <span id="topUsers" class="group-stats" title="Топ пользователей по чатам"> 
                     ${icons({name: 'users_outline', realSize: 20, size: 48})} 
-                    <span class="color-text-subhead" style="font-size: 12px">Топ</span>
+                    <span class="color-text-subhead" style="font-size: 12px">топ</span>
                     <span>Участники</span>
                     <span class="button color-text-subhead" style="font-size: 12px; padding-top: 5px;">
                         ${stats.totalMembers.toLocaleString('ru-RU')}
@@ -720,7 +720,7 @@ async function showStatistics () {
 
                 <span id="topGroups" class="group-stats" title="Топ групп по чатам">
                     ${icons({name: 'users_3_outline', realSize: 24, size: 48})} 
-                    <span class="color-text-subhead" style="font-size: 12px">Топ</span>
+                    <span class="color-text-subhead" style="font-size: 12px">топ</span>
                     <span>Группы</span>
                     <span class="button color-text-subhead" style="font-size: 12px; padding-top: 5px;">
                         ${stats.totalGroupsCount.toLocaleString('ru-RU')}
@@ -834,4 +834,115 @@ async function showTopGroups () {
     modalPage.content(html).show();
 
     document.getElementById('back-button-modal-page').onclick = showStatistics;
+}
+
+
+function showAddChat () {
+
+    const html = `
+        <br>
+        <div>
+            <div style="display: flex; justify-content: center; align-items: center; gap: 5px;">
+                <input
+                    class="input-text"
+                    type="text"
+                    id="addChat_search"
+                    placeholder="vk.me/join/AJQ1d5WK2juv7cfDrybuPh46f"
+                    autocomplete="off" 
+                    value=""
+                    maxlength="100"
+                >
+                <button title="Добавить" id="addChat_button" class="input-button">
+                ${icons({name: 'add', size: 20})}
+                </button>
+            </div>
+            <span
+                id="notifiers_add_chat" 
+                style="
+                    padding-left: 77px; 
+                    display: flex; 
+                    justify-content: flex-start; 
+                    gap: 5px;
+                    font-weight: 400;
+                    color: var(--vkui--color_text_subhead);
+                "
+            >
+                Пожалуйста, введите правильную ссылку на чат.
+            </span>
+        </div>
+        <br>
+        <div style="display: flex; align-items: center; flex-direction: column; margin: 10px;">
+            <span style="
+                display: flex; 
+                flex-direction: column; 
+                align-items: center;
+                gap: 5px;
+                color: var(--vkui--color_text_subhead); 
+                font-weight: 500;
+                text-align: center;
+            ">
+                Добавляя чат, Вы помогаете улучшить работу нашего сервиса. Нам важен каждый чат во ВКонтакте, чтобы «ПоискЧата» мог предоставить Вам любой чат, который Вы только пожелаете.
+            </span>
+        </div>
+       
+    `
+
+    newModalPage(`
+        <div style="display: flex; flex-direction: row; align-items: center; gap: 10px;">
+            ${icons({ name: 'message_add_outline', fill: 'iconsAccent', realSize: 20 ,size: 28 })}
+            <span style="font-size: 18px; display: flex; font-weight: 500;"> 
+                Добавление чата
+            </span>
+        </div>
+    `).content(html).show();
+
+    const input = document.getElementById('addChat_search');
+    input.focus();
+
+    let load = false;
+
+    document.getElementById('addChat_button').onclick = async () => {
+        const [_, key] = input.value.match(/\/join\/([^\s]*)/i) ?? ['', ''];
+
+        if(load) return;
+
+        const notify = document.getElementById('notifiers_add_chat');
+
+
+        if (key) {
+            load = true;
+            const response = await SCAPI.call({
+                method: 'service.addChats',
+                parameters: {
+                    urls: [
+                        {
+                            url: 'vk.me/join/' + key,
+                            source: {
+                                type: 'user',
+                                meta: {
+                                    id: services.VKMainUser.id
+                                },
+                                isHide: false
+                            }
+                        }
+                    ]
+                }
+            });
+            load = false;
+
+            if (response.new) {
+                notify.style.color = appearance === 'dark' ? '#A8E4A0' : '#258b17';
+                notify.innerText = 'Чат добавлен! Благодарим Вас за помощь.';
+            } else if (response.old) {
+                notify.style.color = appearance === 'dark' ? '#f6c254' : '#df9700';
+                notify.innerText = 'Этот чат уже добавлен.';
+            } else if (response.errors) {
+                notify.style.color = '#FD324A';
+                notify.innerText = 'Ссылка на этот чат недействительна.';
+            }
+        } else {
+            notify.style.color = 'var(--vkui--color_text_subhead)';
+            notify.innerHTML = `Пожалуйста, введите правильную ссылку на чат.`
+        }
+    }
 }

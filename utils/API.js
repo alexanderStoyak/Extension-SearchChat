@@ -22,6 +22,7 @@ const VKAPI = {
                 response = JSON.parse(ReResponseString).response;
 
             } else {
+                console.log(error);
                 notifiers('<span style="color: #FD324A; font-weight: bold;">Ошибка VK API код №${error.error_code}: </span>' + error.error_message);
             }
         };
@@ -47,6 +48,7 @@ const SCAPI = {
         const { response: { response, error } } = await GM_xmlhttpRequest(`https://api.search-for-chats-of-vk.ru/method/${method}`, parameters);
 
         if (error) {
+            console.log(error);
             notifiers('<span style="color: #FD324A; font-weight: bold;">Error from SC API: </span>' + JSON.stringify(error, null, "<br/>"));
         };
 

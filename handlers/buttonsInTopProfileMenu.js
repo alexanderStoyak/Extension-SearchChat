@@ -39,9 +39,15 @@ function buttonsInTopProfileMenu(topProfileMenu) {
                     ${icons({ name: 'favorite_outline', fill: 'iconsAccent', realSize: 20 ,size: 22 })} Статистика и топ
                 </span>
             </a>
+            <a id="addChat_searchChats" class="top_profile_mrow">
+                <span style="display: flex; align-items: center; gap: 5px;">
+                    ${icons({ name: 'message_add_outline', fill: 'iconsAccent', realSize: 20 ,size: 22 })} Добавить чат
+                </span>
+            </a>
     `;
 
     topProfileMenu.append(menu);
 
     document.getElementById('stats_searchChats').onclick = showStatistics;
+    document.getElementById('addChat_searchChats').onclick = showAddChat;
 }
