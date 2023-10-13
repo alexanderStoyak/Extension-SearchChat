@@ -153,4 +153,28 @@ GM_addStyle(`
    .input-text:hover {
         background-color: var(--vkui--color_background_secondary--active);
    }
+   
+   .chat-sc {
+        display: flex; 
+        font-weight: bold; 
+        font-size: 15px; 
+        flex-direction: column;
+        background-color: var(--vkui--color_background_secondary);
+        border-radius: 10px;
+        height: 50px;
+        width: 99%;
+        padding: 5px;
+        transition: all 0.2s ease;
+        cursor: default;
+   }
+   
+   .chat-sc > #test {
+   display: flex; align-items: flex-end; justify-content: flex-end; font-weight: 600; text-decoration: none; color: #99a2ad;
+   
+   }
+   
+   .chat-sc-title {
+        display: flex; 
+        
+   }
 `);

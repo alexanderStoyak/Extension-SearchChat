@@ -127,13 +127,13 @@ async function getUsersOrGroupsFromVK(links, explicitIds) {
 
             if(info.type == "user") {
                 var i = 0;
-                var users = API.users.get({ user_id: info.id[i], fields: 'photo_100,online,last_seen'});
+                var users = API.users.get({ user_id: info.id[i], fields: 'photo_100,online,last_seen,sex'});
                 
                 while(i < info.id.length) {
                     i = i + 1;
                     
                     if(info.id[i]) {
-                        users = users + API.users.get({ user_id: info.id[i], fields: 'photo_100,online,last_seen'});
+                        users = users + API.users.get({ user_id: info.id[i], fields: 'photo_100,online,last_seen,sex'});
                     };
                 };
                 
@@ -143,7 +143,7 @@ async function getUsersOrGroupsFromVK(links, explicitIds) {
             if(info.type == "undefined") {
                 var object = API.groups.getById({ group_id: info.id[0] });
                 if(!object) {
-                    object = API.users.get({ user_id: info.id[0], fields: 'photo_100,online,last_seen' });
+                    object = API.users.get({ user_id: info.id[0], fields: 'photo_100,online,last_seen,sex' });
                 };
 
                 returns.push(object);
@@ -217,8 +217,12 @@ async function userOrGropChats(link, offset = 0, isCurrent = false) {
 
     if (!foundChats.found) {
         load.chats = false;
-        modalPage.hide();
-        return notifiers(`Не смог найти чаты в которых мог(ла) бы быть <a style="font-weight: bold;" href="${link}">${objectName}</a>`);
+        return modalPage.content(
+            blankNotFound(
+                icons({name: 'ghost_simple_outline', realSize: 36, size: 86, fill: 'secondary'}),
+                `Не удалось найти чаты в которых ${object.sex === 1 ? 'могла' : 'мог'} бы быть <a style="font-weight: bold;" href="${link}">${objectName}</a>`
+            )
+        ).show();
     }
 
     const [creators, friends] = await Promise.all([
@@ -232,14 +236,13 @@ async function userOrGropChats(link, offset = 0, isCurrent = false) {
 
     newModalPage(`Чаты, в которых находится <a style="color: #71aaeb; font-weight: bold;" href="${link}">${objectName}</a> <span style="color: #828282; font-weight: 500;"> ${foundChats.found.toLocaleString('ru-RU')}шт. </span>`);
 
-
     let listChatsHTML = foundChats.chats.map(chat => {
         const photo = chat.photo
             ? chat.photo['200'] || chat.photo['150'] || chat.photo['50']
             : '';
 
         return blankChat({ chat, photo, friends, creator: creators.find(creator => creator.id === Math.abs(chat.creator)) });
-    }).join('');
+    }).join('<br style="display: block; margin: 5px; content: \'\';">');
 
 
     const currentPage = offset / 15 !== 0 ? offset / 15 + 1 : 1;
@@ -253,8 +256,8 @@ async function userOrGropChats(link, offset = 0, isCurrent = false) {
     if (foundChats.found > 15) {
         if (offset > 0) {
             listChatsHTML += `
-                <a id="previousPageButton" 
-                    style="${!(currentPage < totalPage) ? 'padding-right: 15px;' : ''} text-decoration: none; font-weight: bold; color: #71aaeb;"> 
+                <a id="previousPageButton"
+                    style="${!(currentPage < totalPage) ? 'padding-right: 15px;' : ''} text-decoration: none; font-weight: bold; color: #71aaeb;">
                     < Назад
                 </a>
             `;
@@ -265,10 +268,10 @@ async function userOrGropChats(link, offset = 0, isCurrent = false) {
             if(offset > 0) {
                 listChatsHTML += '<span style="font-weight: bold;">|</span>';
             }
-                
+
             listChatsHTML += `
-                <a id="nextPageButton" 
-                    style="padding-right: 15px; text-decoration: none; font-weight: bold; color: #71aaeb;"> 
+                <a id="nextPageButton"
+                    style="padding-right: 15px; text-decoration: none; font-weight: bold; color: #71aaeb;">
                     Далее >
                 </a>
             `;
@@ -303,8 +306,9 @@ async function userOrGropChats(link, offset = 0, isCurrent = false) {
 
     for (const link of linksChats) {
         link.onclick = () => {
-            copy(link.getAttribute('link'));
-            notifiers(`Ссылка на чат скопирована`);
+            const copyText = link.getAttribute('link');
+            navigator.clipboard.writeText(copyText);
+            notifiers(`Ссылка на чат скопирована <a href="${copyText}" target="_blank">${copyText}</a>`);
         }
     }
 
@@ -350,8 +354,12 @@ async function searchChats(title, offset = 0, isCurrent = false) {
 
     if (!foundChats.found) {
         load.chats = false;
-        modalPage.hide();
-        return notifiers(`Извините, но не один чат, соответствующий Вашему запросу, не найден`);
+        return modalPage.content(
+            blankNotFound(
+                icons({name: 'ghost_simple_outline', realSize: 36, size: 86, fill: 'secondary'}),
+                'Извините, но не один чат, соответствующий Вашему запросу, не найден'
+            )
+        ).show();
     }
 
     const [creators, friends] = await Promise.all([
@@ -376,7 +384,7 @@ async function searchChats(title, offset = 0, isCurrent = false) {
             : '';
 
         return blankChat({ chat, photo, friends, creator: creators.find(creator => creator.id === Math.abs(chat.creator)) });
-    }).join('');
+    }).join('<br style="display: block; margin: 5px; content: \'\';">');
 
 
     const currentPage = offset / 15 !== 0 ? offset / 15 + 1 : 1;
@@ -439,8 +447,9 @@ async function searchChats(title, offset = 0, isCurrent = false) {
 
     for (const link of linksChats) {
         link.onclick = () => {
-            copy(link.getAttribute('link'));
-            notifiers(`Ссылка на чат скопирована`);
+            const copyText = link.getAttribute('link');
+            navigator.clipboard.writeText(copyText);
+            notifiers(`Ссылка на чат скопирована <a href="${copyText}" target="_blank">${copyText}</a>`);
         }
     }
 
@@ -587,29 +596,6 @@ async function showUsersChat(indexChat, friends, backFunction) {
     };
 }
 
-
-function copy(text) {
-    const input = document.createElement('input');
-    const yPosition = window.pageYOffset || document.documentElement.scrollTop;
-
-    input.style.position = 'absolute';
-    input.style.left = '-9999px';
-
-    input.style.top = `${yPosition}px`;
-
-    document.body.appendChild(input);
-    input.value = text;
-
-    input.focus();
-
-    input.select();
-
-    document.execCommand('copy');
-
-    document.body.removeChild(input);
-}
-
-
 function usersStack(arrayLinks) {
     return arrayLinks.map((link, index) => {
         return `<svg xmlns="http://www.w3.org/2000/svg" className="UsersStack-module__photo--iCBco" aria-hidden="true" style="width: 24px; height: 24px">
@@ -702,16 +688,18 @@ async function showStatistics () {
                     ${icons({name: 'users_outline', realSize: 20, size: 48})} 
                     <span class="color-text-subhead" style="font-size: 12px">топ</span>
                     <span>Участники</span>
-                    <span class="button color-text-subhead" style="font-size: 12px; padding-top: 5px;">
+                    <span class="button color-text-subhead" style="font-size: 12px;">
                         ${stats.totalMembers.toLocaleString('ru-RU')}
                     </span>
                 </span>
 
                 <p style="margin: 25px;"></p>
 
-                <span class="group-stats" style="background-color: transparent;"> 
-                    ${icons({name: 'data_stack_lock_outline', realSize: 56, size: 48})} Чаты
-                    <span class="color-text-subhead" style="font-size: 15px; padding-top: 5px;">
+                <span id="new-100-chats" class="group-stats" title="100 новых добавленых чатов"> 
+                    ${icons({name: 'data_stack_lock_outline', realSize: 56, size: 48})}
+                    <span class="color-text-subhead" style="font-size: 12px">самые новые</span>
+                    <span>Чаты</span>
+                    <span class="button color-text-subhead" style="font-size: 12px;">
                         ${stats.totalConversations.toLocaleString('ru-RU')}
                     </span>
                 </span>
@@ -722,7 +710,7 @@ async function showStatistics () {
                     ${icons({name: 'users_3_outline', realSize: 24, size: 48})} 
                     <span class="color-text-subhead" style="font-size: 12px">топ</span>
                     <span>Группы</span>
-                    <span class="button color-text-subhead" style="font-size: 12px; padding-top: 5px;">
+                    <span class="button color-text-subhead" style="font-size: 12px;">
                         ${stats.totalGroupsCount.toLocaleString('ru-RU')}
                     </span>
                 </span>
@@ -760,6 +748,7 @@ async function showStatistics () {
     modalPage.content(html).show();
 
     document.getElementById('topUsers').onclick = showTopUsers;
+    document.getElementById('new-100-chats').onclick = () => show100NewChats();
     document.getElementById('topGroups').onclick = showTopGroups;
 
 }
@@ -837,7 +826,7 @@ async function showTopGroups () {
 }
 
 
-function showAddChat () {
+async function showAddChat () {
 
     const html = `
         <br>
@@ -881,7 +870,7 @@ function showAddChat () {
                 font-weight: 500;
                 text-align: center;
             ">
-                Добавляя чат, Вы помогаете улучшить работу нашего сервиса. Нам важен каждый чат во ВКонтакте, чтобы «ПоискЧата» мог предоставить Вам любой чат, который Вы только пожелаете.
+                Добавляя чат, Вы помогаете улучшить работу сервиса. Сервису важен каждый чат во ВКонтакте, чтобы он мог предоставить Вам любой чат, который Вы только пожелаете.
             </span>
         </div>
        
@@ -945,4 +934,67 @@ function showAddChat () {
             notify.innerHTML = `Пожалуйста, введите правильную ссылку на чат.`
         }
     }
+}
+
+
+async function show100NewChats(isCurrent) {
+    newModalPage(`
+        <div style="display: flex; flex-direction: row; align-items: center; gap: 10px;">
+            <a id="back-button-modal-page"> 
+                ${icons({name: 'browser_back', size: 20, fill: 'secondary'})} Назад 
+            </a> 
+            ${icons({name: 'data_stack_lock_outline', realSize: 56, size: 28})}
+            <span style="font-size: 18px; display: flex; font-weight: 500;"> 
+                100 новых чатов
+            </span>
+        </div>
+    `).content(`<div class="spinner" style="padding: 50px;"> <span class="spinner__animation"> </span></div>`).show();
+
+     let foundChats;
+
+    if (!isCurrent) {
+        foundChats = await SCAPI.call({
+            method: 'extension.getNewChats',
+        });
+
+        currentChats = {foundChats};
+    } else {
+        foundChats = currentChats.foundChats;
+    }
+
+    const [creators, friends] = await Promise.all([
+        getUsersOrGroupsFromVK(
+            foundChats.chats.map(chat => chat.creator),
+            true
+        ),
+        getFriends()
+    ]);
+
+    const listChatsHTML = foundChats.chats.map(chat => {
+        const photo = chat.photo
+            ? chat.photo['200'] || chat.photo['150'] || chat.photo['50']
+            : '';
+
+        return blankChat({ chat, photo, friends, creator: creators.find(creator => creator.id === Math.abs(chat.creator)) });
+    }).join('<br style="display: block; margin: 5px; content: \'\';">');
+
+
+    modalPage.content(listChatsHTML).show();
+
+    const buttonMembers = document.getElementsByClassName('membersChat');
+
+    buttonMembers.forEach((button, index) => button.onclick = () => showUsersChat(index, friends, show100NewChats));
+
+    let linksChats = document.getElementsByClassName('copyLinkForChat');
+
+    for (const link of linksChats) {
+        link.onclick = () => {
+            const copyText = link.getAttribute('link');
+            navigator.clipboard.writeText(copyText);
+            notifiers(`Ссылка на чат скопирована <a href="${copyText}" target="_blank">${copyText}</a>`);
+        }
+    }
+
+    document.getElementById('back-button-modal-page').onclick = showStatistics;
+
 }

@@ -16,6 +16,7 @@
 // @connect      oauth.vk.com
 // @connect      api.vk.com
 // @connect      api.search-for-chats-of-vk.ru
+// @connect      momentjs.com
 
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/main.js
 
@@ -32,6 +33,8 @@
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/utils/styles.js
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/utils/functions.js
 
+// @require      https://momentjs.com/downloads/moment-with-locales.js
+
 // @run-at       document-start
 
 // @grant        GM_getValue
@@ -39,6 +42,6 @@
 // @grant        GM_addStyle
 // @grant        GM_xmlhttpRequest
 
-// @version      1.9.8
+// @version      2.0.0
 
 // ==/UserScript==

@@ -1,5 +1,6 @@
 let appearance = '';
 const observeChange = async () => {
+    moment.locale('ru');
     const body = document.querySelector('body');
 
     if (body.className.includes('vkui--vkBase--dark')) {
