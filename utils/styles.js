@@ -76,7 +76,6 @@ GM_addStyle(`
         font-weight: bold; 
         font-size: 15px; 
         flex-direction: column;
-        background-color: var(--vkui--color_background_secondary);
         border-radius: 10px;
         height: 105px; 
         width: 95px;
@@ -167,14 +166,16 @@ GM_addStyle(`
         transition: all 0.2s ease;
         cursor: default;
    }
-   
-   .chat-sc > #test {
-   display: flex; align-items: flex-end; justify-content: flex-end; font-weight: 600; text-decoration: none; color: #99a2ad;
-   
-   }
-   
-   .chat-sc-title {
-        display: flex; 
-        
+    
+   .background-image-chat {
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        position: absolute;
+        border-radius: 50px 12px 12px 50px;
+        height: 58px;
+        width: 469px;
+        margin-right: 12px;
+        filter: blur(5px);
    }
 `);

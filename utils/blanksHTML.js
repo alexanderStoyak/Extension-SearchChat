@@ -28,34 +28,36 @@ function blankChat({ chat, photo, creator, friends }) {
             <section class="vkuiInternalGroup vkuiGroup vkuiGroup--mode-plain vkuiInternalGroup--mode-plain vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo">
                 
                 <div class="ProfileModalInfoHeadline" style="padding: 5px;">
-                
-                    <div id="raw" style="margin-bottom: 5px; gap: 15px; justify-content: space-between;">
+                       
+                    <div class="background-image-chat" style="
+                        background-image: linear-gradient( 
+                            ${
+                                appearance === 'dark'
+                                    ? 'rgba(0, 0, 0, .8), rgba(0, 0, 0, .8)' 
+                                    : 'rgba(255, 255, 255, .8), rgba(255, 255, 255, .8)'
+                            }), 
+                            url(${photo || 'https://vk.com/images/community_200.png'});
+                    ">      
+                    </div>
+            
+                    <div id="raw" style="margin-bottom: 5px; position: relative; gap: 15px; z-index: 3; justify-content: space-between;">
 
                         <div id="raw" style="margin-bottom: 10px; gap: 15px;">
-                            <div title="Скопировать ссылку на чат" style="width: 58px; height: 58px;" link="vk.me/join/${chat.key}"
+                            <div title="Скопировать ссылку на чат" style="width: 58px; height: 58px; box-shadow: 0 0 0 0.1em;" link="vk.me/join/${chat.key}"
                                 class="vkuiAvatar vkuiImageBase vkuiImageBase--size-58 vkuiImageBase--loaded copyLinkForChat" role="img">
-                                <img class="vkuiImageBase__img" src="${photo}">
+                                <img class="vkuiImageBase__img" src="${photo || 'https://vk.com/images/community_200.png'}">
                             </div>
 
                             <div>
                                 <h4 title="${chat.title}" class="vkuiHeadline vkuiHeadline--sizeY-compact vkuiHeadline--level-1 vkuiTypography--normalize vkuiTypography--weight-1" style="font-size: 15px; max-width: 230px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
                                     ${chat.title}
                                 </h4>
-
-                                <div style="display: flex; flex-direction: row; gap: 5px; align-items: center;">
-                                    ${icons({name: 'door_enter_arrow_right_outline', realSize: 16, size: 16, fill: 'secondary'})}
-                                    <a target="_blank"
-                                        style=
-                                            "
-                                                font-weight: 500;
-                                                gap: 3px;
-                                                text-decoration-color: #99a2ad;
-                                                color: #99a2ad;
-                                            "
-                                            href="https://vk.me/join/${chat.key}">
-                                        Присоединиться
-                                    </a>
-                                </div>
+                            
+                            <span style="color: #99a2ad; display: flex; flex-direction: row; gap: 5px; align-items: center;">
+                                ${icons({name: 'replay', size: 16, fill: 'secondary'})}
+                                <p style="max-width: 180px; margin: 0px;">Обновлен ${moment(chat.lastUpdate).fromNow()}</p>
+                            </span>
+                            
                             </div>
                         </div>
 
@@ -66,53 +68,57 @@ function blankChat({ chat, photo, creator, friends }) {
                             ${icons({name: 'users_2_outline', realSize: 16, size: 16, fill: 'secondary'})}
                         </div>
                     </div>
-
+                    
                     
                     <div style="gap: 5px; display: flex; align-items: center; justify-content: space-between;">
-                        <div style="display: flex; flex-direction: column;">
-
-                            <div style="display: flex; gap: 5px; font-weight: 400; color: #99a2ad; align-items: center;">
-                                <span>
-                                    ${icons({ name: 'crown_outline', size: 16, fill: 'secondary' })}
-                                </span>
-
-                                <a title="${nameString}" target="_blank" href="${creatorUrl}" style="display: flex;">
-                                    ${nameHTML}
-                                </a>
-
-                                <div style="width: 16px; height: 16px;" 
-                                    class="vkuiAvatar vkuiImageBase vkuiImageBase--size-16 vkuiImageBase--loaded" role="img">
-                                    <img class="vkuiImageBase__img" src="${creator.photo_100 || ''}">
+                        <div class="vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard">
+                            <div style="display: flex; flex-direction: column;">
+    
+                                <div style="display: flex; gap: 5px; font-weight: 400; color: #99a2ad; align-items: center;">
+                                    <span>
+                                        ${icons({ name: 'crown_outline', size: 16, fill: 'secondary' })}
+                                    </span>
+    
+                                    <a title="${nameString}" target="_blank" href="${creatorUrl}" style="display: flex;">
+                                        ${nameHTML}
+                                    </a>
+    
+                                    <div style="width: 16px; height: 16px;" 
+                                        class="vkuiAvatar vkuiImageBase vkuiImageBase--size-16 vkuiImageBase--loaded" role="img">
+                                        <img class="vkuiImageBase__img" src="${creator.photo_100 || ''}">
+                                    </div>
                                 </div>
+    
+                                
+                                <span style="color: #99a2ad; display: flex; align-items: center; flex-direction: row; gap: 5px">
+                                    ${icons({name: 'add', size: 16, fill: 'secondary'})}
+                                    <p style="max-width: 180px; margin: 0px;">Добавлен ${moment(chat.added).fromNow()}</p>
+                                </span>
+    
                             </div>
-
-                            
-                            <span style="color: #99a2ad; display: flex; align-items: center; flex-direction: row; gap: 5px">
-                                ${icons({name: 'add', size: 16, fill: 'secondary'})}
-                                Добавлен ${moment(chat.added).fromNow()}
-                            </span>
-
                         </div>
-
+                        
                         <div style="display: flex; justify-content: flex-end; flex-direction: column;">
                             ${
                                 countFriendsInChat ? `
                                     <div style="display: flex; justify-content: flex-end; gap: 5px; align-items: center;">
-                                        <span style="color: #99a2ad; font-weight: 400;">
-                                            ${countFriendsInChat.toLocaleString('ru-RU')} ${decOfNum(countFriendsInChat, ['друг', 'друга', 'друзей'])} в чате
-                                        </span>
-                                            <div class="UsersStack-module__root--HKcQf UsersStack-module__sizeS--O9MMO UsersStack-module__directionRow--HjNuZ ProfileFullStacks__stacks">
+                                        <div class="UsersStack-module__root--HKcQf UsersStack-module__sizeS--O9MMO UsersStack-module__directionRow--HjNuZ ProfileFullStacks__stacks">
                                             <div class="UsersStack-module__photos--bCsMG" aria-hidden="true">
                                                 ${usersStack(photoFriends)}
                                             </div>
                                         </div>
+                                        <span style="color: #99a2ad; font-weight: 400;">
+                                            ${countFriendsInChat.toLocaleString('ru-RU')} ${decOfNum(countFriendsInChat, ['друг', 'друга', 'друзей'])} в чате
+                                        </span>
                                     </div>`
                                 : ''
                             }
-                            <span style="color: #99a2ad; display: flex; align-items: center; flex-direction: row; gap: 5px; justify-content: flex-end;">
-                                Обновлен ${moment(chat.lastUpdate).fromNow()}
-                                ${icons({name: 'replay', size: 16, fill: 'secondary'})}
-                            </span>
+                            <div style="display: flex; text-align: right; align-items: center; flex-direction: row; gap: 5px; justify-content: flex-end;">
+                                <a target="_blank" href="https://vk.me/join/${chat.key}" style=" font-weight: 500;gap: 3px;text-decoration-color: #99a2ad;color: #99a2ad;">
+                                    Присоединиться
+                                </a>
+                                ${icons({name: 'door_enter_arrow_right_outline', realSize: 16, size: 16, fill: 'secondary'})}
+                            </div>
                         <div>
                     </div>
                 </div>
@@ -158,7 +164,7 @@ function blankMembersList({ member, creator, friends }) {
                         </div>
                         <div class="Entity__description">
                             <span style="color: #828282;">
-                                ${member?.online ? 'В сети' : member?.last_seen ? `${member.sex === 1 ? 'Была ' : 'Был ' }` + moment(member.last_seen.time * 1_000).fromNow() : ''}
+                                ${member?.online ? 'В сети' : member?.last_seen ? `${member.sex === 2 ? 'Был ' : 'Была '}` + moment(member.last_seen.time * 1_000).fromNow() : ''}
                                 ${typeMention === 'club' ? 'Бот' : ''}
                             </span>
                         </div>
@@ -224,10 +230,29 @@ function blankNotFound(icon, text) {
         <div style="height: 280px; display: flex; justify-content: center">
             <div style="display: flex; align-items: center; flex-direction: column; justify-content: center;">
                 ${icon}
-                <span style="font-size: 13px; padding-top: 3px; text-align: center; max-width: 250px; font-weight: 500;">
+                <span style="font-size: 13px; padding-top: 3px; text-align: center; max-width: 250px;">
                     ${text}
                 </span>
             </div>
         <div>
+    `
+}
+
+
+function blankPagination (currentPage, totalPage) {
+    return `
+        <div style="display: flex; max-height: 27px; align-items: center; flex-direction: row; justify-content: space-between;"> 
+            
+             <a id="previousPageButton" class="btn-pagination">
+                < Назад
+             </a>
+            
+            <p style="margin: 0px;">${currentPage}/${totalPage}</p>
+            
+            <a id="nextPageButton" class="btn-pagination">
+                Далее >
+            </a>
+            
+        </div> 
     `
 }

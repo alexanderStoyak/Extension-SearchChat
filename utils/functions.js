@@ -13,6 +13,34 @@ function newModalPage(title) {
         });
     }
 
+    if (modalPage) {
+        const boxLayout = document.getElementById('box_layer');
+        boxLayout.style.marginTop = '50px';
+
+        modalPage.visible = () => {
+            modalPage.show();
+            
+            const [boxBody] = document.getElementsByClassName('box_body');
+            if (boxBody && boxBody.offsetHeight > window.innerHeight) {
+                const [modalPageTitle] = document.getElementsByClassName('box_title_wrap');
+                const modalPageScroll = document.getElementById('box_layer_wrap');
+
+                modalPageScroll.onscroll = () => {
+                    if (modalPageTitle.getBoundingClientRect().top < 0 && !modalPageTitle.classList.contains('ui_tabs_fixed')) {
+                        modalPageTitle.style.width = '500px';
+                        modalPageTitle.style.borderRadius = '0px';
+                        boxBody.style.marginTop = `${modalPageTitle.offsetHeight}px`;
+                        modalPageTitle.classList.add('ui_tabs_fixed');
+                    } else if (boxBody.getBoundingClientRect().top >= modalPageTitle.offsetHeight) {
+                        boxBody.style.marginTop = '0px';
+                        modalPageTitle.style.borderRadius = '10px 10px 0px 0px';
+                        modalPageTitle.classList.remove('ui_tabs_fixed');
+                    }
+                }
+            }
+        }
+    }
+
     return modalPage;
 }
 
@@ -185,15 +213,25 @@ async function userOrGropChats(link, offset = 0, isCurrent = false) {
     const [object] = await getUsersOrGroupsFromVK([link]);
 
     const typeMention = object?.first_name ? 'id' : 'club';
-    const objectName = deXSS(
-        typeMention === 'id'
-            ? `${object.first_name} ${object.last_name}`
-            : `группа «${object.name}»`
+    const objectNameString = deXSS(typeMention === 'id'
+        ? `${object.first_name} ${object.last_name}`
+        : `Группа «${object.name}»`
     );
+    const objectNameHTML = typeMention === 'id'
+        ? `<span style="max-width: 150px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${deXSS(object.first_name)} ${deXSS(object.last_name)}</span>`
+        : `группа «<span style="max-width: 100px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${deXSS(object.name)}</span>»`;
 
-    newModalPage(`Чаты, в которых находится <a style="color: #71aaeb; font-weight: bold;" href="${link}">${objectName}</a>`)
+
+    newModalPage(`
+        <span style="display: flex; flex-direction: row; align-items: center; gap: 5px"> 
+            Чаты, в которых находится 
+            <a title="${objectNameString}" style="display: flex; color: #71aaeb; font-weight: bold;" href="${link}">
+                ${objectNameHTML}
+            </a>
+        </span>
+    `)
         .content(`<div class="spinner" style="padding: 50px;"> <span class="spinner__animation"> </span></div>`)
-        .show();
+        .visible();
 
 
     let foundChats;
@@ -220,9 +258,9 @@ async function userOrGropChats(link, offset = 0, isCurrent = false) {
         return modalPage.content(
             blankNotFound(
                 icons({name: 'ghost_simple_outline', realSize: 36, size: 86, fill: 'secondary'}),
-                `Не удалось найти чаты в которых ${object.sex === 1 ? 'могла' : 'мог'} бы быть <a style="font-weight: bold;" href="${link}">${objectName}</a>`
+                `Не удалось найти чаты в которых ${object.sex === 2 ? 'мог' : 'могла'} бы быть <a style="font-weight: bold;" href="${link}">${objectName}</a>`
             )
-        ).show();
+        ).visible();
     }
 
     const [creators, friends] = await Promise.all([
@@ -234,7 +272,17 @@ async function userOrGropChats(link, offset = 0, isCurrent = false) {
     ]);
 
 
-    newModalPage(`Чаты, в которых находится <a style="color: #71aaeb; font-weight: bold;" href="${link}">${objectName}</a> <span style="color: #828282; font-weight: 500;"> ${foundChats.found.toLocaleString('ru-RU')}шт. </span>`);
+    newModalPage(`
+        <span style="display: flex; flex-direction: row; align-items: center; gap: 5px"> 
+            Чаты, в которых находится 
+            <a title="${objectNameString}" style="display: flex; color: #71aaeb; font-weight: bold;" href="${link}">
+                ${objectNameHTML}
+            </a>
+            <span style="color: #828282; font-weight: 500;">
+                ${foundChats.found.toLocaleString('ru-RU')}шт. 
+            </span>
+        </span>
+    `);
 
     let listChatsHTML = foundChats.chats.map(chat => {
         const photo = chat.photo
@@ -281,7 +329,7 @@ async function userOrGropChats(link, offset = 0, isCurrent = false) {
 
     listChatsHTML += `</div>`;
 
-    modalPage.content(listChatsHTML).show();
+    modalPage.content(listChatsHTML).visible();
 
     const nextPageButton = document.getElementById('nextPageButton');
     const previousPageButton = document.getElementById('previousPageButton');
@@ -321,13 +369,21 @@ async function searchChats(title, offset = 0, isCurrent = false) {
     else load.chats = true;
 
     if(title.length > 150) {
+        load.chats = false;
         return notifiers(`Название чата не должно превышать 150 символов`);
     }
 
 
-    newModalPage(`Чаты по запросу «<span style="color: #71aaeb; font-weight: bold;">${deXSS(title)}</span>»`)
+    const modalPageTitle = `
+        <span title="${deXSS(title)}" style="max-width: 130px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: #71aaeb; font-weight: bold;">
+            ${deXSS(title)}
+        </span>
+    `;
+
+
+    newModalPage(`<span style="display: flex;"> Чаты по запросу «${modalPageTitle}» </span>`)
         .content(`<div class="spinner" style="padding: 50px;"> <span class="spinner__animation"></span></div>`)
-        .show();
+        .visible();
 
 
     let foundChats;
@@ -359,7 +415,7 @@ async function searchChats(title, offset = 0, isCurrent = false) {
                 icons({name: 'ghost_simple_outline', realSize: 36, size: 86, fill: 'secondary'}),
                 'Извините, но не один чат, соответствующий Вашему запросу, не найден'
             )
-        ).show();
+        ).visible();
     }
 
     const [creators, friends] = await Promise.all([
@@ -372,9 +428,11 @@ async function searchChats(title, offset = 0, isCurrent = false) {
 
 
     newModalPage(`
-        Чаты по запросу «<span style="color: #71aaeb; font-weight: bold;">${title}</span>»
-        <span style="color: #828282; font-weight: 500;"> 
-            ${foundChats.found.toLocaleString('ru-RU')}шт. 
+        <span style="display: flex; flex-direction: row; align-items: center; gap: 5px"> 
+            Чаты по запросу «${modalPageTitle}» 
+            <span style="color: #828282; font-weight: 500;"> 
+                ${foundChats.found.toLocaleString('ru-RU')}шт. 
+            </span>
         </span>
     `);
 
@@ -422,7 +480,7 @@ async function searchChats(title, offset = 0, isCurrent = false) {
 
     listChatsHTML += `</div>`;
 
-    modalPage.content(listChatsHTML).show();
+    modalPage.content(listChatsHTML).visible();;
 
     const nextPageButton = document.getElementById('nextPageButton');
     const previousPageButton = document.getElementById('previousPageButton');
@@ -516,7 +574,7 @@ async function authModalPage() {
             </div>
     `;
 
-    modalPage.content(Html).show();
+    modalPage.content(Html).visible();
 
 
     const buttonAuthForModalPage = document.getElementById('buttonAuthForModalPage');
@@ -546,7 +604,7 @@ async function showUsersChat(indexChat, friends, backFunction) {
                 ${icons({name: 'browser_back', size: 20, fill: 'secondary'})} Назад 
             </a> 
                 Участники чата 
-            <span style="font-weight: bold; color: #71aaeb;"> 
+            <span style="max-width: 100px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: bold; color: #71aaeb;"> 
                 ${deXSS(chat.title)}
             </span> 
             <span style="color: #99a2ad; font-weight: 500;"> 
@@ -557,7 +615,7 @@ async function showUsersChat(indexChat, friends, backFunction) {
 
     newModalPage(header)
         .content(`<div class="spinner" style="padding: 50px;"> <span class="spinner__animation"> </span></div>`)
-        .show();
+        .visible();
 
     const membersList = await getUsersOrGroupsFromVK(chat.members, true);
 
@@ -585,9 +643,7 @@ async function showUsersChat(indexChat, friends, backFunction) {
 
     html += '</div> </div>';
 
-    newModalPage(header)
-        .content(html)
-        .show();
+    newModalPage(header).content(html).visible();;
 
     const backButton = document.getElementById('back-button-modal-page');
 
@@ -671,7 +727,7 @@ async function showStatistics () {
                 Статистика хранилища и топ
             </span>
         </div>
-    `).content(`<div class="spinner" style="padding: 50px;"> <span class="spinner__animation"> </span></div>`).show();
+    `).content(`<div class="spinner" style="padding: 50px;"> <span class="spinner__animation"> </span></div>`).visible();
 
 
     const stats = await SCAPI.call({method: 'extension.getStats'});
@@ -684,7 +740,7 @@ async function showStatistics () {
         <div style="display: flex; align-items: center; flex-direction: column; margin: 10px;">
             <div style="display: flex; flex-direction: row; align-items: center;">
             
-                 <span id="topUsers" class="group-stats" title="Топ пользователей по чатам"> 
+                 <span id="topUsers" class="group-stats vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard" title="Топ пользователей по чатам"> 
                     ${icons({name: 'users_outline', realSize: 20, size: 48})} 
                     <span class="color-text-subhead" style="font-size: 12px">топ</span>
                     <span>Участники</span>
@@ -695,7 +751,7 @@ async function showStatistics () {
 
                 <p style="margin: 25px;"></p>
 
-                <span id="new-100-chats" class="group-stats" title="100 новых добавленых чатов"> 
+                <span id="new-100-chats" class="group-stats vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard" title="100 новых добавленых чатов"> 
                     ${icons({name: 'data_stack_lock_outline', realSize: 56, size: 48})}
                     <span class="color-text-subhead" style="font-size: 12px">самые новые</span>
                     <span>Чаты</span>
@@ -705,8 +761,8 @@ async function showStatistics () {
                 </span>
 
                 <p style="margin: 25px;"></p>
-
-                <span id="topGroups" class="group-stats" title="Топ групп по чатам">
+                
+                <span id="topGroups" class="group-stats vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard" title="Топ групп по чатам">
                     ${icons({name: 'users_3_outline', realSize: 24, size: 48})} 
                     <span class="color-text-subhead" style="font-size: 12px">топ</span>
                     <span>Группы</span>
@@ -719,33 +775,31 @@ async function showStatistics () {
             
             <p style="margin-bottom: 15px;"></p>
             
-            <span style="
-                display: flex; 
-                flex-direction: row; 
-                font-weight: 500; 
-                margin-bottom: 3px; 
-                align-items: center; 
-                gap: 5px;
-                color: var(--vkui--color_text_subhead);
-            "> 
-                ${icons({name: 'smile_outline', size: 22, realSize: 24, fill: 'secondary'})}
-                В среднем на 1 чат приходиться ${mediumCountMembersPerOneChat} ${decOfNum(membersPerOneChat, ['участник', 'участников', 'участников'])}
-            </span>
-            <span style="
-                display: flex; 
-                flex-direction: row; 
-                font-weight: 500; 
-                align-items: center; 
-                gap: 5px;
-                color: var(--vkui--color_text_subhead);
-            ">
-                ${icons({name: 'globe_outline', size: 22, realSize: 24, fill: 'secondary'})}
-                Почти каждый участник есть хотя бы в ${membersPerOneChat} ${decOfNum(membersPerOneChat, ['чате', 'чатах', 'чатах'])}
-            </span>
+            <div style="display: flex; width: 100%; flex-direction: column; align-items: center;" class="vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard">
+                <span style="
+                    display: flex; 
+                    flex-direction: row; 
+                    margin-bottom: 3px; 
+                    align-items: center; 
+                    gap: 5px;
+                "> 
+                    ${icons({name: 'smile_outline', size: 16, realSize: 24, fill: 'secondary'})}
+                    В среднем на 1 чат приходиться ${mediumCountMembersPerOneChat} ${decOfNum(membersPerOneChat, ['участник', 'участников', 'участников'])}
+                </span>
+                <span style="
+                    display: flex; 
+                    flex-direction: row; 
+                    align-items: center; 
+                    gap: 5px;
+                ">
+                    ${icons({name: 'globe_outline', size: 16, realSize: 24, fill: 'secondary'})}
+                    Почти каждый участник есть хотя бы в ${membersPerOneChat} ${decOfNum(membersPerOneChat, ['чате', 'чатах', 'чатах'])}
+                </span>
+            </div>
         </div>
     `;
 
-    modalPage.content(html).show();
+    modalPage.content(html).visible();
 
     document.getElementById('topUsers').onclick = showTopUsers;
     document.getElementById('new-100-chats').onclick = () => show100NewChats();
@@ -765,7 +819,7 @@ async function showTopUsers () {
                 Топ пользователей по чатам
             </span>
         </div>
-    `).content(`<div class="spinner" style="padding: 50px;"> <span class="spinner__animation"> </span></div>`).show();
+    `).content(`<div class="spinner" style="padding: 50px;"> <span class="spinner__animation"> </span></div>`).visible();
 
     const topUsers = await SCAPI.call({
         method: 'extension.getUsersTop',
@@ -784,7 +838,7 @@ async function showTopUsers () {
 
     html += '</div> </div>';
 
-    modalPage.content(html).show();
+    modalPage.content(html).visible();;
 
     document.getElementById('back-button-modal-page').onclick = showStatistics;
 }
@@ -801,7 +855,7 @@ async function showTopGroups () {
                 Топ групп по чатам
             </span>
         </div>
-    `).content(`<div class="spinner" style="padding: 50px;"> <span class="spinner__animation"> </span></div>`).show();
+    `).content(`<div class="spinner" style="padding: 50px;"> <span class="spinner__animation"> </span></div>`).visible();
 
     const topGroups = await SCAPI.call({
         method: 'extension.getGroupsTop',
@@ -820,7 +874,7 @@ async function showTopGroups () {
 
     html += '</div> </div>';
 
-    modalPage.content(html).show();
+    modalPage.content(html).visible();;
 
     document.getElementById('back-button-modal-page').onclick = showStatistics;
 }
@@ -883,7 +937,7 @@ async function showAddChat () {
                 Добавление чата
             </span>
         </div>
-    `).content(html).show();
+    `).content(html).visible();
 
     const input = document.getElementById('addChat_search');
     input.focus();
@@ -948,7 +1002,7 @@ async function show100NewChats(isCurrent) {
                 100 новых чатов
             </span>
         </div>
-    `).content(`<div class="spinner" style="padding: 50px;"> <span class="spinner__animation"> </span></div>`).show();
+    `).content(`<div class="spinner" style="padding: 50px;"> <span class="spinner__animation"> </span></div>`).visible();
 
      let foundChats;
 
@@ -979,7 +1033,7 @@ async function show100NewChats(isCurrent) {
     }).join('<br style="display: block; margin: 5px; content: \'\';">');
 
 
-    modalPage.content(listChatsHTML).show();
+    modalPage.content(listChatsHTML).visible();;
 
     const buttonMembers = document.getElementsByClassName('membersChat');
 

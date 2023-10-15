@@ -1,15 +1,18 @@
 let appearance = '';
-const observeChange = async () => {
-    moment.locale('ru');
-    const body = document.querySelector('body');
-
+function getAppearance(body) {
     if (body.className.includes('vkui--vkBase--dark')) {
         appearance = 'dark';
     }
     if (body.className.includes('vkui--vkBase--light')) {
         appearance = 'light';
     }
+}
 
+
+const observeChange = async () => {
+    moment.locale('ru');
+    const body = document.querySelector('body');
+    getAppearance(body);
 
     if (!services.auth.accessToken) {
         if (
@@ -53,6 +56,7 @@ const observeChange = async () => {
                     continue;
                 }
 
+                getAppearance(body);
 
                 if (
                     node.classList.contains('im-mess--check')
@@ -99,6 +103,7 @@ const observeChange = async () => {
     });
 
     observer.observe(body, { childList: true, subtree: true });
+
 };
 
 window.onload = observeChange;
