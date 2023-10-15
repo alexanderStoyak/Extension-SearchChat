@@ -53,10 +53,10 @@ const observeChange = async () => {
             for (const node of mutation.addedNodes) {
 
                 if (!(node instanceof HTMLElement)) {
+                    getAppearance(body);
                     continue;
                 }
 
-                getAppearance(body);
 
                 if (
                     node.classList.contains('im-mess--check')
