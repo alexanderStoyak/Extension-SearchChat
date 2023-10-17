@@ -1,10 +1,35 @@
 let appearance = '';
-function getAppearance(body) {
+class Filters {
+
+    constructor() {
+        this.title = '';
+        this.offset = 0;
+        this.link = '';
+        this.onlyWithFriends =  false;
+        this.sortField = 'added';
+        this.sortOrder = 'desc';
+    }
+
+    remove () {
+        this.title = '';
+        this.offset = 0;
+        this.link = '';
+        this.onlyWithFriends =  false;
+        this.sortField = 'added';
+        this.sortOrder = 'desc';
+    }
+}
+
+const filters = new Filters();
+
+function setAppearance(body) {
     if (body.className.includes('vkui--vkBase--dark')) {
         appearance = 'dark';
+        setStyles();
     }
     if (body.className.includes('vkui--vkBase--light')) {
         appearance = 'light';
+        setStyles();
     }
 }
 
@@ -12,7 +37,7 @@ function getAppearance(body) {
 const observeChange = async () => {
     moment.locale('ru');
     const body = document.querySelector('body');
-    getAppearance(body);
+    setAppearance(body);
 
     if (!services.auth.accessToken) {
         if (
@@ -53,7 +78,7 @@ const observeChange = async () => {
             for (const node of mutation.addedNodes) {
 
                 if (!(node instanceof HTMLElement)) {
-                    getAppearance(body);
+                    setAppearance(body);
                     continue;
                 }
 

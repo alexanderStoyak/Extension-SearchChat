@@ -27,7 +27,7 @@ function buttonInDialogsSearch(dialogsSearch) {
 
             button.onclick = () => {
                 if(dialogsSearch.value.length > 3) {
-                    searchChats(dialogsSearch.value);
+                    searchChats(filters.title = dialogsSearch.value);
                 }
             }
 

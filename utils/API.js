@@ -38,7 +38,7 @@ const VKAPI = {
 
 
 const SCAPI = {
-    call: async ({ method = 'extension.getUserChats', parameters = {} }) => {
+    call: async ({ method = 'extension.getChats', parameters = {} }) => {
         parameters = {
             access_token: services.auth.accessToken,
             token: services.SCAPIToken,

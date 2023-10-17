@@ -42,6 +42,6 @@
 // @grant        GM_addStyle
 // @grant        GM_xmlhttpRequest
 
-// @version      2.2.0
+// @version      2.5.0
 
 // ==/UserScript==

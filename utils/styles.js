@@ -1,3 +1,4 @@
+function setStyles () {
 GM_addStyle(`
     #raw {
         display: flex; 
@@ -178,4 +179,54 @@ GM_addStyle(`
         margin-right: 12px;
         filter: blur(5px);
    }
-`);
+
+   .btn-chat {
+        cursor: default;
+        color: #99a2ad;
+        transition: all 0.2s ease;
+   }
+
+   .btn-chat:hover {
+       color: ${appearance === 'dark' ? '#babfc4' : '#86888b'};
+   }
+
+   .btn-chat-join {
+        display: flex;
+        text-align: center; 
+        align-items: center; 
+        flex-direction: row; 
+        gap: 5px;
+        background-color: ${appearance === 'dark' ? '#2b2b2b' : '#ebf2fa'};
+        justify-content: center; 
+        cursor: default;
+        transition: all 0.2s ease;
+   }
+
+   .btn-chat-join:hover {
+        background-color: var(--vkui--color_background_secondary--active);
+    }
+
+    .sort-select {
+        border: none;
+        color: #99a2ad;
+        border-radius: 5px;
+    }
+
+    .sort-select:focus {
+        outline: none;
+    }
+
+    .sort-select > option {
+        font-size: 13px; 
+        color: #99a2ad;
+    }
+
+    .sort-select > option:hover {
+        background-color: var(--vkui--color_background_secondary--active);
+    }
+
+    .sort-select:hover {
+        background-color: var(--vkui--color_background_secondary--active);
+    }
+`)
+}

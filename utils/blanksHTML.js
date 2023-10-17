@@ -9,9 +9,9 @@ function blankChat({ chat, photo, creator, friends }) {
 
     const creatorUrl = `https://vk.com/${typeMention}${creator.id}`;
     const nameHTML = typeMention === 'id'
-        ? `<span style="max-width: 150px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${deXSS(creator.first_name)} ${deXSS(creator.last_name)}</span>`
-        : `Группа «<span style="max-width: 150px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${deXSS(creator.name)}</span>»`;
-    
+        ? `<span style="max-width: 140px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${deXSS(creator.first_name)} ${deXSS(creator.last_name)}</span>`
+        : `Группа «<span style="max-width: 140px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${deXSS(creator.name)}</span>»`;
+
     const nameString = deXSS(typeMention === 'id'
         ? `${creator.first_name} ${creator.last_name}`
         : `Группа «${creator.name}»`
@@ -24,23 +24,22 @@ function blankChat({ chat, photo, creator, friends }) {
     photoFriends.splice(3);
 
     return `
-        <div class="vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard">
-            <section class="vkuiInternalGroup vkuiGroup vkuiGroup--mode-plain vkuiInternalGroup--mode-plain vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo">
+        <div class="vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard" style="padding-bottom: 0px;">
+            <section class="vkuiInternalGroup vkuiGroup vkuiGroup--mode-plain vkuiInternalGroup--mode-plain vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo" style="font-weight: 500;">
                 
-                <div class="ProfileModalInfoHeadline" style="padding: 5px;">
+                <div class="ProfileModalInfoHeadline" style="padding: 0px 0px 5px 0px;">
                        
                     <div class="background-image-chat" style="
                         background-image: linear-gradient( 
-                            ${
-                                appearance === 'dark'
-                                    ? 'rgba(0, 0, 0, .8), rgba(0, 0, 0, .8)' 
-                                    : 'rgba(255, 255, 255, .8), rgba(255, 255, 255, .8)'
+                            ${appearance === 'dark'
+                                ? 'rgba(0, 0, 0, .8), rgba(0, 0, 0, .8)'
+                                : 'rgba(255, 255, 255, .8), rgba(255, 255, 255, .8)'
                             }), 
                             url(${photo || 'https://vk.com/images/community_200.png'});
                     ">      
                     </div>
             
-                    <div id="raw" style="margin-bottom: 5px; position: relative; gap: 15px; z-index: 3; justify-content: space-between;">
+                    <div id="raw" style="align-items: center; margin-bottom: 5px; position: relative; gap: 15px; z-index: 3; justify-content: space-between;">
 
                         <div id="raw" style="margin-bottom: 10px; gap: 15px;">
                             <div title="Скопировать ссылку на чат" style="width: 58px; height: 58px; box-shadow: 0 0 0 0.1em;" link="vk.me/join/${chat.key}"
@@ -52,20 +51,28 @@ function blankChat({ chat, photo, creator, friends }) {
                                 <h4 title="${chat.title}" class="vkuiHeadline vkuiHeadline--sizeY-compact vkuiHeadline--level-1 vkuiTypography--normalize vkuiTypography--weight-1" style="font-size: 15px; max-width: 230px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
                                     ${chat.title}
                                 </h4>
-                            
-                            <span style="color: #99a2ad; display: flex; flex-direction: row; gap: 5px; align-items: center;">
-                                ${icons({name: 'replay', size: 16, fill: 'secondary'})}
-                                <p style="max-width: 180px; margin: 0px;">Обновлен ${moment(chat.lastUpdate).fromNow()}</p>
-                            </span>
-                            
+
+                                ${countFriendsInChat ? `
+                                        <div style="display: flex; justify-content: flex-start; gap: 3px; align-items: center;">
+                                            <div class="UsersStack-module__root--HKcQf UsersStack-module__sizeS--O9MMO UsersStack-module__directionRow--HjNuZ ProfileFullStacks__stacks">
+                                                <div class="UsersStack-module__photos--bCsMG" aria-hidden="true">
+                                                    ${usersStack(photoFriends)}
+                                                </div>
+                                            </div>
+                                            <span style="color: #99a2ad; font-weight: 400;">
+                                                ${countFriendsInChat.toLocaleString('ru-RU')} ${decOfNum(countFriendsInChat, ['друг', 'друга', 'друзей'])} в чате
+                                            </span>
+                                        </div>`
+                                    : ''
+                                }
                             </div>
                         </div>
 
-                        <div style="display: flex; flex-direction: row; gap: 5px; align-items: center;">
-                            <a class="membersChat" style="font-weight: 500; color: #99a2ad; text-decoration-color: #99a2ad;">
+                        <div style="display: flex; flex-direction: row; gap: 5px; align-items: center; margin-bottom: 10px; margin-right: 10px;">
+                            <span class="btn-chat membersChat">
                                 ${chat.membersCount.toLocaleString('ru-RU')} ${decOfNum(chat.membersCount, ['участник', 'участника', 'участников'])}
-                            </a>
-                            ${icons({name: 'users_2_outline', realSize: 16, size: 16, fill: 'secondary'})}
+                            </span>
+                            ${icons({ name: 'users_2_outline', realSize: 16, size: 16, fill: 'secondary' })}
                         </div>
                     </div>
                     
@@ -91,34 +98,31 @@ function blankChat({ chat, photo, creator, friends }) {
     
                                 
                                 <span style="color: #99a2ad; display: flex; align-items: center; flex-direction: row; gap: 5px">
-                                    ${icons({name: 'add', size: 16, fill: 'secondary'})}
-                                    <p style="max-width: 180px; margin: 0px;">Добавлен ${moment(chat.added).fromNow()}</p>
+                                    ${icons({ name: 'add', size: 16, fill: 'secondary' })}
+                                    <p style="max-width: 170px; margin: 0px;">Добавлен ${moment(chat.added).fromNow()}</p>
                                 </span>
     
                             </div>
                         </div>
                         
-                        <div style="display: flex; justify-content: flex-end; flex-direction: column;">
-                            ${
-                                countFriendsInChat ? `
-                                    <div style="display: flex; justify-content: flex-end; gap: 5px; align-items: center;">
-                                        <div class="UsersStack-module__root--HKcQf UsersStack-module__sizeS--O9MMO UsersStack-module__directionRow--HjNuZ ProfileFullStacks__stacks">
-                                            <div class="UsersStack-module__photos--bCsMG" aria-hidden="true">
-                                                ${usersStack(photoFriends)}
-                                            </div>
-                                        </div>
-                                        <span style="color: #99a2ad; font-weight: 400;">
-                                            ${countFriendsInChat.toLocaleString('ru-RU')} ${decOfNum(countFriendsInChat, ['друг', 'друга', 'друзей'])} в чате
-                                        </span>
-                                    </div>`
-                                : ''
-                            }
-                            <div style="display: flex; text-align: right; align-items: center; flex-direction: row; gap: 5px; justify-content: flex-end;">
-                                <a target="_blank" href="https://vk.me/join/${chat.key}" style=" font-weight: 500;gap: 3px;text-decoration-color: #99a2ad;color: #99a2ad;">
+                        <div style="display: flex; align-items: flex-end; flex-direction: column;">
+                            <a target="_blank"
+                                style="padding: 2px; text-decoration: none;"
+                                    href="https://vk.me/join/${chat.key}"
+                                        class="btn-chat-join vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard" 
+                            >
+                                ${icons({ name: 'door_enter_arrow_right_outline', realSize: 16, size: 16, fill: 'secondary' })}
+                                <span style="font-size: 13px; font-weight: 500; color: #99a2ad; padding: 0px 4px 0px 4px;">
                                     Присоединиться
-                                </a>
-                                ${icons({name: 'door_enter_arrow_right_outline', realSize: 16, size: 16, fill: 'secondary'})}
-                            </div>
+                                </span>
+                            </a>
+
+                            <span style="color: #99a2ad; display: flex; flex-direction: row; gap: 5px; align-items: center; text-align: end;">
+                                <p style="max-width: 170px; margin: 0px;">
+                                    Обновлен ${moment(chat.lastUpdate).fromNow()}
+                                 </p>
+                                ${icons({ name: 'replay', size: 16, fill: 'secondary' })}
+                            </span>
                         <div>
                     </div>
                 </div>
@@ -152,14 +156,13 @@ function blankMembersList({ member, creator, friends }) {
                             <a target="_blank" href="${link}" ${isFriend ? `style="color: ${appearance === 'dark' ? '#A8E4A0' : '#258b17'};"` : ''}>
                                 <span style="font-weight: bold;">${memberName}</span>
                             </a>
-                            ${
-                                Math.abs(creator) === member.id
-                                    ? `    
+                            ${Math.abs(creator) === member.id
+                                ? `    
                                         <span style="color: #828282; padding-left: 5px;">
                                             ${icons({ name: 'crown_outline', size: 20, fill: 'secondary' })}
                                         </span>
                                       `
-                                    : ''
+                                : ''
                             }
                         </div>
                         <div class="Entity__description">
@@ -239,20 +242,99 @@ function blankNotFound(icon, text) {
 }
 
 
-function blankPagination (currentPage, totalPage) {
+function blankSitingsSearchChats({ user = false }) {
+    let typeMention;
+    let userUrl;
+
+    let nameHTML;
+    let nameString;
+
+
+    if (user) {
+        typeMention = user?.first_name ? 'id' : 'club';
+        userUrl = `https://vk.com/${typeMention}${user.id}`;
+
+        nameHTML = typeMention === 'id'
+            ? `<span style="max-width: 140px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${deXSS(user.first_name)} ${deXSS(user.last_name)}</span>`
+            : `группа «<span style="max-width: 140px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${deXSS(user.name)}</span>»`;
+
+        nameString = deXSS(typeMention === 'id'
+            ? `${user.first_name} ${user.last_name}`
+            : `Группа «${user.name}»`
+        );
+    }
+
+    
     return `
-        <div style="display: flex; max-height: 27px; align-items: center; flex-direction: row; justify-content: space-between;"> 
-            
-             <a id="previousPageButton" class="btn-pagination">
-                < Назад
-             </a>
-            
-            <p style="margin: 0px;">${currentPage}/${totalPage}</p>
-            
-            <a id="nextPageButton" class="btn-pagination">
-                Далее >
-            </a>
-            
-        </div> 
+
+    <div style="font-size: 13px; padding: 5px;">
+
+        <div style="display: flex; justify-content: center; align-items: center; gap: 5px;">
+            <input
+                style="width: 100%; font-size: 13px;"
+                class="input-text"
+                type="text"
+                id="searchChats_input"
+                placeholder="Поиск"
+                autocomplete="off" 
+                value="${filters.title}" 
+                maxlength="100"
+            >
+            <button title="Поиск" id="searchChats_button" class="input-button">
+                ${icons({ name: 'search_stars_outline', size: 20, realSize: 24 })}
+            </button>
+        </div>
+
+
+        <div style="gap: 5px; display: flex; align-items: center; justify-content: space-between; margin-top: 3px">
+            <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
+                <span>
+                    ${icons({ name: 'sort', size: 16, realSize: 24, fill: 'secondary' })}
+                </span>
+                <label for="sortField"> Сортировать по </label>
+                <select name="sortField" id="sortField" class="sort-select">
+                    <option value="membersCount" ${filters.sortField === 'membersCount' ? 'selected' : ''}>количеству участников</option>
+                    <option value="added" ${filters.sortField === 'added' ? 'selected' : ''}>дате добавления</option>
+                    <option value="lastUpdate" ${filters.sortField === 'lastUpdate' ? 'selected' : ''}>дате обновления</option>
+                </select>
+                <span id="filter_set_sort_filed" title="${filters.sortOrder === 'desc' ? 'по возрастанию' : 'по убыванию'}">
+                    ${icons({ name: filters.sortOrder === 'desc' ? 'arrow_down_outline' : 'arrow_up_outline', size: 16, fill: 'secondary' })}
+                </span>
+            </div>
+        </div>
+
+        ${user ?
+            `
+                <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
+                    <span>
+                        ${icons({ name: 'user_outline', size: 16, fill: 'secondary' })}
+                    </span>
+                    Чаты, в которых есть
+                    <a title="${nameString}" target="_blank" href="${userUrl}" style="display: flex;">
+                        ${nameHTML}
+                    </a>
+
+                    <div style="width: 16px; height: 16px;" 
+                        class="vkuiAvatar vkuiImageBase vkuiImageBase--size-16 vkuiImageBase--loaded" role="img">
+                        <img class="vkuiImageBase__img" src="${user.photo_100 || ''}">
+                    </div>
+
+                    <span title="Удалить" id="filter_delete_user">
+                        ${icons({ name: 'cross_large_outline', size: 16, realSize: 28, fill: 'secondary' })}
+                    </span>
+                </div>
+            ` : ``
+        }
+
+
+        <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
+            <span>
+                ${icons({ name: 'users_3_outline', size: 16, realSize: 20, fill: 'secondary' })}
+            </span>
+            Чаты, в которых есть только <a target="_blank" href="https://vk.com/friends">Ваши друзья</a>
+            <input type="checkbox" id="filter_only_friends" ${filters.onlyWithFriends ? 'checked' : ''} />
+        </div>
+
+    </div>
     `
 }

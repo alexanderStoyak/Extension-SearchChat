@@ -7,7 +7,7 @@ function buttonInProfilesForGroups(pageActions) {
 
     newButton.className = 'FlatButton FlatButton--secondary FlatButton--size-m redesigned-group-action';
 
-    newButton.onclick = () => userOrGropChats(window.location.href, 0);
+    newButton.onclick = () => searchChats(filters.link = window.location.href);
 
     newButton.innerHTML = `
          <span id="buttonInProfilesForGroups" class="FlatButton__in" title="Чаты группы">
