@@ -237,7 +237,7 @@ const load = {
 };
 let currentChats = {};
 
-async function searchChats({ isCurrent = false }) {
+async function searchChats({ isCurrent = false, offset = 0 }) {
 
     if (load.chats) return;
     else load.chats = true;
@@ -247,7 +247,7 @@ async function searchChats({ isCurrent = false }) {
         onlyWithFriends: filters.onlyWithFriends,
         sortField: filters.sortField,
         sortOrder: filters.sortOrder,
-        offset: filters.offset,
+        offset,
     }
 
     let user;
@@ -368,15 +368,13 @@ async function searchChats({ isCurrent = false }) {
 
     if (nextPageButton) {
         nextPageButton.onclick = () => {
-            filters.offset += 15;
-            searchChats({});
+            searchChats({offset: offset += 15});
         };
     }
 
     if (previousPageButton) {
         previousPageButton.onclick = () => {
-            filters.offset -= 15;
-            searchChats({});
+            searchChats({offset: offset -= 15});
         };
     }
 

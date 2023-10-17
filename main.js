@@ -3,7 +3,6 @@ class Filters {
 
     constructor() {
         this.title = '';
-        this.offset = 0;
         this.link = '';
         this.onlyWithFriends =  false;
         this.sortField = 'added';
@@ -12,7 +11,6 @@ class Filters {
 
     remove () {
         this.title = '';
-        this.offset = 0;
         this.link = '';
         this.onlyWithFriends =  false;
         this.sortField = 'added';
