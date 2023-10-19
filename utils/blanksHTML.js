@@ -43,12 +43,18 @@ function blankChat({ chat, photo, creator, friends }) {
 
                         <div id="raw" style="margin-bottom: 10px; gap: 15px;">
                             <div title="Скопировать ссылку на чат" style="width: 58px; height: 58px; box-shadow: 0 0 0 0.1em;" link="vk.me/join/${chat.key}"
-                                class="vkuiAvatar vkuiImageBase vkuiImageBase--size-58 vkuiImageBase--loaded copyLinkForChat" role="img">
+                                class="vkuiAvatar vkuiImageBase vkuiImageBase--size-58 vkuiImageBase--loaded copy_link_for_chat" role="img">
                                 <img class="vkuiImageBase__img" src="${photo || 'https://vk.com/images/community_200.png'}">
                             </div>
 
                             <div>
                                 <h4 title="${chat.title}" class="vkuiHeadline vkuiHeadline--sizeY-compact vkuiHeadline--level-1 vkuiTypography--normalize vkuiTypography--weight-1" style="font-size: 15px; max-width: 230px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+                                    ${chat.membersCount > 7_000 
+                                        ? `<span style="display: flex; flex-direction: row; gap: 5px; align-items: center; font-size: 12px; color: #99a2ad;"> 
+                                                ${icons({ name: 'archive_outline', size: 16, fill: 'secondary' })} Канал
+                                            </span>`
+                                        : ''
+                                    }                                    
                                     ${chat.title}
                                 </h4>
 
@@ -69,7 +75,7 @@ function blankChat({ chat, photo, creator, friends }) {
                         </div>
 
                         <div style="display: flex; flex-direction: row; gap: 5px; align-items: center; margin-bottom: 10px; margin-right: 10px;">
-                            <span class="btn-chat membersChat">
+                            <span class="btn-chat members_chat">
                                 ${chat.membersCount.toLocaleString('ru-RU')} ${decOfNum(chat.membersCount, ['участник', 'участника', 'участников'])}
                             </span>
                             ${icons({ name: 'users_2_outline', realSize: 16, size: 16, fill: 'secondary' })}
@@ -99,7 +105,7 @@ function blankChat({ chat, photo, creator, friends }) {
                                 
                                 <span style="color: #99a2ad; display: flex; align-items: center; flex-direction: row; gap: 5px">
                                     ${icons({ name: 'add', size: 16, fill: 'secondary' })}
-                                    <p style="max-width: 170px; margin: 0px;">Добавлен ${moment(chat.added).fromNow()}</p>
+                                    <p style="max-width: 185px; margin: 0px;">Добавлен ${moment(chat.added).fromNow()}</p>
                                 </span>
     
                             </div>
@@ -118,7 +124,7 @@ function blankChat({ chat, photo, creator, friends }) {
                             </a>
 
                             <span style="color: #99a2ad; display: flex; flex-direction: row; gap: 5px; align-items: center; text-align: end;">
-                                <p style="max-width: 170px; margin: 0px;">
+                                <p style="max-width: 185px; margin: 0px;">
                                     Обновлен ${moment(chat.lastUpdate).fromNow()}
                                  </p>
                                 ${icons({ name: 'replay', size: 16, fill: 'secondary' })}
@@ -236,13 +242,24 @@ function blankNotFound(icon, text) {
                 <span style="font-size: 13px; padding-top: 3px; text-align: center; max-width: 250px;">
                     ${text}
                 </span>
+                <div style="padding-top: 15px;">
+                    <button id="reset_filters" class="FlatButton FlatButton--primary FlatButton--size-m" type="button">
+                        <span class="FlatButton__in">
+                            <span class="FlatButton__content">Сбросить фильтры</span>
+                        </span>
+                    </button>
+                </div>
             </div>
         <div>
     `
 }
 
 
-function blankSitingsSearchChats({ user = false }) {
+function blankSitingsSearchChats({
+    user = false,
+    foundChats,
+    offset
+}) {
     let typeMention;
     let userUrl;
 
@@ -263,6 +280,9 @@ function blankSitingsSearchChats({ user = false }) {
             : `Группа «${user.name}»`
         );
     }
+
+    const currentPage = offset / 15 !== 0 ? offset / 15 + 1 : 1;
+    const totalPage = Math.ceil(foundChats / 15 || 1);
 
     
     return `
@@ -292,12 +312,12 @@ function blankSitingsSearchChats({ user = false }) {
                     ${icons({ name: 'sort', size: 16, realSize: 24, fill: 'secondary' })}
                 </span>
                 <label for="sortField"> Сортировать по </label>
-                <select name="sortField" id="sortField" class="sort-select">
+                <select name="sort_field" id="sort_field" class="sort-select">
                     <option value="membersCount" ${filters.sortField === 'membersCount' ? 'selected' : ''}>количеству участников</option>
                     <option value="added" ${filters.sortField === 'added' ? 'selected' : ''}>дате добавления</option>
                     <option value="lastUpdate" ${filters.sortField === 'lastUpdate' ? 'selected' : ''}>дате обновления</option>
                 </select>
-                <span id="filter_set_sort_filed" title="${filters.sortOrder === 'desc' ? 'по возрастанию' : 'по убыванию'}">
+                <span id="filter_set_sort_order" title="${filters.sortOrder === 'desc' ? 'по возрастанию' : 'по убыванию'}">
                     ${icons({ name: filters.sortOrder === 'desc' ? 'arrow_down_outline' : 'arrow_up_outline', size: 16, fill: 'secondary' })}
                 </span>
             </div>
@@ -319,7 +339,7 @@ function blankSitingsSearchChats({ user = false }) {
                         <img class="vkuiImageBase__img" src="${user.photo_100 || ''}">
                     </div>
 
-                    <span title="Удалить" id="filter_delete_user">
+                    <span title="Удалить" id="filter_button_delete_user">
                         ${icons({ name: 'cross_large_outline', size: 16, realSize: 28, fill: 'secondary' })}
                     </span>
                 </div>
@@ -331,10 +351,45 @@ function blankSitingsSearchChats({ user = false }) {
             <span>
                 ${icons({ name: 'users_3_outline', size: 16, realSize: 20, fill: 'secondary' })}
             </span>
-            Чаты, в которых есть только <a target="_blank" href="https://vk.com/friends">Ваши друзья</a>
-            <input type="checkbox" id="filter_only_friends" ${filters.onlyWithFriends ? 'checked' : ''} />
+            Чаты, в которых есть <a target="_blank" href="https://vk.com/friends">Ваши друзья</a>
+            <input type="checkbox" id="filter_only_with_friends" ${filters.onlyWithFriends ? 'checked' : ''} />
         </div>
+        
 
+        <div style="display: flex; color: #99a2ad; align-items: center; height: 20px;"> 
+            <span style="display: flex; gap: 5px;">
+                ${icons({name: 'document_text_outline', size: 16, realSize: 20, fill: 'secondary'})}
+                <span style="padding-right: 10px; color: #99a2ad;">
+                    Страница ${foundChats !== undefined && foundChats !== 0 ? `${currentPage}/${totalPage}` : foundChats === 0 ? 'пуста' : 'загружается'}
+                </span>
+            </span>
+                    
+            ${foundChats ?
+                `
+                    <span style="display: flex; gap: 5px;">
+                        ${offset > 0 ?
+                            `
+                                <a id="previous_page_button" style="${!(currentPage < totalPage) ? 'padding-right: 15px;' : ''} color: #71aaeb;"> 
+                                    Назад
+                                </a>
+                            `
+                            : ''
+                        }
+                        ${currentPage < totalPage && offset > 0 ? '<span style="padding-left: 2px; padding-right: 2px; ">•</span>' : ''}
+                        ${currentPage < totalPage ?
+                            `
+                                <a id="next_page_button" style="padding-right: 15px; color: #71aaeb;"> 
+                                    Далее
+                                </a>
+                        `
+                        : ''
+                    }
+                    </span>
+                `
+                : ''
+            }
+        </div>
+        
     </div>
     `
 }

@@ -3,17 +3,20 @@ function newModalPage(title) {
     if (modalPage && modalPage.isVisible()) {
         modalPage.hide();
     }
+    
 
     if (!modalPage || !modalPage.isVisible()) {
         modalPage = new MessageBox({
             title,
-            width: 500,
+            width: 550,
             hideButtons: true,
             bodyStyle: 'padding: 5px;'
         });
+    }
 
-        let boxTitle = document.getElementsByClassName('box_title');
-        boxTitle = boxTitle[boxTitle.length - 1];
+    if (modalPage) {
+        const boxBody = [...document.getElementsByClassName('box_body')].at(-1);
+        const boxTitle = [...document.getElementsByClassName('box_title')].at(-1);
 
         if (boxTitle) {
             boxTitle.style.height = 'auto';
@@ -21,52 +24,44 @@ function newModalPage(title) {
             boxTitle.style.padding = '5px';
             boxTitle.style.overflow = 'visible';
         }
-    }
 
-    if (modalPage) {
-        const boxLayout = document.getElementById('box_layer');
-        boxLayout.style.marginTop = '50px';
+        const fixedTitle = () => {
+            const modalPageTitle = [...document.getElementsByClassName('box_title_wrap')].at(-1);
+            const boxLayout = [...document.getElementsByClassName('box_layout')].at(-1);
+            const boxLayer = document.getElementById('box_layer');
+            const modalPageScroll = document.getElementById('box_layer_wrap');
+
+            modalPageScroll.onscroll = () => {
+                const offset = modalPageTitle.offsetHeight + boxLayer.offsetHeight - boxLayout.offsetHeight - 80;
+                if (modalPageTitle.getBoundingClientRect().top < 0 && !modalPageTitle.classList.contains('ui_tabs_fixed')) {
+                    modalPageTitle.style.width = '550px';
+                    modalPageTitle.style.borderRadius = '0px';
+                    boxBody.style.marginTop = `${offset}px`;
+                    modalPageTitle.classList.add('ui_tabs_fixed');
+                } else if (boxBody.getBoundingClientRect().top >= modalPageTitle.offsetHeight) {
+                    boxBody.style.marginTop = '0px';
+                    modalPageTitle.style.borderRadius = '10px 10px 0px 0px';
+                    modalPageTitle.classList.remove('ui_tabs_fixed');
+                }
+            }
+        }
 
         modalPage.visible = () => {
             modalPage.show();
+            fixedTitle();
+        }
 
-            const input = document.getElementById('searchChats_input');
-
-            if (input) {
-                input.focus();
-
-                input.oninput = () => {
-                    filters.title = input.value;
-
-                    if (!input.value) {
-                        searchChats({});
-                    }
-                }
-
-                document.getElementById('searchChats_button').onclick = () => searchChats({});
+        modalPage.setContent = html => {
+            if(modalPage.isVisible()) {
+                boxBody.innerHTML = html;
+                fixedTitle();
             }
+        }
 
-            let boxBody = document.getElementsByClassName('box_body');
-            boxBody = boxBody[boxBody.length - 1];
-
-            if (boxBody && boxBody.offsetHeight > window.innerHeight) {
-                let modalPageTitle = document.getElementsByClassName('box_title_wrap');
-                modalPageTitle = modalPageTitle[modalPageTitle.length - 1];
-
-                const modalPageScroll = document.getElementById('box_layer_wrap');
-
-                modalPageScroll.onscroll = () => {
-                    if (modalPageTitle.getBoundingClientRect().top < 0 && !modalPageTitle.classList.contains('ui_tabs_fixed')) {
-                        modalPageTitle.style.width = '500px';
-                        modalPageTitle.style.borderRadius = '0px';
-                        boxBody.style.marginTop = `${modalPageTitle.offsetHeight}px`;
-                        modalPageTitle.classList.add('ui_tabs_fixed');
-                    } else if (boxBody.getBoundingClientRect().top >= modalPageTitle.offsetHeight) {
-                        boxBody.style.marginTop = '0px';
-                        modalPageTitle.style.borderRadius = '10px 10px 0px 0px';
-                        modalPageTitle.classList.remove('ui_tabs_fixed');
-                    }
-                }
+        modalPage.setTitle = html => {
+            if(modalPage.isVisible()) {
+                boxTitle.innerHTML = html;
+                fixedTitle();
             }
         }
     }
@@ -85,10 +80,10 @@ function deXSS(text) {
 function notifiers(text, title = 'ПоискЧата') {
     title = `
         <span style="
-                    display: flex;
-                    align-items: center;
-                    gap: 5px;
-                    justify-content: flex-start;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            justify-content: flex-start;
         "> 
             ${icons({ name: 'notification_outline', size: 20, fill: 'secondary' })} 
             ${title}
@@ -236,7 +231,6 @@ const load = {
     chats: false
 };
 let currentChats = {};
-
 async function searchChats({ isCurrent = false, offset = 0 }) {
 
     if (load.chats) return;
@@ -254,19 +248,38 @@ async function searchChats({ isCurrent = false, offset = 0 }) {
     if (filters.link) {
         user = (await getUsersOrGroupsFromVK([filters.link]))[0];
         if (user) {
-            parameters.userId = user?.first_name ? user.id : -user.id;
+            parameters.userId = user.first_name ? user.id : -user.id;
         }
     }
 
+    const title = foundChats => `
+        <div style="display: flex; justify-content: space-between; flex-direction: row;">
+            <span style="display: flex; flex-direction: row; align-items: center; gap: 10px; line-height: 49px;"> 
+                <svg width="28" height="28" class="vkuiIcon vkuiIcon--28 vkuiIcon--w-28 vkuiIcon--h-28" display="block" style="border-radius: 50%">
+                    <image width="28" height="28" xlink:href="https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/icons/logo.png"/>
+                </svg>
+                <span style="font-size: 20px; display: flex; font-weight: bold; gap: 5px ;flex-direction: row;"> 
+                    ПоискЧата
+                    <span style="font-weight: 400; color: #828282;"> > Чаты </span>
+                </span>
+            </span>
+            ${foundChats ? 
+                `
+                <span style="color: #828282; font-weight: 400; display: flex; align-items: center; line-height: 49px;"> 
+                    ${foundChats.toLocaleString('ru-RU')}шт. 
+                </span>
+                ` : ''
+            }
+        </div>
+    `
+
     newModalPage(`
         <div>
-            <span style="display: flex; font-size: 17px; padding-left: 5px; font-weight: 500; line-height: 49px;"> 
-                Список найденных чатов 
-            </span> 
-                ${blankSitingsSearchChats({user})}
+            ${title()}
+            ${blankSitingsSearchChats({ user })}
         </div>
     `)
-        .content(`<div class="spinner" style="padding: 50px;"> <span class="spinner__animation"></span></div>`)
+        .content(`<div class="spinner" style="padding: 100px;"> <span class="spinner__animation"></span></div>`)
         .visible();
 
     let foundChats;
@@ -278,22 +291,33 @@ async function searchChats({ isCurrent = false, offset = 0 }) {
 
         currentChats = {
             foundChats,
-            user
+            user,
+            offset
         };
     } else {
         user = currentChats.user;
         foundChats = currentChats.foundChats;
+        parameters.offset = currentChats.offset;
     }
 
 
     if (!foundChats.found) {
         load.chats = false;
-        return modalPage.content(
+        modalPage.setContent(
             blankNotFound(
-                icons({ name: 'ghost_simple_outline', realSize: 36, size: 86, fill: 'secondary' }),
-                'Извините, но не один чат, соответствующий Вашему запросу, не найден'
+                icons({ name: 'ghost_simple_outline', realSize: 36, size: 86, }),
+                'По фильтрам ничего не найдено'
             )
-        ).visible();
+        );
+        modalPage.setTitle(`
+            <div>
+                ${title(foundChats.found)}
+                ${blankSitingsSearchChats({ offset, user, foundChats: foundChats.found })}
+            </div>
+        `);
+
+        onClicks('searchChats', {offset});
+        return;
     }
 
     const [creators, friends] = await Promise.all([
@@ -304,23 +328,15 @@ async function searchChats({ isCurrent = false, offset = 0 }) {
         getFriends()
     ]);
 
-    const currentPage = parameters.offset / 15 !== 0 ? parameters.offset / 15 + 1 : 1;
-    const totalPage = Math.ceil(foundChats.found / 15 || 1);
 
-
-    newModalPage(`
+    modalPage.setTitle(`
         <div>
-            <span style="display: flex; justify-content: space-between; flex-direction: row; font-weight: 500; align-items: center; gap: 5px; padding-left: 5px; font-size: 17px; line-height: 49px;"> 
-                Список найденных чатов
-                <span style="color: #828282; font-weight: 400;"> 
-                    ${foundChats.found.toLocaleString('ru-RU')}шт. 
-                </span>
-            </span>
-            ${blankSitingsSearchChats({ currentPage, totalPage, user })}
+            ${title(foundChats.found)}
+            ${blankSitingsSearchChats({ offset, user, foundChats: foundChats.found })}
         </div>
     `);
 
-    let listChatsHTML = foundChats.chats.map(chat => {
+    const listChatsHTML = foundChats.chats.map(chat => {
         const photo = chat.photo
             ? chat.photo['200'] || chat.photo['150'] || chat.photo['50']
             : '';
@@ -328,97 +344,9 @@ async function searchChats({ isCurrent = false, offset = 0 }) {
         return blankChat({ chat, photo, friends, creator: creators.find(creator => creator.id === Math.abs(chat.creator)) });
     }).join('<br style="display: block; margin: 5px; content: \'\';">');
 
+    modalPage.setContent(listChatsHTML);
 
-
-    listChatsHTML += `<div style="display: flex; justify-content: flex-end; gap: 5px">`;
-    listChatsHTML += `<span style="padding-right: 10px; color: #99a2ad; font-weight: 500;"> Страница ${currentPage}/${totalPage} </span>`;
-
-
-    if (foundChats.found > 15) {
-        if (parameters.offset > 0) {
-            listChatsHTML += `
-                <a id="previousPageButton" 
-                    style="${!(currentPage < totalPage) ? 'padding-right: 15px;' : ''} text-decoration: none; font-weight: bold; color: #71aaeb;"> 
-                    < Назад
-                </a>
-            `;
-        }
-
-        if (currentPage < totalPage && parameters.offset > 0) {
-            listChatsHTML += '<span style="font-weight: bold;">|</span>';
-        }
-
-        if (currentPage < totalPage) {
-            listChatsHTML += `
-                <a id="nextPageButton" 
-                    style="padding-right: 15px; text-decoration: none; font-weight: bold; color: #71aaeb;"> 
-                    Далее >
-                </a>
-            `;
-        }
-    }
-
-
-    listChatsHTML += `</div>`;
-
-    modalPage.content(listChatsHTML).visible();
-
-    const nextPageButton = document.getElementById('nextPageButton');
-    const previousPageButton = document.getElementById('previousPageButton');
-
-    if (nextPageButton) {
-        nextPageButton.onclick = () => {
-            searchChats({offset: offset += 15});
-        };
-    }
-
-    if (previousPageButton) {
-        previousPageButton.onclick = () => {
-            searchChats({offset: offset -= 15});
-        };
-    }
-
-    const sortField = document.getElementById('sortField');
-    const filterSetSortFiled = document.getElementById('filter_set_sort_filed');
-    const filterOnlyFriends = document.getElementById('filter_only_friends')
-
-    filterSetSortFiled.onclick = () => {
-        filters.sortOrder = filters.sortOrder === 'desc' ? 'asc' : 'desc';
-        searchChats({});
-    }
-
-    filterOnlyFriends.onclick = () => {
-        filters.onlyWithFriends = filters.onlyWithFriends ? false : true;
-        searchChats({});
-    }
-
-    sortField.onclick = () => {
-        filters.sortField = sortField.value;
-    }
-
-    if (user) {
-        const filtersDeleteUser = document.getElementById('filter_delete_user');
-
-        filtersDeleteUser.onclick = () => {
-            filters.link = '';
-            searchChats({});
-        }
-    }
-    
-
-    const buttonMembers = document.getElementsByClassName('membersChat');
-
-    buttonMembers.forEach((button, index) => button.onclick = () => showUsersChat(index, friends, searchChats));
-
-    let linksChats = document.getElementsByClassName('copyLinkForChat');
-
-    for (const link of linksChats) {
-        link.onclick = () => {
-            const copyText = link.getAttribute('link');
-            navigator.clipboard.writeText(copyText);
-            notifiers(`Ссылка на чат скопирована <a href="${copyText}" target="_blank">${copyText}</a>`);
-        }
-    }
+    onClicks('searchChats', {offset, friends});
 
     load.chats = false;
 }
@@ -504,21 +432,23 @@ async function authModalPage() {
 }
 
 
-async function showUsersChat(indexChat, friends, backFunction) {
+async function showUsersChat(indexChat, friends, backFunction, offset = 0) {
     const chat = currentChats.foundChats.chats[indexChat];
 
     const header = `
-        <div style="display: flex; flex-direction: row; align-items: center; gap: 10px; line-height: 49px;">
-            <a id="back-button-modal-page"> 
-                ${icons({ name: 'browser_back', size: 20, fill: 'secondary' })} Назад 
-            </a> 
-                Участники чата 
-            <span style="max-width: 100px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: bold; color: #71aaeb;"> 
-                ${deXSS(chat.title)}
-            </span> 
-            <span style="color: #99a2ad; font-weight: 500;"> 
-                ${chat.membersCount.toLocaleString('ru-RU')} 
-            </span>
+        <div style="display: flex; flex-direction: column;">
+            <div style="display: flex; flex-direction: row; align-items: center; gap: 10px; line-height: 49px;">
+                <a id="back_button_modal_page"> 
+                    ${icons({ name: 'browser_back', size: 20, fill: 'secondary' })} Назад 
+                </a> 
+                    Участники чата 
+                <span style="max-width: 100px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: bold; color: #71aaeb;"> 
+                    ${deXSS(chat.title)}
+                </span> 
+                <span style="color: #99a2ad; font-weight: 500;"> 
+                    ${chat.membersCount.toLocaleString('ru-RU')} 
+                </span>
+           </div>
        </div>
     `;
 
@@ -538,27 +468,65 @@ async function showUsersChat(indexChat, friends, backFunction) {
             membersList.filter(member => !member.first_name),
             membersList.filter(member => !friendsIds.includes(member.id) && member.first_name)
                 .sort((a, b) => b.online - a.online)
-        );
+        )
+        .splice(offset, 500);
 
-    let html = '<div class="ChatSettings__pane"> <div class="ChatSettingsMembersWidget__list">';
+    let html = `
+        <div class="ChatSettings__pane"> 
+            <div class="ChatSettingsMembersWidget__list" id="chat_users"></div> 
+        </div>
+    `;
 
-    if (creator) {
-        html += blankMembersList({ member: creator, creator: creator.id, friends });
+    const currentPage = offset / 500 !== 0 ? offset / 500 + 1 : 1;
+    const totalPage = Math.ceil(chat.membersCount / 500 || 1);
+
+    modalPage.setContent(html);
+
+    const usersChatBody = document.getElementById('chat_users');
+
+    usersChatBody.innerHTML += `<div style="display: flex; justify-content: flex-end; gap: 5px">`;
+    usersChatBody.innerHTML += `<span style="padding-right: 10px; color: #99a2ad; font-weight: 500;"> Страница ${currentPage}/${totalPage} </span>`;
+
+
+    if (chat.membersCount > 500) {
+        if (offset > 0) {
+            usersChatBody.innerHTML += `
+                <a id="previous_page_button" 
+                    style="${!(currentPage < totalPage) ? 'padding-right: 15px;' : ''} text-decoration: none; font-weight: bold; color: #71aaeb;"> 
+                    < Назад
+                </a>
+            `;
+        }
+
+        if (currentPage < totalPage && offset > 0) {
+            usersChatBody.innerHTML += '<span style="font-weight: bold;">|</span>';
+        }
+
+        if (currentPage < totalPage) {
+            usersChatBody.innerHTML += `
+                <a id="next_page_button" 
+                    style="padding-right: 15px; text-decoration: none; font-weight: bold; color: #71aaeb;"> 
+                    Далее >
+                </a>
+            `;
+        }
     }
+
+    usersChatBody.innerHTML += `</div>`;
+
+    if (creator && offset === 0) {
+        usersChatBody.innerHTML += blankMembersList({ member: creator, creator: creator.id, friends });
+    }
+
+    let htmlUsers = '';
 
     for (const member of sortedMembersList) {
-        html += blankMembersList({ member, creator: 0, friends });
+        htmlUsers += blankMembersList({ member, creator: 0, friends });
     }
 
-    html += '</div> </div>';
+    usersChatBody.innerHTML += htmlUsers;
 
-    newModalPage(header).content(html).visible();;
-
-    const backButton = document.getElementById('back-button-modal-page');
-
-    backButton.onclick = () => {
-        backFunction({ isCurrent: true });
-    };
+    onClicks('showUsersChat', {indexChat, friends, backFunction, offset});
 }
 
 function usersStack(arrayLinks) {
@@ -644,12 +612,12 @@ async function showStatistics() {
     const mediumCountMembersPerOneChat = Math.round(stats.totalMembers / stats.totalConversations);
 
     const membersPerOneChat = Math.round(stats.totalMembers / stats.totalUsersCount);
-
+``
     const html = `
         <div style="display: flex; align-items: center; flex-direction: column; margin: 10px;">
             <div style="display: flex; flex-direction: row; align-items: center;">
             
-                 <span id="topUsers" class="group-stats vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard" title="Топ пользователей по чатам"> 
+                 <span id="top_users" class="group-stats vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard" title="Топ пользователей по чатам"> 
                     ${icons({ name: 'users_outline', realSize: 20, size: 48 })} 
                     <span class="color-text-subhead" style="font-size: 12px">топ</span>
                     <span>Участники</span>
@@ -660,18 +628,17 @@ async function showStatistics() {
 
                 <p style="margin: 25px;"></p>
 
-                <span id="new-100-chats" class="group-stats vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard" title="100 новых добавленых чатов"> 
-                    ${icons({ name: 'data_stack_lock_outline', realSize: 56, size: 48 })}
-                    <span class="color-text-subhead" style="font-size: 12px">самые новые</span>
-                    <span>Чаты</span>
-                    <span class="button color-text-subhead" style="font-size: 12px;">
+                <span id="new_100_chats" class="group-stats"> 
+                    ${icons({ name: 'data_stack_lock_outline', realSize: 56, size: 56 })}
+                    <span style="font-size: 16px;">Чаты</span>
+                    <span class="color-text-subhead" style="font-size: 14px;">
                         ${stats.totalConversations.toLocaleString('ru-RU')}
                     </span>
                 </span>
 
                 <p style="margin: 25px;"></p>
                 
-                <span id="topGroups" class="group-stats vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard" title="Топ групп по чатам">
+                <span id="top_groups" class="group-stats vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard" title="Топ групп по чатам">
                     ${icons({ name: 'users_3_outline', realSize: 24, size: 48 })} 
                     <span class="color-text-subhead" style="font-size: 12px">топ</span>
                     <span>Группы</span>
@@ -708,19 +675,16 @@ async function showStatistics() {
         </div>
     `;
 
-    modalPage.content(html).visible();
+    modalPage.setContent(html);
 
-    document.getElementById('topUsers').onclick = showTopUsers;
-    document.getElementById('new-100-chats').onclick = () => show100NewChats();
-    document.getElementById('topGroups').onclick = showTopGroups;
-
+    onClicks('showStatistics');
 }
 
 
 async function showTopUsers() {
     newModalPage(`
         <div style="display: flex; flex-direction: row; align-items: center; gap: 10px; line-height: 49px;">
-            <a id="back-button-modal-page"> 
+            <a id="back_button_modal_page"> 
                 ${icons({ name: 'browser_back', size: 20, fill: 'secondary' })} Назад 
             </a> 
             ${icons({ name: 'users_outline', realSize: 20, size: 28 })}
@@ -747,16 +711,16 @@ async function showTopUsers() {
 
     html += '</div> </div>';
 
-    modalPage.content(html).visible();;
+    modalPage.setContent(html);
 
-    document.getElementById('back-button-modal-page').onclick = showStatistics;
+    document.getElementById('back_button_modal_page').onclick = showStatistics;
 }
 
 
 async function showTopGroups() {
     newModalPage(`
         <div style="display: flex; flex-direction: row; align-items: center; gap: 10px; line-height: 49px;">
-            <a id="back-button-modal-page"> 
+            <a id="back_button_modal_page"> 
                 ${icons({ name: 'browser_back', size: 20, fill: 'secondary' })} Назад 
             </a> 
             ${icons({ name: 'users_3_outline', realSize: 24, size: 28 })}
@@ -783,9 +747,9 @@ async function showTopGroups() {
 
     html += '</div> </div>';
 
-    modalPage.content(html).visible();;
+    modalPage.setContent(html);
 
-    document.getElementById('back-button-modal-page').onclick = showStatistics;
+    document.getElementById('back_button_modal_page').onclick = showStatistics;
 }
 
 
@@ -798,13 +762,13 @@ async function showAddChat() {
                 <input
                     class="input-text"
                     type="text"
-                    id="addChat_search"
+                    id="add_сhat_search"
                     placeholder="vk.me/join/AJQ1d5WK2juv7cfDrybuPh46f"
                     autocomplete="off" 
                     value=""
                     maxlength="100"
                 >
-                <button title="Добавить" id="addChat_button" class="input-button">
+                <button title="Добавить" id="add_сhat_button" class="input-button">
                 ${icons({ name: 'add', size: 20 })}
                 </button>
             </div>
@@ -848,12 +812,12 @@ async function showAddChat() {
         </div>
     `).content(html).visible();
 
-    const input = document.getElementById('addChat_search');
+    const input = document.getElementById('add_сhat_search');
     input.focus();
 
     let load = false;
 
-    document.getElementById('addChat_button').onclick = async () => {
+    document.getElementById('add_сhat_button').onclick = async () => {
         const [_, key] = input.value.match(/\/join\/([^\s]*)/i) ?? ['', ''];
 
         if (load) return;
@@ -897,67 +861,4 @@ async function showAddChat() {
             notify.innerHTML = `Пожалуйста, введите правильную ссылку на чат.`
         }
     }
-}
-
-
-async function show100NewChats(isCurrent) {
-    newModalPage(`
-        <div style="display: flex; flex-direction: row; align-items: center; gap: 10px; line-height: 49px;">
-            <a id="back-button-modal-page"> 
-                ${icons({ name: 'browser_back', size: 20, fill: 'secondary' })} Назад 
-            </a> 
-            ${icons({ name: 'data_stack_lock_outline', realSize: 56, size: 28 })}
-            <span style="font-size: 18px; display: flex; font-weight: 500;"> 
-                100 новых чатов
-            </span>
-        </div>
-    `).content(`<div class="spinner" style="padding: 50px;"> <span class="spinner__animation"> </span></div>`).visible();
-
-    let foundChats;
-
-    if (!isCurrent) {
-        foundChats = await SCAPI.call({
-            method: 'extension.getNewChats',
-        });
-
-        currentChats = { foundChats };
-    } else {
-        foundChats = currentChats.foundChats;
-    }
-
-    const [creators, friends] = await Promise.all([
-        getUsersOrGroupsFromVK(
-            foundChats.chats.map(chat => chat.creator),
-            true
-        ),
-        getFriends()
-    ]);
-
-    const listChatsHTML = foundChats.chats.map(chat => {
-        const photo = chat.photo
-            ? chat.photo['200'] || chat.photo['150'] || chat.photo['50']
-            : '';
-
-        return blankChat({ chat, photo, friends, creator: creators.find(creator => creator.id === Math.abs(chat.creator)) });
-    }).join('<br style="display: block; margin: 5px; content: \'\';">');
-
-
-    modalPage.content(listChatsHTML).visible();;
-
-    const buttonMembers = document.getElementsByClassName('membersChat');
-
-    buttonMembers.forEach((button, index) => button.onclick = () => showUsersChat(index, friends, show100NewChats));
-
-    let linksChats = document.getElementsByClassName('copyLinkForChat');
-
-    for (const link of linksChats) {
-        link.onclick = () => {
-            const copyText = link.getAttribute('link');
-            navigator.clipboard.writeText(copyText);
-            notifiers(`Ссылка на чат скопирована <a href="${copyText}" target="_blank">${copyText}</a>`);
-        }
-    }
-
-    document.getElementById('back-button-modal-page').onclick = showStatistics;
-
 }

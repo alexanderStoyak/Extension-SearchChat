@@ -34,12 +34,17 @@ function buttonsInTopProfileMenu(topProfileMenu) {
                 </span>
             </a>
             
-            <a id="stats_searchChats" class="top_profile_mrow">
+            <a id="search_chats" class="top_profile_mrow">
+                <span style="display: flex; align-items: center; gap: 5px;">
+                    ${icons({ name: 'list_bullet_outline', fill: 'iconsAccent', realSize: 20 , size: 22 })} Чаты
+                </span>
+            </a>
+            <a id="stats" class="top_profile_mrow">
                 <span style="display: flex; align-items: center; gap: 5px;">
                     ${icons({ name: 'favorite_outline', fill: 'iconsAccent', realSize: 20 ,size: 22 })} Статистика и топ
                 </span>
             </a>
-            <a id="addChat_searchChats" class="top_profile_mrow">
+            <a id="add_chat" class="top_profile_mrow">
                 <span style="display: flex; align-items: center; gap: 5px;">
                     ${icons({ name: 'message_add_outline', fill: 'iconsAccent', realSize: 20 ,size: 22 })} Добавить чат
                 </span>
@@ -48,6 +53,7 @@ function buttonsInTopProfileMenu(topProfileMenu) {
 
     topProfileMenu.append(menu);
 
-    document.getElementById('stats_searchChats').onclick = showStatistics;
-    document.getElementById('addChat_searchChats').onclick = showAddChat;
+    document.getElementById('stats').onclick = showStatistics;
+    document.getElementById('add_chat').onclick = showAddChat;
+    document.getElementById('search_chats').onclick = () => searchChats({});
 }

@@ -1,5 +1,5 @@
 function buttonInDialogsSearch(dialogsSearch) {
-    if (dialogsSearch.value.length < 4) {
+    if (!dialogsSearch.value) {
         document.getElementById('searchChats')?.remove();
     }
 
@@ -7,7 +7,7 @@ function buttonInDialogsSearch(dialogsSearch) {
 
         const oldButton = document.getElementById('searchChats');
 
-        if(dialogsSearch.value.length > 3 && !oldButton) {
+        if(dialogsSearch.value.length > 0 && !oldButton) {
             const search = document.getElementById('im_dialogs');
             const newButton = document.createElement('li');
             newButton.id = "searchChats";
@@ -32,7 +32,7 @@ function buttonInDialogsSearch(dialogsSearch) {
             }
 
 
-        } else if(oldButton && dialogsSearch.value.length < 4) {
+        } else if(oldButton && !dialogsSearch.value) {
             oldButton.remove();
         }
 

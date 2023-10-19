@@ -1,4 +1,4 @@
-let appearance = '';
+let appearance = 'dark';
 class Filters {
 
     constructor() {
@@ -76,15 +76,17 @@ const observeChange = async () => {
             for (const node of mutation.addedNodes) {
 
                 if (!(node instanceof HTMLElement)) {
-                    setAppearance(body);
+                    if (node.textContent === 'Светлая' || node.textContent === 'Тёмная') {
+                        setAppearance(body);
+                    }
                     continue;
                 }
 
 
                 if (
-                    node.classList.contains('im-mess--check')
-                    || node.classList.contains('_sticker_hints')
+                    node.classList.contains('_sticker_hints')
                     || node.classList.contains('im-page--title')
+                    || node.classList.contains('im-mess')
                 ) {
                     const [peerHistory] = document.getElementsByClassName('_im_peer_history');
 

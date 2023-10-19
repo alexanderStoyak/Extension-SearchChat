@@ -32,6 +32,7 @@
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/utils/services.js
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/utils/styles.js
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/utils/functions.js
+// @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/utils/onClicks.js
 
 // @require      https://momentjs.com/downloads/moment-with-locales.js
 
@@ -42,6 +43,6 @@
 // @grant        GM_addStyle
 // @grant        GM_xmlhttpRequest
 
-// @version      2.5.0
+// @version      2.6.0
 
 // ==/UserScript==

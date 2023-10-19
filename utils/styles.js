@@ -98,7 +98,7 @@ GM_addStyle(`
         background-color: var(--vkui--color_background_secondary);
     }
     
-    #back-button-modal-page {
+    #back_button_modal_page {
         display: flex; 
         flex-direction: row; 
         text-decoration: none; 
@@ -175,7 +175,7 @@ GM_addStyle(`
         position: absolute;
         border-radius: 50px 12px 12px 50px;
         height: 58px;
-        width: 469px;
+        width: 519px;
         margin-right: 12px;
         filter: blur(5px);
    }
@@ -207,9 +207,13 @@ GM_addStyle(`
     }
 
     .sort-select {
+        display: flex;
         border: none;
         color: #99a2ad;
         border-radius: 5px;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 3px;
     }
 
     .sort-select:focus {
@@ -217,8 +221,8 @@ GM_addStyle(`
     }
 
     .sort-select > option {
-        font-size: 13px; 
         color: #99a2ad;
+        align-items: center;
     }
 
     .sort-select > option:hover {
