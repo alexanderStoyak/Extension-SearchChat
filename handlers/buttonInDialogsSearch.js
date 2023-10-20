@@ -26,7 +26,7 @@ function buttonInDialogsSearch(dialogsSearch) {
             const button = document.getElementById('buttonSearchChats');
 
             button.onclick = () => {
-                if(dialogsSearch.value.length > 3) {
+                if(dialogsSearch.value) {
                     searchChats(filters.title = dialogsSearch.value);
                 }
             }
@@ -35,6 +35,5 @@ function buttonInDialogsSearch(dialogsSearch) {
         } else if(oldButton && !dialogsSearch.value) {
             oldButton.remove();
         }
-
     };
 }

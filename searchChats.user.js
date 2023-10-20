@@ -18,6 +18,8 @@
 // @connect      api.search-for-chats-of-vk.ru
 // @connect      momentjs.com
 
+// @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/utils/classes.js
+
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/main.js
 
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/handlers/buttonInProfiles.js
@@ -43,6 +45,9 @@
 // @grant        GM_addStyle
 // @grant        GM_xmlhttpRequest
 
-// @version      2.6.0
+// @updateURL    https://github.com/alexanderStoyak/Extension-SearchChat/blob/main/searchChats.user.js
+// @downloadURL  https://github.com/alexanderStoyak/Extension-SearchChat/blob/main/searchChats.user.js
+
+// @version      2.7.0
 
 // ==/UserScript==

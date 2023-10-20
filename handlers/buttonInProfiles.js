@@ -18,7 +18,7 @@ function buttonInProfiles(elementButtons) {
          <a title="Чаты пользователя" class="vkuiButton vkuiButton--size-m vkuiButton--mode-secondary vkuiButton--appearance-accent vkuiButton--align-center vkuiButton--with-icon vkuiButton--singleIcon vkuiTappable vkuiInternalTappable vkuiTappable--hasHover vkuiTappable--hasActive">
                 <span class="vkuiButton__in">
                     <span class="vkuiButton__before" role="presentation">
-                        ${icons({name: 'search_stars_outline', realSize: 24, fill: appearance === 'dark' ? 'white' : 'textAccentThemed', size: 20})}
+                        ${icons({name: 'search_stars_outline', realSize: 24, fill: appearance.get() === 'dark' ? 'white' : 'textAccentThemed', size: 20})}
                     </span>
                 </span>
             <div class="vkuiFocusVisible vkuiFocusVisible--mode-outside" aria-hidden="true"></div>

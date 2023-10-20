@@ -1,41 +1,7 @@
-let appearance = 'dark';
-class Filters {
-
-    constructor() {
-        this.title = '';
-        this.link = '';
-        this.onlyWithFriends =  false;
-        this.sortField = 'added';
-        this.sortOrder = 'desc';
-    }
-
-    remove () {
-        this.title = '';
-        this.link = '';
-        this.onlyWithFriends =  false;
-        this.sortField = 'added';
-        this.sortOrder = 'desc';
-    }
-}
-
-const filters = new Filters();
-
-function setAppearance(body) {
-    if (body.className.includes('vkui--vkBase--dark')) {
-        appearance = 'dark';
-        setStyles();
-    }
-    if (body.className.includes('vkui--vkBase--light')) {
-        appearance = 'light';
-        setStyles();
-    }
-}
-
-
 const observeChange = async () => {
     moment.locale('ru');
     const body = document.querySelector('body');
-    setAppearance(body);
+    appearance.update(body);
 
     if (!services.auth.accessToken) {
         if (
@@ -76,8 +42,8 @@ const observeChange = async () => {
             for (const node of mutation.addedNodes) {
 
                 if (!(node instanceof HTMLElement)) {
-                    if (node.textContent === 'Светлая' || node.textContent === 'Тёмная') {
-                        setAppearance(body);
+                    if (node.textContent === 'Системная' || node.textContent === 'Светлая' || node.textContent === 'Тёмная') {
+                        appearance.update(body);
                     }
                     continue;
                 }

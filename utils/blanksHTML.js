@@ -31,7 +31,7 @@ function blankChat({ chat, photo, creator, friends }) {
                        
                     <div class="background-image-chat" style="
                         background-image: linear-gradient( 
-                            ${appearance === 'dark'
+                            ${appearance.get() === 'dark'
                                 ? 'rgba(0, 0, 0, .8), rgba(0, 0, 0, .8)'
                                 : 'rgba(255, 255, 255, .8), rgba(255, 255, 255, .8)'
                             }), 
@@ -159,7 +159,7 @@ function blankMembersList({ member, creator, friends }) {
 
                     <div class="Entity__main">
                         <div class="Entity__title" style="display: flex; flex-direction: row; align-items: center;">
-                            <a target="_blank" href="${link}" ${isFriend ? `style="color: ${appearance === 'dark' ? '#A8E4A0' : '#258b17'};"` : ''}>
+                            <a target="_blank" href="${link}" ${isFriend ? `style="color: ${appearance.get() === 'dark' ? '#A8E4A0' : '#258b17'};"` : ''}>
                                 <span style="font-weight: bold;">${memberName}</span>
                             </a>
                             ${Math.abs(creator) === member.id
@@ -234,7 +234,7 @@ function blankMembersTopList({ member, memberFromVK, index }) {
 }
 
 
-function blankNotFound(icon, text) {
+function blankNotFound(icon, text, button) {
     return `
         <div style="height: 280px; display: flex; justify-content: center">
             <div style="display: flex; align-items: center; flex-direction: column; justify-content: center;">
@@ -242,13 +242,18 @@ function blankNotFound(icon, text) {
                 <span style="font-size: 13px; padding-top: 3px; text-align: center; max-width: 250px;">
                     ${text}
                 </span>
-                <div style="padding-top: 15px;">
-                    <button id="reset_filters" class="FlatButton FlatButton--primary FlatButton--size-m" type="button">
-                        <span class="FlatButton__in">
-                            <span class="FlatButton__content">Сбросить фильтры</span>
-                        </span>
-                    </button>
-                </div>
+                ${button ? 
+                    `
+                        <div style="padding-top: 15px;">
+                            <button id="${button.id}reset_filters" class="FlatButton FlatButton--primary FlatButton--size-m" type="button">
+                                <span class="FlatButton__in">
+                                    <span class="FlatButton__content">${button.text}</span>
+                                </span>
+                            </button>
+                        </div>
+                    ` 
+                    : ''
+                }
             </div>
         <div>
     `
@@ -369,7 +374,7 @@ function blankSitingsSearchChats({
                     <span style="display: flex; gap: 5px;">
                         ${offset > 0 ?
                             `
-                                <a id="previous_page_button" style="${!(currentPage < totalPage) ? 'padding-right: 15px;' : ''} color: #71aaeb;"> 
+                                <a id="previous_page_button" style="${!(currentPage < totalPage) ? 'padding-right: 15px;' : ''}"> 
                                     Назад
                                 </a>
                             `
@@ -378,12 +383,12 @@ function blankSitingsSearchChats({
                         ${currentPage < totalPage && offset > 0 ? '<span style="padding-left: 2px; padding-right: 2px; ">•</span>' : ''}
                         ${currentPage < totalPage ?
                             `
-                                <a id="next_page_button" style="padding-right: 15px; color: #71aaeb;"> 
+                                <a id="next_page_button" style="padding-right: 15px;">
                                     Далее
                                 </a>
-                        `
-                        : ''
-                    }
+                            `
+                            : ''
+                        }
                     </span>
                 `
                 : ''

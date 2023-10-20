@@ -29,9 +29,8 @@ function newModalPage(title) {
             const modalPageTitle = [...document.getElementsByClassName('box_title_wrap')].at(-1);
             const boxLayout = [...document.getElementsByClassName('box_layout')].at(-1);
             const boxLayer = document.getElementById('box_layer');
-            const modalPageScroll = document.getElementById('box_layer_wrap');
 
-            modalPageScroll.onscroll = () => {
+            boxLayerWrapScroll.set('fixedTitle', () => {
                 const offset = modalPageTitle.offsetHeight + boxLayer.offsetHeight - boxLayout.offsetHeight - 80;
                 if (modalPageTitle.getBoundingClientRect().top < 0 && !modalPageTitle.classList.contains('ui_tabs_fixed')) {
                     modalPageTitle.style.width = '550px';
@@ -43,7 +42,7 @@ function newModalPage(title) {
                     modalPageTitle.style.borderRadius = '10px 10px 0px 0px';
                     modalPageTitle.classList.remove('ui_tabs_fixed');
                 }
-            }
+            });
         }
 
         modalPage.visible = () => {
@@ -297,7 +296,7 @@ async function searchChats({ isCurrent = false, offset = 0 }) {
     } else {
         user = currentChats.user;
         foundChats = currentChats.foundChats;
-        parameters.offset = currentChats.offset;
+        parameters.offset, offset = currentChats.offset;
     }
 
 
@@ -306,7 +305,11 @@ async function searchChats({ isCurrent = false, offset = 0 }) {
         modalPage.setContent(
             blankNotFound(
                 icons({ name: 'ghost_simple_outline', realSize: 36, size: 86, }),
-                'По фильтрам ничего не найдено'
+                'По фильтрам ничего не найдено',
+                {
+                    id: 'reset_filters',
+                    text: 'Сбросить фильтры'
+                }
             )
         );
         modalPage.setTitle(`
@@ -380,7 +383,7 @@ async function authModalPage() {
                     Расширение «ПоискЧата» представляет собой инструмент для поиска чатов во ВКонтакте. В настоящее время расширение находиться на стадии разработки, рекомендуем следить за всеми обновлениями в <a style="color: #71aaeb;" target="_blank" href="${services.telegramChannelURL}">нашем телеграм канале</a>. Некоторые функции, включая просмотр чатов пользователей, могут потребовать платной подписки в любой момент.
 
                     <hr style="margin-top: 30px"  class="separator" data-content="Получение Вашего токена"/>
-                    <span style="color: ${appearance === 'dark' ? '#f6c254' : '#df9700'};">
+                    <span style="color: ${appearance.get() === 'dark' ? '#f6c254' : '#df9700'};">
                         Для использования расширения необходима авторизация, которая будет выполняться путем получения Вашего токена ВКонтакте с помощью приложения «<a style="color: #71aaeb;" target="_blank" href="${services.auth.urlByGetCode}">ПоискЧата</a>».
                     </span>
           
@@ -397,9 +400,9 @@ async function authModalPage() {
                         padding: 0 .5em; 
                         line-height: 1.5em; 
                         max-width: max-content; 
-                        background-color: ${appearance === 'dark' ? '#4b4b4b' : '#ebf2fa'}; 
+                        background-color: ${appearance.get() === 'dark' ? '#4b4b4b' : '#ebf2fa'}; 
                         border-radius: 50px;
-                        color: ${appearance === 'dark' ? '#828282' : '#3770b1'};
+                        color: ${appearance.get() === 'dark' ? '#828282' : '#3770b1'};
                         text-align: center; 
                         text-decoration: none"
                         id="buttonAuthForModalPage"
@@ -435,7 +438,7 @@ async function authModalPage() {
 async function showUsersChat(indexChat, friends, backFunction, offset = 0) {
     const chat = currentChats.foundChats.chats[indexChat];
 
-    const header = `
+    const setHeader = pages => `
         <div style="display: flex; flex-direction: column;">
             <div style="display: flex; flex-direction: row; align-items: center; gap: 10px; line-height: 49px;">
                 <a id="back_button_modal_page"> 
@@ -449,10 +452,11 @@ async function showUsersChat(indexChat, friends, backFunction, offset = 0) {
                     ${chat.membersCount.toLocaleString('ru-RU')} 
                 </span>
            </div>
+           ${pages ?? ''}
        </div>
     `;
 
-    newModalPage(header)
+    newModalPage(setHeader())
         .content(`<div class="spinner" style="padding: 50px;"> <span class="spinner__animation"> </span></div>`)
         .visible();
 
@@ -462,14 +466,14 @@ async function showUsersChat(indexChat, friends, backFunction, offset = 0) {
     const creator = membersList.find(member => member.id === Math.abs(chat.creator));
 
     membersList.splice(membersList.findIndex(member => member.id === Math.abs(chat.creator)), 1);
+    const membersCount = membersList.length;
 
     const sortedMembersList = membersList.filter(member => friendsIds.includes(member.id))
         .concat(
             membersList.filter(member => !member.first_name),
             membersList.filter(member => !friendsIds.includes(member.id) && member.first_name)
                 .sort((a, b) => b.online - a.online)
-        )
-        .splice(offset, 500);
+        ).splice(offset, 50);
 
     let html = `
         <div class="ChatSettings__pane"> 
@@ -477,42 +481,59 @@ async function showUsersChat(indexChat, friends, backFunction, offset = 0) {
         </div>
     `;
 
-    const currentPage = offset / 500 !== 0 ? offset / 500 + 1 : 1;
-    const totalPage = Math.ceil(chat.membersCount / 500 || 1);
+    if (!sortedMembersList.length) {
+        modalPage.setContent(
+            blankNotFound(
+                icons({ name: 'ghost_simple_outline', realSize: 36, size: 86, }),
+                'Этот чат без участников'
+            )
+        );
+        return onClicks('showUsersChat', {indexChat, friends, backFunction, offset});
+    }
+
+    const currentPage = offset / 50 !== 0 ? offset / 50 + 1 : 1;
+    const totalPage = Math.ceil(membersCount / 50 || 1);
 
     modalPage.setContent(html);
 
     const usersChatBody = document.getElementById('chat_users');
 
-    usersChatBody.innerHTML += `<div style="display: flex; justify-content: flex-end; gap: 5px">`;
-    usersChatBody.innerHTML += `<span style="padding-right: 10px; color: #99a2ad; font-weight: 500;"> Страница ${currentPage}/${totalPage} </span>`;
+    let pages = `
+        <div style="display: flex; color: #99a2ad; align-items: center; height: 20px;"> 
+            <span style="display: flex; gap: 5px;">
+                ${icons({name: 'document_text_outline', size: 16, realSize: 20, fill: 'secondary'})} 
+                <span style="padding-right: 10px; color: #99a2ad;">
+                    Страница ${membersCount !== 0 ? `${currentPage}/${totalPage}` : membersCount === 0 ? 'пуста' : 'загружается'}
+                </span>
+            </span>
+            ${membersCount > 50 ? 
+                `
+                    ${offset > 0 ? 
+                        `
+                            <a id="previous_page_button" 
+                                style="${!(currentPage < totalPage) ? 'padding-right: 15px;' : ''}"> 
+                                Назад
+                            </a>
+                        `
+                        : ''
+                    }
+                    ${currentPage < totalPage && offset > 0 ? '<span style="padding-left: 2px; padding-right: 2px; ">•</span>' : ''}
+                    ${currentPage < totalPage ? 
+                        `
+                            <a id="next_page_button" 
+                                style="padding-right: 15px;"> 
+                                Далее
+                            </a>
+                        ` 
+                        : ''
+                    }
+                `
+                : ''
+            }
+        </div>
+    `;
 
-
-    if (chat.membersCount > 500) {
-        if (offset > 0) {
-            usersChatBody.innerHTML += `
-                <a id="previous_page_button" 
-                    style="${!(currentPage < totalPage) ? 'padding-right: 15px;' : ''} text-decoration: none; font-weight: bold; color: #71aaeb;"> 
-                    < Назад
-                </a>
-            `;
-        }
-
-        if (currentPage < totalPage && offset > 0) {
-            usersChatBody.innerHTML += '<span style="font-weight: bold;">|</span>';
-        }
-
-        if (currentPage < totalPage) {
-            usersChatBody.innerHTML += `
-                <a id="next_page_button" 
-                    style="padding-right: 15px; text-decoration: none; font-weight: bold; color: #71aaeb;"> 
-                    Далее >
-                </a>
-            `;
-        }
-    }
-
-    usersChatBody.innerHTML += `</div>`;
+    modalPage.setTitle(setHeader(pages));
 
     if (creator && offset === 0) {
         usersChatBody.innerHTML += blankMembersList({ member: creator, creator: creator.id, friends });
@@ -570,7 +591,7 @@ const iconColors = {
     textAccentThemed: 'brightness(0) saturate(100%) invert(43%) sepia(35%) saturate(1094%) hue-rotate(172deg) brightness(83%) contrast(81%);',
     secondary: 'brightness(0) saturate(100%) invert(55%) sepia(0%) saturate(1%) hue-rotate(295deg) brightness(94%) contrast(96%);',
     white: 'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7500%) hue-rotate(203deg) brightness(112%) contrast(109%);',
-    iconsAccent: appearance === 'dark'
+    iconsAccent: appearance.get() === 'dark'
         ? 'brightness(0) saturate(100%) invert(59%) sepia(9%) saturate(3344%) hue-rotate(175deg) brightness(75%) contrast(92%);'
         : 'brightness(0) saturate(100%) invert(78%) sepia(22%) saturate(6954%) hue-rotate(184deg) brightness(100%) contrast(84%);'
 }
@@ -775,7 +796,7 @@ async function showAddChat() {
             <span
                 id="notifiers_add_chat" 
                 style="
-                    padding-left: 77px; 
+                    padding-left: 102px; 
                     display: flex; 
                     justify-content: flex-start; 
                     gap: 5px;
@@ -847,10 +868,10 @@ async function showAddChat() {
             load = false;
 
             if (response.new) {
-                notify.style.color = appearance === 'dark' ? '#A8E4A0' : '#258b17';
+                notify.style.color = appearance.get() === 'dark' ? '#A8E4A0' : '#258b17';
                 notify.innerText = 'Чат добавлен! Благодарим Вас за помощь.';
             } else if (response.old) {
-                notify.style.color = appearance === 'dark' ? '#f6c254' : '#df9700';
+                notify.style.color = appearance.get() === 'dark' ? '#f6c254' : '#df9700';
                 notify.innerText = 'Этот чат уже добавлен.';
             } else if (response.errors) {
                 notify.style.color = '#FD324A';

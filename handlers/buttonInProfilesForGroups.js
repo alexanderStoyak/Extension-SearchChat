@@ -12,7 +12,7 @@ function buttonInProfilesForGroups(pageActions) {
     newButton.innerHTML = `
          <span id="buttonInProfilesForGroups" class="FlatButton__in" title="Чаты группы">
             <span class="FlatButton__content">
-                ${icons({name: 'search_stars_outline', realSize: 24, fill: appearance === 'dark' ? 'white' : 'textAccentThemed', size: 20})}
+                ${icons({name: 'search_stars_outline', realSize: 24, fill: appearance.get() === 'dark' ? 'white' : 'textAccentThemed', size: 20})}
             </span>
         </span>
     `;

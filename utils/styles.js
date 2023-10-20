@@ -7,15 +7,16 @@ GM_addStyle(`
         gap: 20px; 
         padding: 0px;
     }
+    
     #cell {
         display: table-cell;
         max-width: 100%;
     }
 
-
     .spinner {
         text-align: center;
     }
+    
     .spinner__animation {
         display: inline-block;
         border-radius: 50%;
@@ -27,28 +28,30 @@ GM_addStyle(`
         border-left: 3px solid rgb(129, 138, 145);
         animation: loading-spinner 0.5s infinite linear;
     }
+    
     .spinner__info {
         display: block;
         padding-top: 5px;
         color: rgb(129, 138, 145);
         font-size: .9rem;
     }
+    
     @keyframes loading-spinner {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
     }
     
-
     .separator {
         line-height: 1em;
         position: relative;
         outline: 0;
         border: 0;
-        color: ${appearance === 'dark' ? 'black' : '#ffffff;'};
+        color: ${appearance.get() === 'dark' ? 'black' : '#ffffff;'};
         text-align: center;
         height: 1.5em;
         opacity: .5;
     }
+    
     .separator:before {
         content: '';
         background: linear-gradient(to right, transparent, #818078, transparent);
@@ -58,18 +61,18 @@ GM_addStyle(`
         width: 100%;
         height: 1px;
     }
+    
     .separator:after {
         content: attr(data-content);
         position: relative;
         display: inline-block;
-        color: ${appearance === 'dark' ? 'black' : '#ffffff;'};
+        color: ${appearance.get() === 'dark' ? 'black' : '#ffffff;'};
         font-weight: 500;
         padding: 0 .5em;
         line-height: 1.5em;
         background-color: #818078;
         border-radius: 50px;
     }
-    
     
     .group-stats {
         display: flex; 
@@ -187,7 +190,7 @@ GM_addStyle(`
    }
 
    .btn-chat:hover {
-       color: ${appearance === 'dark' ? '#babfc4' : '#86888b'};
+       color: ${appearance.get() === 'dark' ? '#babfc4' : '#86888b'};
    }
 
    .btn-chat-join {
@@ -196,7 +199,7 @@ GM_addStyle(`
         align-items: center; 
         flex-direction: row; 
         gap: 5px;
-        background-color: ${appearance === 'dark' ? '#2b2b2b' : '#ebf2fa'};
+        background-color: ${appearance.get() === 'dark' ? '#2b2b2b' : '#ebf2fa'};
         justify-content: center; 
         cursor: default;
         transition: all 0.2s ease;

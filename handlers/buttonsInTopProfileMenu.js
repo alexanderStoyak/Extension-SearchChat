@@ -36,7 +36,7 @@ function buttonsInTopProfileMenu(topProfileMenu) {
             
             <a id="search_chats" class="top_profile_mrow">
                 <span style="display: flex; align-items: center; gap: 5px;">
-                    ${icons({ name: 'list_bullet_outline', fill: 'iconsAccent', realSize: 20 , size: 22 })} Чаты
+                    ${icons({ name: 'list_bullet_outline', fill: 'iconsAccent', realSize: 20 , size: 22 })} Список чатов
                 </span>
             </a>
             <a id="stats" class="top_profile_mrow">

@@ -1,3 +1,5 @@
+const hashCode = s => s.split('').reduce((a,b)=>{a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);
+
 const VKAPI = {
     call: async (method = 'users.get', parameters = {}) => {
         parameters = {
@@ -5,6 +7,14 @@ const VKAPI = {
             v: '5.131',
             ...parameters
         };
+
+        const parametersHashCode = String(hashCode(JSON.stringify(parameters) + method));
+
+        const cache = APICache.get(parametersHashCode);
+
+        if (cache) {
+            return cache;
+        }
 
         let { response: responseString } = await GM_xmlhttpRequest(`https://api.vk.com/method/${method}`, parameters);
 
@@ -14,18 +24,24 @@ const VKAPI = {
             if(error.error_code === 5) {
                 await vkAuth();
 
-                let { response: ReResponseString } = await GM_xmlhttpRequest(
+                let { response: responseString } = await GM_xmlhttpRequest(
                     `https://api.vk.com/method/${method}`,
                     {...parameters, access_token: services.auth.accessToken}
                 );
 
-                response = JSON.parse(ReResponseString).response;
+                response = JSON.parse(responseString).response;
 
             } else {
                 console.log(error);
                 notifiers('<span style="color: #FD324A; font-weight: bold;">Ошибка VK API код №${error.error_code}: </span>' + error.error_message);
             }
         };
+
+        APICache.set({
+            key: parametersHashCode,
+            data: response,
+            expired: +new Date + 60_000
+        });
 
         return response;
     },
@@ -45,6 +61,14 @@ const SCAPI = {
             ...parameters
         };
 
+        const parametersHashCode = String(hashCode(JSON.stringify(parameters) + method));
+
+        const cache = APICache.get(parametersHashCode);
+
+        if (cache) {
+            return cache;
+        }
+
         const { response: { response, error } } = await GM_xmlhttpRequest(`https://api.search-for-chats-of-vk.ru/method/${method}`, parameters);
 
         if (error) {
@@ -52,6 +76,11 @@ const SCAPI = {
             notifiers('<span style="color: #FD324A; font-weight: bold;">Error from SC API: </span>' + JSON.stringify(error, null, "<br/>"));
         };
 
+        APICache.set({
+            key: parametersHashCode,
+            data: response,
+            expired: +new Date + 60_000
+        });
 
         return response;
     }

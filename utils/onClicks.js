@@ -2,11 +2,11 @@ function onClicks (fromWhichFunction, args) {
     ({
         'showUsersChat': ({indexChat, friends, backFunction, offset}) => {
             (document.getElementById('next_page_button') ?? {}).onclick = () => {
-                showUsersChat(indexChat, friends, backFunction, offset + 500);
+                showUsersChat(indexChat, friends, backFunction, offset + 50);
             };
 
             (document.getElementById('previous_page_button') ?? {}).onclick = () => {
-                showUsersChat(indexChat, friends, backFunction, offset - 500);
+                showUsersChat(indexChat, friends, backFunction, offset - 50);
             };
 
             (document.getElementById('back_button_modal_page') ?? {}).onclick = () => {
