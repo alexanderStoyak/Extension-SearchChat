@@ -26,7 +26,7 @@ GM_addStyle(`
         border-right: 3px solid rgba(0, 0, 0, 0.1);
         border-bottom: 3px solid rgba(0, 0, 0, 0.1);
         border-left: 3px solid rgb(129, 138, 145);
-        animation: loading-spinner 0.5s infinite linear;
+        animation: loading-spinner 1s infinite linear;
     }
     
     .spinner__info {
@@ -193,7 +193,7 @@ GM_addStyle(`
        color: ${appearance.get() === 'dark' ? '#babfc4' : '#86888b'};
    }
 
-   .btn-chat-join {
+   .btn {
         display: flex;
         text-align: center; 
         align-items: center; 
@@ -205,11 +205,16 @@ GM_addStyle(`
         transition: all 0.2s ease;
    }
 
-   .btn-chat-join:hover {
+   .btn:hover {
         background-color: var(--vkui--color_background_secondary--active);
-    }
+   }
+   
+   .btn:active {
+        transition: all 0s ease;
+        background-color: ${appearance.get() === 'dark' ? '#2b2b2b' : '#ebf2fa'};
+   }
 
-    .sort-select {
+   .sort-select {
         display: flex;
         border: none;
         color: #99a2ad;
@@ -217,7 +222,7 @@ GM_addStyle(`
         justify-content: center;
         align-items: center;
         margin-bottom: 3px;
-    }
+   }
 
     .sort-select:focus {
         outline: none;

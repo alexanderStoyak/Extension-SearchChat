@@ -2,6 +2,7 @@ const observeChange = async () => {
     moment.locale('ru');
     const body = document.querySelector('body');
     appearance.update(body);
+    modalPage = new ModalPage();
 
     if (!services.auth.accessToken) {
         if (
@@ -94,7 +95,6 @@ const observeChange = async () => {
     });
 
     observer.observe(body, { childList: true, subtree: true });
-
 };
 
 window.onload = observeChange;

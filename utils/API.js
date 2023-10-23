@@ -72,8 +72,19 @@ const SCAPI = {
         const { response: { response, error } } = await GM_xmlhttpRequest(`https://api.search-for-chats-of-vk.ru/method/${method}`, parameters);
 
         if (error) {
+            if (error.code === 19 || error.code === 25 || error.code === 18) {
+                modalPage.setContent(
+                    blankNotFound(
+                        icons({ name: 'privacy_outline', realSize: 28, size: 86 }),
+                        'Ошибка доступа'
+                    )
+                )
+
+                return { accessDenied: true };
+            }
+
             console.log(error);
-            notifiers('<span style="color: #FD324A; font-weight: bold;">Error from SC API: </span>' + JSON.stringify(error, null, "<br/>"));
+            notifiers('<span style="color: #FD324A; font-weight: bold;">Ошибка ПоискЧата API</span>код №${error.code}: ${error.message}');
         };
 
         APICache.set({
@@ -101,7 +112,7 @@ async function vkAuth() {
     const auth = JSON.parse(response);
 
     if (!auth.access_token) {
-        return notifiers('<span style="color: #FD324A; font-weight: bold;">Ошибка при авторизации ВКонтакте</span>');
+        return false;
     }
 
     services.auth.accessToken = auth.access_token;

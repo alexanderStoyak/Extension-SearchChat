@@ -1,8 +1,51 @@
-const separator = `
-<div class="vkuiGroup__separator vkuiGroup__separator--spacing vkuiSpacing" style="height: 16px; padding: 4px 0px;"></div>
-<div class="vkuiSeparator vkuiSeparator--padded vkuiGroup__separator vkuiGroup__separator--separator">
-    <hr class="vkuiSeparator__in">
-</div>`;
+const logo = `
+    <svg width="28" height="28" class="vkuiIcon vkuiIcon--28 vkuiIcon--w-28 vkuiIcon--h-28" display="block" style="border-radius: 50%">
+        <image width="28" height="28" xlink:href="https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/icons/logo.png"/>
+    </svg>
+`;
+
+function titleModalPage ({
+    title = 'ПоискЧата',
+    before = '',
+    after = '',
+    subTitle = '',
+    icon = logo
+}) {
+    if (typeof before === 'object') {
+        before = `
+            <div style="display: flex; align-items: center; flex-direction: row; gap: 10px;">
+                ${before.title ? `<span style="font-weight: 400; color: #828282; max-width: 250px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"> > ${before.title} </span>` : ''}
+                ${before.icon ? 
+                    `
+                        <div style="width: 20px; height: 20px;" class="vkuiAvatar vkuiImageBase vkuiImageBase--size-20 vkuiImageBase--loaded" role="img">
+                            <img class="vkuiImageBase__img" src="${before.icon}">
+                        </div>
+                    ` : ''
+                }
+            </div>
+        `
+    } else if (before) {
+        before = `<span style="font-weight: 400; color: #828282; max-width: 250px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"> > ${before} </span>`
+    }
+
+    return `
+        <div>
+            <div style="display: flex; justify-content: space-between; flex-direction: row;">
+                <span style="display: flex; flex-direction: row; align-items: center; gap: 10px; line-height: 49px;"> 
+                    ${icon}
+                    <span style="font-size: 20px; display: flex; font-weight: bold; gap: 5px ;flex-direction: row;">
+                        ${title}
+                        ${before}
+                    </span>
+                </span>
+                ${after ? `<span style="color: #828282; font-weight: 400; display: flex; align-items: center; justify-content: flex-end; line-height: 49px;">${after}</span>` : ''}
+            </div>
+            <div style="font-size: 13px; padding: 5px;">
+                ${subTitle ? subTitle : ''}
+            </div>
+        </div>
+    `
+}
 
 function blankChat({ chat, photo, creator, friends }) {
     const typeMention = creator?.first_name ? 'id' : 'club';
@@ -115,7 +158,7 @@ function blankChat({ chat, photo, creator, friends }) {
                             <a target="_blank"
                                 style="padding: 2px; text-decoration: none;"
                                     href="https://vk.me/join/${chat.key}"
-                                        class="btn-chat-join vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard" 
+                                        class="btn vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard" 
                             >
                                 ${icons({ name: 'door_enter_arrow_right_outline', realSize: 16, size: 16, fill: 'secondary' })}
                                 <span style="font-size: 13px; font-weight: 500; color: #99a2ad; padding: 0px 4px 0px 4px;">
@@ -245,7 +288,7 @@ function blankNotFound(icon, text, button) {
                 ${button ? 
                     `
                         <div style="padding-top: 15px;">
-                            <button id="${button.id}reset_filters" class="FlatButton FlatButton--primary FlatButton--size-m" type="button">
+                            <button id="${button.id}" class="FlatButton FlatButton--primary FlatButton--size-m" type="button">
                                 <span class="FlatButton__in">
                                     <span class="FlatButton__content">${button.text}</span>
                                 </span>
@@ -260,116 +303,39 @@ function blankNotFound(icon, text, button) {
 }
 
 
-function blankSitingsSearchChats({
-    user = false,
-    foundChats,
-    offset
-}) {
-    let typeMention;
-    let userUrl;
-
-    let nameHTML;
-    let nameString;
-
-
-    if (user) {
-        typeMention = user?.first_name ? 'id' : 'club';
-        userUrl = `https://vk.com/${typeMention}${user.id}`;
-
-        nameHTML = typeMention === 'id'
-            ? `<span style="max-width: 140px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${deXSS(user.first_name)} ${deXSS(user.last_name)}</span>`
-            : `группа «<span style="max-width: 140px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${deXSS(user.name)}</span>»`;
-
-        nameString = deXSS(typeMention === 'id'
-            ? `${user.first_name} ${user.last_name}`
-            : `Группа «${user.name}»`
-        );
-    }
-
-    const currentPage = offset / 15 !== 0 ? offset / 15 + 1 : 1;
-    const totalPage = Math.ceil(foundChats / 15 || 1);
-
-    
+function blankInputSearch ({id = 'search', value = '', placeholder = 'Поиск'}) {
     return `
-
-    <div style="font-size: 13px; padding: 5px;">
-
-        <div style="display: flex; justify-content: center; align-items: center; gap: 5px;">
+        <div style="display: flex; justify-content: center; align-items: center; gap: 5px; margin-bottom: 3px">
             <input
                 style="width: 100%; font-size: 13px;"
                 class="input-text"
                 type="text"
-                id="searchChats_input"
-                placeholder="Поиск"
-                autocomplete="off" 
-                value="${filters.title}" 
-                maxlength="100"
+                id="${id}"
+                placeholder="${placeholder}"
+                autoComplete="off"
+                value="${value}"
+                maxLength="100"
             >
-            <button title="Поиск" id="searchChats_button" class="input-button">
-                ${icons({ name: 'search_stars_outline', size: 20, realSize: 24 })}
-            </button>
+                <button title="Поиск" id="searchChats_button" class="input-button">
+                    ${icons({ name: 'search_stars_outline', size: 20, realSize: 24 })}
+                </button>
         </div>
+    `
+}
 
 
-        <div style="gap: 5px; display: flex; align-items: center; justify-content: space-between; margin-top: 3px">
-            <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
-                <span>
-                    ${icons({ name: 'sort', size: 16, realSize: 24, fill: 'secondary' })}
-                </span>
-                <label for="sortField"> Сортировать по </label>
-                <select name="sort_field" id="sort_field" class="sort-select">
-                    <option value="membersCount" ${filters.sortField === 'membersCount' ? 'selected' : ''}>количеству участников</option>
-                    <option value="added" ${filters.sortField === 'added' ? 'selected' : ''}>дате добавления</option>
-                    <option value="lastUpdate" ${filters.sortField === 'lastUpdate' ? 'selected' : ''}>дате обновления</option>
-                </select>
-                <span id="filter_set_sort_order" title="${filters.sortOrder === 'desc' ? 'по возрастанию' : 'по убыванию'}">
-                    ${icons({ name: filters.sortOrder === 'desc' ? 'arrow_down_outline' : 'arrow_up_outline', size: 16, fill: 'secondary' })}
-                </span>
-            </div>
-        </div>
-
-        ${user ?
-            `
-                <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
-                    <span>
-                        ${icons({ name: 'user_outline', size: 16, fill: 'secondary' })}
-                    </span>
-                    Чаты, в которых есть
-                    <a title="${nameString}" target="_blank" href="${userUrl}" style="display: flex;">
-                        ${nameHTML}
-                    </a>
-
-                    <div style="width: 16px; height: 16px;" 
-                        class="vkuiAvatar vkuiImageBase vkuiImageBase--size-16 vkuiImageBase--loaded" role="img">
-                        <img class="vkuiImageBase__img" src="${user.photo_100 || ''}">
-                    </div>
-
-                    <span title="Удалить" id="filter_button_delete_user">
-                        ${icons({ name: 'cross_large_outline', size: 16, realSize: 28, fill: 'secondary' })}
-                    </span>
-                </div>
-            ` : ``
-        }
-
-
-        <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
-            <span>
-                ${icons({ name: 'users_3_outline', size: 16, realSize: 20, fill: 'secondary' })}
-            </span>
-            Чаты, в которых есть <a target="_blank" href="https://vk.com/friends">Ваши друзья</a>
-            <input type="checkbox" id="filter_only_with_friends" ${filters.onlyWithFriends ? 'checked' : ''} />
-        </div>
-        
-
+function blankPages ({found = undefined, totalPage = 0, currentPage = 0, offset = 0, inOnePage = undefined}) {
+    return `
         <div style="display: flex; color: #99a2ad; align-items: center; height: 20px;"> 
             <span style="display: flex; gap: 5px;">
                 ${icons({name: 'document_text_outline', size: 16, realSize: 20, fill: 'secondary'})}
                 <span style="padding-right: 10px; color: #99a2ad;">
-                    Страница ${foundChats !== undefined && foundChats !== 0 ? `${currentPage}/${totalPage}` : foundChats === 0 ? 'пуста' : 'загружается'}
+                    Страница ${found !== undefined && found !== 0 ? `${currentPage}/${totalPage}` : found === 0 ? 'пуста' : 'загружается'}
+                    ${inOnePage ? ` (${inOnePage.toLocaleString('ru-RU')})` : ''}
                 </span>
             </span>
                     
-            ${foundChats ?
+            ${found ?
                 `
                     <span style="display: flex; gap: 5px;">
                         ${offset > 0 ?
@@ -394,6 +360,96 @@ function blankSitingsSearchChats({
                 : ''
             }
         </div>
+    `
+}
+
+
+function blankFiltersSearchChats({
+    user = false,
+    foundChats,
+    offset,
+    countListChats = 0
+}) {
+    let typeMention;
+    let userUrl;
+
+    let nameHTML;
+    let nameString;
+
+    if (user) {
+        typeMention = user?.first_name ? 'id' : 'club';
+        userUrl = `https://vk.com/${typeMention}${user.id}`;
+
+        nameHTML = typeMention === 'id'
+            ? `<span style="max-width: 140px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${deXSS(user.first_name)} ${deXSS(user.last_name)}</span>`
+            : `группа «<span style="max-width: 140px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${deXSS(user.name)}</span>»`;
+
+        nameString = deXSS(typeMention === 'id'
+            ? `${user.first_name} ${user.last_name}`
+            : `Группа «${user.name}»`
+        );
+    }
+
+    const currentPage = offset / 15 !== 0 ? offset / 15 + 1 : 1;
+    const totalPage = Math.ceil(foundChats / 15 || 1);
+
+
+    return `
+
+    <div style="font-size: 13px; padding: 5px;">
+        
+        ${blankInputSearch({ id: 'searchChats_input', value: filters.title, placeholder: 'Найдётся все, ну.. почти' })}
+
+        <div style="gap: 5px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
+                <span>
+                    ${icons({ name: 'sort', size: 16, realSize: 24, fill: 'secondary' })}
+                </span>
+                <label for="sortField"> Сортировать по </label>
+                <select name="sort_field" id="sort_field" class="sort-select">
+                    <option value="membersCount" ${filters.sortField === 'membersCount' ? 'selected' : ''}>количеству участников</option>
+                    <option value="added" ${filters.sortField === 'added' ? 'selected' : ''}>дате добавления</option>
+                    <option value="lastUpdate" ${filters.sortField === 'lastUpdate' ? 'selected' : ''}>дате обновления</option>
+                </select>
+                <span class="btn" style="border-radius: 3px;" id="filter_set_sort_order" title="${filters.sortOrder === 'desc' ? 'по возрастанию' : 'по убыванию'}">
+                    ${icons({ name: filters.sortOrder === 'desc' ? 'arrow_down_outline' : 'arrow_up_outline', size: 16, fill: 'secondary' })}
+                </span>
+            </div>
+        </div>
+
+        ${user ?
+            `
+                <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
+                    <span>
+                        ${icons({ name: 'user_outline', size: 16, fill: 'secondary' })}
+                    </span>
+                    Чаты, в которых есть
+                    <a title="${nameString}" target="_blank" href="${userUrl}" style="display: flex;">
+                        ${nameHTML}
+                    </a>
+
+                    <div style="width: 16px; height: 16px;" 
+                        class="vkuiAvatar vkuiImageBase vkuiImageBase--size-16 vkuiImageBase--loaded" role="img">
+                        <img class="vkuiImageBase__img" src="${user.photo_100 || ''}">
+                    </div>
+
+                    <span class="btn" style="border-radius: 3px;" title="Удалить" id="filter_button_delete_user">
+                        ${icons({ name: 'cross_large_outline', size: 16, realSize: 28, fill: 'secondary' })}
+                    </span>
+                </div>
+            ` : ``
+        }
+
+
+        <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
+            <span>
+                ${icons({ name: 'users_3_outline', size: 16, realSize: 20, fill: 'secondary' })}
+            </span>
+            Чаты, в которых есть <a target="_blank" href="https://vk.com/friends">Ваши друзья</a>
+            <input type="checkbox" id="filter_only_with_friends" ${filters.onlyWithFriends ? 'checked' : ''} />
+        </div>
+        
+        ${blankPages({found: foundChats, inOnePage: countListChats, offset, currentPage, totalPage})}
         
     </div>
     `

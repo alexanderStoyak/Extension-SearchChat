@@ -1,17 +1,29 @@
 function onClicks (fromWhichFunction, args) {
     ({
         'showUsersChat': ({indexChat, friends, backFunction, offset}) => {
+            const input = document.getElementById('search_users_chat');
+
             (document.getElementById('next_page_button') ?? {}).onclick = () => {
-                showUsersChat(indexChat, friends, backFunction, offset + 50);
+                showUsersChat(indexChat, friends, backFunction, offset + 50, input?.value);
             };
 
             (document.getElementById('previous_page_button') ?? {}).onclick = () => {
-                showUsersChat(indexChat, friends, backFunction, offset - 50);
+                showUsersChat(indexChat, friends, backFunction, offset - 50, input?.value);
             };
 
             (document.getElementById('back_button_modal_page') ?? {}).onclick = () => {
                 backFunction({ isCurrent: true });
             };
+
+            if (input) {
+                input.oninput = () => {
+                    showUsersChat(indexChat, friends, backFunction, offset, input.value);
+                }
+                input.setSelectionRange(input.value.length, input.value.length);
+                input.focus();
+
+                document.getElementById('searchChats_button').onclick = () => searchChats({});
+            }
         },
         'showStatistics': () => {
             (document.getElementById('top_users') ?? {}).onclick = showTopUsers;
@@ -75,17 +87,18 @@ function onClicks (fromWhichFunction, args) {
             if (input) {
                 let timeOut;
                 input.oninput = () => {
+                    filters.title = input.value;
                     if (timeOut) {
                         clearTimeout(timeOut);
                     }
 
-                    filters.title = input.value;
                     timeOut = setTimeout(() => {
-                        filters.title = input.value;
                         searchChats({});
-                    }, 300);
+                    }, 500);
                 }
+                input.setSelectionRange(input.value.length, input.value.length);
                 input.focus();
+
                 document.getElementById('searchChats_button').onclick = () => searchChats({});
             }
         }
