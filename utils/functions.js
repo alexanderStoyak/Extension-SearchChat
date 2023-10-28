@@ -106,8 +106,8 @@ async function getUsersOrGroupsFromVK(links, explicitIds) {
         var idsOrSreensNames = ${JSON.stringify(idsOrSreensNames)};
         var returns = [];
 
-        while(i < Args.idsOrSreensNames.length) {
-            var info = Args.idsOrSreensNames[i];
+        while(i < idsOrSreensNames.length) {
+            var info = idsOrSreensNames[i];
 
             if(info.type == "club") {
                 var i = 0;
