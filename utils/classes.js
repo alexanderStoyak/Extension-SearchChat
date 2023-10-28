@@ -195,13 +195,22 @@ class ModalPage {
         return this;
     }
 
-    setLoad(title) {
+    setLoad(titles = []) {
         this.setContent(`
             <div class="spinner" style="padding: 100px;"> 
                 <span class="spinner__animation"></span>
-                ${title ? `<span class="spinner__info">${title}</span>` : ''}
+                ${Array.isArray(titles) && titles.length ? `<span id="spinner_info" class="spinner__info">${pick(titles)}</span>` : ''}
             </div>
         `);
+
+        const updateTitleLoad = setInterval(() => {
+            const spanLoad = document.getElementById('spinner_info');
+            if (!spanLoad) {
+                return clearInterval(updateTitleLoad);
+            } else {
+                spanLoad.innerHTML = pick(titles);
+            }
+        }, 1_000);
 
         return this;
     }

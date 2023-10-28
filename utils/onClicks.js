@@ -25,10 +25,14 @@ function onClicks (fromWhichFunction, args) {
                 document.getElementById('searchChats_button').onclick = () => searchChats({});
             }
         },
+
+
         'showStatistics': () => {
             (document.getElementById('top_users') ?? {}).onclick = showTopUsers;
             (document.getElementById('top_groups') ?? {}).onclick = showTopGroups;
         },
+
+
         'searchChats': ({offset, friends}) => {
             (document.getElementById('reset_filters') ?? {}).onclick = () => {
                 filters.remove();
@@ -100,6 +104,41 @@ function onClicks (fromWhichFunction, args) {
                 input.focus();
 
                 document.getElementById('searchChats_button').onclick = () => searchChats({});
+            }
+        },
+
+
+        'buttonsInTopProfileMenu': () => {
+            (document.getElementById('stats') ?? {}).onclick = showStatistics;
+
+            (document.getElementById('add_chat') ?? {}).onclick = showAddChat;
+
+            (document.getElementById('search_chats') ?? {}).onclick = () => searchChats({});
+            
+            (document.getElementById('admin_panel') ?? {}).onclick = showAdminPanel;
+
+            (document.getElementById('shop') ?? {}).onclick = showShop;
+        },
+
+
+        'showShop': () => {
+            (document.getElementById('my_hide') ?? {}).onclick = () => showDescriptionProduct('myHide');
+            (document.getElementById('subscription') ?? {}).onclick = () => showDescriptionProduct('subscription');
+        },
+
+        
+        'showDescriptionProduct': () => {
+            (document.getElementById('back_button_modal_page') ?? {}).onclick = showShop;
+        },
+
+        
+        'warn': () => {
+            (document.getElementById('restart_page') ?? {}).onclick = () => {
+                location.reload();
+            }
+        
+            (document.getElementById('shop') ?? {}).onclick = () => {
+                showShop();
             }
         }
     })[fromWhichFunction](args);

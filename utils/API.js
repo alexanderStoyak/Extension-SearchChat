@@ -1,4 +1,22 @@
-const hashCode = s => s.split('').reduce((a,b)=>{a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);
+const hashCode = s => s.split('').reduce((a, b) => { a = ((a << 5) - a) + b.charCodeAt(0); return a & a }, 0);
+const warns = {
+    18: {
+        title: 'Фильтр «Участник» требует подписки',
+        button: {
+            id: 'shop',
+            text: 'В магазин',
+        },
+    },
+    25: {
+        title: 'Аккаунт заблокирован',
+        button: undefined
+    },
+    19: {
+        title: 'Ошибка доступа',
+        button: undefined
+    }
+};
+
 
 const VKAPI = {
     call: async (method = 'users.get', parameters = {}) => {
@@ -21,19 +39,19 @@ const VKAPI = {
         let { response, error } = JSON.parse(responseString);
 
         if (error) {
-            if(error.error_code === 5) {
+            if (error.error_code === 5) {
                 await vkAuth();
 
                 let { response: responseString } = await GM_xmlhttpRequest(
                     `https://api.vk.com/method/${method}`,
-                    {...parameters, access_token: services.auth.accessToken}
+                    { ...parameters, access_token: services.auth.accessToken }
                 );
 
                 response = JSON.parse(responseString).response;
 
             } else {
                 console.log(error);
-                notifiers('<span style="color: #FD324A; font-weight: bold;">Ошибка VK API код №${error.error_code}: </span>' + error.error_message);
+                notifiers(`<span style="color: #FD324A; font-weight: bold;">Ошибка VK API код №${error.error_code}: </span>` + error.error_msg);
             }
         };
 
@@ -73,18 +91,31 @@ const SCAPI = {
 
         if (error) {
             if (error.code === 19 || error.code === 25 || error.code === 18) {
+
+                const warn = warns[error.code] ??
+                {
+                    title: 'Что-то пошло не так..',
+                    button: {
+                        id: 'restart_page',
+                        text: 'Перезагрузить страницу'
+                    }
+                }
+
                 modalPage.setContent(
                     blankNotFound(
                         icons({ name: 'privacy_outline', realSize: 28, size: 86 }),
-                        'Ошибка доступа'
+                        warn.title,
+                        warn.button
                     )
                 )
+
+                onClicks('warn', {});
 
                 return { accessDenied: true };
             }
 
             console.log(error);
-            notifiers('<span style="color: #FD324A; font-weight: bold;">Ошибка ПоискЧата API</span>код №${error.code}: ${error.message}');
+            notifiers(`<span style="color: #FD324A; font-weight: bold;">Ошибка ПоискЧата API </span> код №${error.code}: ${error.message}`);
         };
 
         APICache.set({
@@ -127,7 +158,7 @@ async function vkAuth() {
 
 
     GM_setValue('accessToken', services.auth.accessToken = auth.access_token);
-    GM_setValue('expiresIn', services.auth.expiresIn = +new Date + auth.expires_in * 1_000 );
+    GM_setValue('expiresIn', services.auth.expiresIn = +new Date + auth.expires_in * 1_000);
     GM_setValue('VKMainUser', services.VKMainUser = user);
 
     return true;

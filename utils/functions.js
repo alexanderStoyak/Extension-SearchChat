@@ -173,7 +173,8 @@ function decOfNum(number, words) {
 
 
 const load = {
-    chats: false
+    chats: false,
+    addChats: false
 };
 let currentChats = {};
 async function searchChats({ isCurrent = false, offset = 0 }) {
@@ -207,7 +208,7 @@ async function searchChats({ isCurrent = false, offset = 0 }) {
 
     modalPage.new(
         title(0, blankFiltersSearchChats({ user }))
-    ).setLoad(pick(['Сортируем..', 'Ищем..', 'Чаты же в пути!', 'Один момент', 'Загружаем'])).visible();
+    ).setLoad(services.pick.searchChats).visible();
     onClicks('searchChats', { offset });
 
     let foundChats;
@@ -282,35 +283,35 @@ async function authModalPage() {
     const html = `
             <div class="ProfileModalInfoHeadline" style="padding: 10px;">
                 <span style="display: block; gap: 5px; text-align: center; font-size: 13px;">
-                    Расширение «ПоискЧата» представляет собой инструмент для поиска чатов во ВКонтакте. В настоящее время расширение находиться на стадии разработки, рекомендуем следить за всеми обновлениями в <a style="color: #71aaeb;" target="_blank" href="${services.telegramChannelURL}">нашем телеграм канале</a>. Некоторые функции, включая просмотр чатов пользователей, могут потребовать платной подписки в любой момент.
-
+                    Расширение «ПоискЧата» — это инструмент, разработанный для удобного поиска чатов в социальной сети ВКонтакте. Оно предоставляет возможность пользователям быстро найти нужный чат, используя различные фильтры и параметры.
+                    <br/>В настоящее время расширение находится на стадии активной разработки, поэтому мы регулярно выпускаем обновления, внедряем новые функции и исправляем ошибки. Чтобы быть в курсе всех последних обновлений, рекомендуем подписаться на наш <a style="color: #71aaeb;" target="_blank" href="${services.telegramChannelURL}">телеграм-канале</a>, где мы делимся информацией о новых возможностях расширения.
+                    <br/>С помощью расширения Вы можете осуществлять поиск чатов по их названиям, что позволяет быстро найти нужную беседу. Кроме того, Вы можете использовать различные фильтры для уточнения результатов поиска. Например, Вы можете фильтровать чаты по участникам, чтобы найти только те, в которых участвует определенный пользователь или группа людей. Также есть возможность фильтровать чаты по Вашим друзьям, чтобы быстро найти те беседы, в которых они присутствуют.
+                    <br/>
+                    
                     <hr style="margin-top: 30px"  class="separator" data-content="Получение Вашего токена"/>
                     <span style="color: ${appearance.get() === 'dark' ? '#f6c254' : '#df9700'};">
                         Для использования расширения необходима авторизация, которая будет выполняться путем получения Вашего токена ВКонтакте с помощью приложения «<a style="color: #71aaeb;" target="_blank" href="${services.auth.urlByGetCode}">ПоискЧата</a>».
                     </span>
           
-                    <hr style="margin-top: 25px;" class="separator" data-content="Важно"/>
+                    <hr style="margin-top: 25px;" class="separator" data-content="Обратите внимание"/>
                     <span> 
                         Ваш токен будет сохранен только на Вашем компьютере (локально) и будет действителен только в течение 24 часов. По истечении этого времени будет получен новый токен, чтобы гарантировать его актуальность во время использования расширения. Таким образом, фактическое хранение токена на сервере невозможно. 
                     </span>
                     
                     <hr style="margin-top: 25px" class="separator" data-content="Авторизация"/>
                     Пожалуйста, нажмите на кнопку: 
-                    <a style="
+                    <span style="
                         display: inline-block; 
                         font-weight: 500; 
                         padding: 0 .5em; 
                         line-height: 1.5em; 
                         max-width: max-content; 
-                        background-color: ${appearance.get() === 'dark' ? '#4b4b4b' : '#ebf2fa'}; 
-                        border-radius: 50px;
-                        color: ${appearance.get() === 'dark' ? '#828282' : '#3770b1'};
-                        text-align: center; 
-                        text-decoration: none"
+                        border-radius: 50px;"
                         id="button_auth_for_modal_page"
+                        class="btn"
                     >
                         Подтвердить регистрацию
-                    </a>
+                    </span>
                     <br/>В ином случае функционал расширения не будет работать.
                 </span>
             </div>
@@ -344,7 +345,7 @@ async function showUsersChat(indexChat, friends, backFunction, offset = 0, searc
         ? chat.photo['200'] || chat.photo['150'] || chat.photo['50']
         : 'https://vk.com/images/community_200.png';
 
-    const title = pages => titleModalPage({
+    const title = subTitle => titleModalPage({
         icon: `
             <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px;">
                 ${icons({ name: 'browser_back', size: 20, fill: 'secondary' })}
@@ -355,19 +356,21 @@ async function showUsersChat(indexChat, friends, backFunction, offset = 0, searc
         after: `${chat.membersCount.toLocaleString('ru-RU')}уч.`,
         subTitle: `
             ${blankInputSearch({ id: 'search_users_chat', value: search})}
-            ${pages || blankPages({})}
+            ${subTitle || blankPages({})}
         `
     });
 
-    modalPage.new(title()).setLoad('Получаем участников из ВКонтакте').visible();
+    modalPage.new(title()).setLoad(services.pick.showUsersChat).visible();
 
-    const membersList = (await getUsersOrGroupsFromVK(chat.members, true))
-        .filter(member =>
-            search ?
-                new RegExp(noSpecialCharacters(search), 'i')
-                    .test(member.first_name ? `${member.first_name} ${member.last_name}` : member.name)
-                : true
-        );
+    let membersList = await getUsersOrGroupsFromVK(chat.members, true);
+    const onlineMembers = membersList.filter(member => member.online).length;
+
+    membersList = membersList.filter(member =>
+        search ?
+            new RegExp(noSpecialCharacters(search), 'i')
+                .test(member.first_name ? `${member.first_name} ${member.last_name}` : member.name)
+            : true
+    );
 
     const membersCount = membersList.length;
 
@@ -425,7 +428,15 @@ async function showUsersChat(indexChat, friends, backFunction, offset = 0, searc
     modalPage.setContent(html)
         .setTitle(
             title(
-                blankPages({found: membersCount, inOnePage: sortedMembersList.length, offset, currentPage, totalPage})
+                `
+                    ${blankPages({found: membersCount, inOnePage: sortedMembersList.length, offset, currentPage, totalPage})}
+                    <span style="display: flex; gap: 5px;">
+                        ${icons({name: 'users_outline', size: 16, realSize: 20, fill: 'secondary'})}
+                        <span style="padding-right: 10px; color: #99a2ad;">
+                            ${onlineMembers.toLocaleString('ru-RU')} ${decOfNum(onlineMembers, ['участник', 'участника', 'участников'])} в сети
+                        </span>
+                    </span>
+                `
             )
         );
 
@@ -475,9 +486,11 @@ const iconColors = {
     white: 'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7500%) hue-rotate(203deg) brightness(112%) contrast(109%);',
     iconsAccent: appearance.get() === 'dark'
         ? 'brightness(0) saturate(100%) invert(59%) sepia(9%) saturate(3344%) hue-rotate(175deg) brightness(75%) contrast(92%);'
-        : 'brightness(0) saturate(100%) invert(78%) sepia(22%) saturate(6954%) hue-rotate(184deg) brightness(100%) contrast(84%);'
+        : 'brightness(0) saturate(100%) invert(78%) sepia(22%) saturate(6954%) hue-rotate(184deg) brightness(100%) contrast(84%);',
+    original: ''
 }
 function icons({ name, realSize = 24, size = realSize, fill = 'accent' }) {
+    fill = iconColors[fill] ? `style="filter: ${iconColors[fill]}"` : '';
 
     return `
         <svg 
@@ -485,7 +498,7 @@ function icons({ name, realSize = 24, size = realSize, fill = 'accent' }) {
             stroke="currentColor"
             width="${size}" 
             height="${size}"
-            style="filter: ${iconColors[fill]}"
+            ${fill}
             class="vkuiIcon vkuiIcon--${size} vkuiIcon--w-${size} vkuiIcon--h-${size}"
             display="block"
         >
@@ -707,20 +720,19 @@ async function showAddChat() {
     modalPage.new(titleModalPage({before: 'Добавление чата'})).setContent(html).visible();
 
     const input = document.getElementById('add_сhat_search');
+    input.setSelectionRange(input.value.length, input.value.length);
     input.focus();
-
-    let load = false;
 
     document.getElementById('add_сhat_button').onclick = async () => {
         const [_, key] = input.value.match(/\/join\/([^\s]*)/i) ?? ['', ''];
 
-        if (load) return;
+        if (load.addChats) return;
 
         const notify = document.getElementById('notifiers_add_chat');
 
 
         if (key) {
-            load = true;
+            load.addChats = true;
             const response = await SCAPI.call({
                 method: 'service.addChats',
                 parameters: {
@@ -738,7 +750,7 @@ async function showAddChat() {
                     ]
                 }
             });
-            load = false;
+            load.addChats = false;
 
             if (response.new) {
                 notify.style.color = appearance.get() === 'dark' ? '#A8E4A0' : '#258b17';
@@ -755,4 +767,186 @@ async function showAddChat() {
             notify.innerHTML = `Пожалуйста, введите правильную ссылку на чат.`
         }
     }
+}
+
+
+async function showTopUseExtension () {
+    modalPage.new(titleModalPage({
+        title: 'Админ панель',
+        before: 'Использования',
+        icon: `
+            <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px;">
+                ${icons({ name: 'browser_back', size: 20, fill: 'secondary' })}
+            </span>
+        `
+    })).setLoad().visible();
+
+    
+    (document.getElementById('back_button_modal_page') ?? {}).onclick = () => {
+        showAdminPanel({ isCurrent: true });
+    };
+
+    const users = await SCAPI.call({method: "extension.getTopUse"});
+
+    const usersFromVK = await getUsersOrGroupsFromVK(users.map(user => user.id), true);
+
+    let htmlUsers = usersFromVK.map((member, index) => {
+        const user = users[index];
+        const subTitle = user.useExtension ? `${user.useExtension.toLocaleString('ru-RU')} ${decOfNum(user.useExtension, ['запрос', 'запроса', 'запросов'])} к API` : '0 запросов к API';
+
+        return blankMembersList({ member, creator: 0, friends: [{}], subTitle });
+    }).join('');
+
+    const html = `
+        <div class="ChatSettings__pane"> 
+            <div class="ChatSettingsMembersWidget__list" id="chat_users">
+                ${htmlUsers}
+            </div> 
+        </div>
+    `;
+
+    modalPage.setContent(html);
+}
+
+
+async function showAdminPanel () {
+    modalPage.new(titleModalPage({
+        title: 'Админ панель',
+        icon: icons({ name: 'wrench_outline', fill: 'iconsAccent', realSize: 28 , size: 28 })
+    })).setLoad().visible();
+
+    const html = `
+        <div style="display: flex; align-items: center; flex-direction: column; margin: 10px;">
+            <div style="display: flex; flex-direction: row; align-items: center;">
+            
+                 <span id="top_use_extension" class="group-stats vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard" title="Топ пользователей по чатам"> 
+                    ${icons({ name: 'api_outline', realSize: 20, size: 48 })} 
+                    <span class="button" style="font-size: 12px;">Использования</span>
+                </span>
+
+            </div>
+        </div>
+    `;
+
+    modalPage.setContent(html);
+
+    document.getElementById('top_use_extension').onclick = () => {
+        showTopUseExtension();
+    }
+}
+
+
+async function showShop () {
+    modalPage.new(titleModalPage({
+        before: 'Товары',
+    })).setLoad().visible();
+
+    const html = `
+        <div style="display: flex; align-items: center; flex-direction: column; margin: 10px;">
+        
+            <div style="display: flex; flex-direction: row; align-items: center;">
+
+                <span id="subscription" class="group-stats vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard" title="Описание товара"> 
+                    ${icons({ name: 'star_circle', realSize: 16, size: 45 })}
+                    <span class="color-text-subhead" style="font-size: 12px">месяц</span>
+                    <span class="button" style="font-size: 12px;">Подписка</span>
+                    <span class="button color-text-subhead" style="font-size: 12px;">
+                        250 руб.
+                    </span>
+                </span>
+
+                <p style="margin: 25px;"></p>
+
+                <span id="my_hide" class="group-stats vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard" title="Описание товара"> 
+                    ${icons({ name: 'ghost_simple_outline', realSize: 28, size: 48 })}
+                    <span class="color-text-subhead" style="font-size: 12px">навсегда</span>
+                    <span class="button" style="font-size: 12px;">Скрыть себя</span>
+                    <span class="button color-text-subhead" style="font-size: 12px;">
+                        500 руб.
+                    </span>
+                </span>
+
+            </div>
+
+            ${services.profileFromSC.isSubscriptionValid ? 
+                `
+                    <p style="margin-bottom: 15px;"></p>
+                    <span style="display: flex; flex-direction: row; align-items: center; gap: 5px;">
+                        ${icons({name: 'donut_circle_fill_yellow', size: 20, realSize: 20, fill: 'original'})}
+                        Ваша подписка активна до ${moment(services.profileFromSC.subscription.expired).calendar()}
+                    </span>
+                ` 
+                : ''
+            }
+
+        </div>
+    `;
+
+    modalPage.setContent(html);
+
+    onClicks('showShop', {})
+}
+
+
+const descriptionProduct = {
+    'subscription': {
+        title: 'Подписка',
+        tableСontents: 'Больше возможностей с подпиской',
+        price: 250,
+        description: `
+            Доступ к чатам любого пользователя или группы ВКонтакте.
+            <br/>
+            Мы сделали подписку платной, поскольку функции с подпиской требуют дополнительных расходов, в том числе на аренду серверов. Вклад подписчиков позволяет нам покрывать эти расходы и помогает «ПоискЧата» оставаться бесплатным для всех пользователей.
+        `,
+    },
+    'myHide': {
+        title: 'Скрыть все свои чаты',
+        tableСontents: 'Гарантированная конфиденциальность',
+        price: 500,
+        description: `
+        Мы понимаем, что многим пользователям не нравится, когда кто-то несанкционированно заходит в их любимые чаты. Это может серьезно нарушить комфорт и безопасность пользователей, особенно если чат является школьным или городским. Кроме того, информация, представленная в профиле чата, может раскрыть много о человеке, его интересах, месте жительства, образовании и месте работы.
+        Мы предлагаем функцию скрытия чатов, чтобы Вы могли защитить свою приватность. Это позволит Вам контролировать доступ к Вашим чатам и предотвратить несанкционированный доступ.
+        Скрытие чатов - это важная функция, которая помогает защитить Вас от нежелательного вмешательства и сохранить Вашу приватность.
+        Ваши чаты останутся полностью скрыты от посторонних глаз.
+        <br/>
+        Ни один сервис, который использует наше API, такие как
+        <a href="https://t.me/HowToFind" target="_blank" > HowToFind</a>,
+        <a href="https://vk.com/luxury__cb" target="_blank" > luxury</a>,
+        <a href="https://vk.com/lapik_bot" target="_blank" > lapik bot</a> и
+        <a href="https://t.me/QuickLeaks_Bot" target="_blank" > Quick OSINT</a>
+        не сможет получить доступ к Вашим чатам, включая и это расширение.
+        `,
+    }
+}
+function showDescriptionProduct(productId) {
+    const product = descriptionProduct[productId];
+
+    modalPage.new(titleModalPage({
+        icon: `
+            <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px;">
+                ${icons({ name: 'browser_back', size: 20, fill: 'secondary' })}
+            </span>
+        `,
+        title: 'Товары',
+        before: product.title,
+        after: 'описание'
+    })).visible();
+
+    modalPage.setContent(`
+        <div style="display: block; gap: 5px; text-align: center; margin-top: 3px; padding: 10px;">
+            <span style="font-size: 15px; font-weight: 500;">${product.tableСontents}</span>
+            <p style="margin-bottom: 15px;"></p>
+            <span style="font-size: 13px;">${product.description}</span>
+
+            <div style="display: flex; padding-top: 15px; align-items: flex-end; justify-content: flex-end;">
+                <a href="https://t.me/istoyak" target="_blank" class="FlatButton FlatButton--primary FlatButton--size-m" type="button">
+                    <span class="FlatButton__in">
+                        <span class="FlatButton__content">Купить за ${product.price}₽</span>
+                    </span>
+                </a>
+            </div>
+        </div>
+    `);
+
+    onClicks('showDescriptionProduct', {});
 }

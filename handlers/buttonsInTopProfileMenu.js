@@ -1,3 +1,14 @@
+function adminButtonInTopProfileMenu() {
+    return `
+        <a id="admin_panel" class="top_profile_mrow">
+            <span style="display: flex; align-items: center; gap: 5px;">
+                ${icons({ name: 'wrench_outline', fill: 'iconsAccent', realSize: 28 ,size: 22 })} Админ панель
+            </span>
+        </a>
+    `    
+}
+
+
 function buttonsInTopProfileMenu(topProfileMenu) {
 
     const menu = document.createElement('div');
@@ -49,11 +60,15 @@ function buttonsInTopProfileMenu(topProfileMenu) {
                     ${icons({ name: 'message_add_outline', fill: 'iconsAccent', realSize: 20 ,size: 22 })} Добавить чат
                 </span>
             </a>
+            <a id="shop" class="top_profile_mrow">
+                <span style="display: flex; align-items: center; gap: 5px;">
+                    ${icons({ name: 'shopping_cart_outline', fill: 'iconsAccent', realSize: 20 ,size: 22 })} Магазин
+                </span>
+            </a>
+            ${services.profileFromSC.role > 0 ? adminButtonInTopProfileMenu() : ''}
     `;
 
     topProfileMenu.append(menu);
 
-    document.getElementById('stats').onclick = showStatistics;
-    document.getElementById('add_chat').onclick = showAddChat;
-    document.getElementById('search_chats').onclick = () => searchChats({});
+    onClicks('buttonsInTopProfileMenu', {})
 }

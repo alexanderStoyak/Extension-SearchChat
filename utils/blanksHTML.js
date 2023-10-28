@@ -105,7 +105,7 @@ function blankChat({ chat, photo, creator, friends }) {
                                         <div style="display: flex; justify-content: flex-start; gap: 3px; align-items: center;">
                                             <div class="UsersStack-module__root--HKcQf UsersStack-module__sizeS--O9MMO UsersStack-module__directionRow--HjNuZ ProfileFullStacks__stacks">
                                                 <div class="UsersStack-module__photos--bCsMG" aria-hidden="true">
-                                                    ${usersStack(photoFriends)}
+                                                    ${blankUsersStack(photoFriends)}
                                                 </div>
                                             </div>
                                             <span style="color: #99a2ad; font-weight: 400;">
@@ -181,7 +181,7 @@ function blankChat({ chat, photo, creator, friends }) {
 }
 
 
-function blankMembersList({ member, creator, friends }) {
+function blankMembersList({ member, creator, friends, subTitle }) {
     const typeMention = member?.first_name ? 'id' : 'club';
     const link = `https://vk.com/${typeMention}${member.id}`;
     const memberName = deXSS(typeMention === 'id'
@@ -216,8 +216,13 @@ function blankMembersList({ member, creator, friends }) {
                         </div>
                         <div class="Entity__description">
                             <span style="color: #828282;">
-                                ${member?.online ? 'В сети' : member?.last_seen ? `${member.sex === 2 ? 'Был ' : 'Была '}` + moment(member.last_seen.time * 1_000).fromNow() : ''}
-                                ${typeMention === 'club' ? 'Бот' : ''}
+                                ${
+                                    subTitle ? subTitle : 
+                                        `
+                                            ${member?.online ? 'В сети' : member?.last_seen ? `${member.sex === 2 ? 'Был ' : 'Была '}` + moment(member.last_seen.time * 1_000).fromNow() : ''}
+                                            ${typeMention === 'club' ? 'Бот' : ''}
+                                        `
+                                }
                             </span>
                         </div>
                     </div>
@@ -453,4 +458,27 @@ function blankFiltersSearchChats({
         
     </div>
     `
+}
+
+
+function blankUsersStack(arrayLinks) {
+    return arrayLinks.map((link, index) => {
+        return `<svg xmlns="http://www.w3.org/2000/svg" className="UsersStack-module__photo--iCBco" aria-hidden="true" style="width: 24px; height: 24px">
+        <defs>
+            ${index === 0
+                ? `<circle cx="12" cy="12" r="12" id=":r0:${index}"/>`
+                : `<path d="M2,18.625A12 12 0 0 0 12 24A12 12 0 0 0 12 0A12 12 0 0 0 2 5.375A12 12 0 0 1 2,18.625" id=":r0:${index}"/>`
+            }
+        </defs>
+        <clipPath id="UsersStackMask:r0:${index}">
+            <use href="#:r0:${index}"/>
+        </clipPath>
+        <g clip-path="url(#UsersStackMask:r0:${index})">
+            <use href="#:r0:${index}" className="SVGStackMask-module__fill--pL05i"/>
+            <image href="${link}" width="24" height="24"/>
+            <use href="#:r0:${index}" fill="none" className="SVGStackMask-module__useElement--usICi"/>
+        </g>
+    </svg>`
+
+    }).join('');
 }

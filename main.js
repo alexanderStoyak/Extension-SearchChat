@@ -18,6 +18,10 @@ const observeChange = async () => {
         vkAuth();
     }
 
+    services.profileFromSC = await SCAPI.call({method: "extension.getUser"});
+    if(!services.profileFromSC) {
+        return;
+    }
 
     const [profileHeaderActions] = document.getElementsByClassName('ProfileHeaderButton');
     const pageActions = document.getElementById('page_actions');
