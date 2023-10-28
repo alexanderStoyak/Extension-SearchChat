@@ -103,7 +103,7 @@ async function getUsersOrGroupsFromVK(links, explicitIds) {
 
     const code = `
         var i = 0;
-        var returns = [];
+        var returns = [Args.idsOrSreensNames, Args];
 
         while(i < Args.idsOrSreensNames.length) {
             var info = Args.idsOrSreensNames[i];
