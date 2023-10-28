@@ -155,7 +155,6 @@ async function getUsersOrGroupsFromVK(links, explicitIds) {
 
     const response = await VKAPI.call('execute', { code });
 
-    console.log(response);
     return [].concat.apply([], response);
 }
 
