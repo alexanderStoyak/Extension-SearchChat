@@ -58,12 +58,9 @@ const observeChange = async () => {
                     node.classList.contains('_sticker_hints')
                     || node.classList.contains('im-page--title')
                     || node.classList.contains('im-mess')
-                    || node.classList.contains('_im-mess')
-                    || node.classList.contains('_im_stack_messages')
                 ) {
                     const [peerHistory] = document.getElementsByClassName('_im_peer_history');
                     
-                    console.log(node.classList);
                     if (peerHistory) {
                         buttonInMessages(peerHistory);
                     }
