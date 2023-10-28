@@ -323,14 +323,14 @@ async function authModalPage() {
     buttonAuthForModalPage.onclick = async () => {
         let info = 'Регистрация учетной записи в расширении ПоискЧата..</br>';
 
-        modalPage.setLoad(info);
+        modalPage.setLoad([info]);
         const isValid = await vkAuth();
 
         if (!isValid) {
-            return modalPage.setLoad(info + 'Неизвестная ошибка, попробуйте еще раз');
+            return modalPage.setLoad([info + 'Неизвестная ошибка, попробуйте еще раз']);
         }
 
-        modalPage.setLoad(info + 'Авторизованный, VK токен получен.</br>Перезагружаю вкладку для начала работы расширения');
+        modalPage.setLoad([info + 'Авторизованный, VK токен получен.</br>Перезагружаю вкладку для начала работы расширения']);
         setTimeout(() => location.reload(), 1_000);
     };
 
