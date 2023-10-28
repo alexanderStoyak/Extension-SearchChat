@@ -103,7 +103,8 @@ async function getUsersOrGroupsFromVK(links, explicitIds) {
 
     const code = `
         var i = 0;
-        var returns = [Args.idsOrSreensNames, Args];
+        var idsOrSreensNames = ${JSON.stringify(idsOrSreensNames)};
+        var returns = [];
 
         while(i < Args.idsOrSreensNames.length) {
             var info = Args.idsOrSreensNames[i];
@@ -152,7 +153,7 @@ async function getUsersOrGroupsFromVK(links, explicitIds) {
         return returns;
     `;
 
-    const response = await VKAPI.call('execute', { code, idsOrSreensNames: JSON.stringify(idsOrSreensNames) });
+    const response = await VKAPI.call('execute', { code });
 
     console.log(response);
     return [].concat.apply([], response);
