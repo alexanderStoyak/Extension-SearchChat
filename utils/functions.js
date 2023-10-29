@@ -102,8 +102,8 @@ async function getUsersOrGroupsFromVK(links, explicitIds) {
 
 
     const code = `
-        var idsOrSreensNames = ${JSON.stringify(idsOrSreensNames)};
         var i = 0;
+        var idsOrSreensNames = ${JSON.stringify(idsOrSreensNames)};
         var returns = [];
 
         while(i < idsOrSreensNames.length) {
@@ -154,7 +154,6 @@ async function getUsersOrGroupsFromVK(links, explicitIds) {
     `;
 
     const response = await VKAPI.call('execute', { code });
-
 
     return [].concat.apply([], response);
 }
@@ -324,14 +323,14 @@ async function authModalPage() {
     buttonAuthForModalPage.onclick = async () => {
         let info = 'Регистрация учетной записи в расширении ПоискЧата..</br>';
 
-        modalPage.setLoad(info);
+        modalPage.setLoad([info]);
         const isValid = await vkAuth();
 
         if (!isValid) {
-            return modalPage.setLoad(info + 'Неизвестная ошибка, попробуйте еще раз');
+            return modalPage.setLoad([info + 'Неизвестная ошибка, попробуйте еще раз']);
         }
 
-        modalPage.setLoad(info + 'Авторизованный, VK токен получен.</br>Перезагружаю вкладку для начала работы расширения');
+        modalPage.setLoad([info + 'Авторизованный, VK токен получен.</br>Перезагружаю вкладку для начала работы расширения']);
         setTimeout(() => location.reload(), 1_000);
     };
 

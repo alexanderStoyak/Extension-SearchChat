@@ -60,7 +60,7 @@ const observeChange = async () => {
                     || node.classList.contains('im-mess')
                 ) {
                     const [peerHistory] = document.getElementsByClassName('_im_peer_history');
-
+                    
                     if (peerHistory) {
                         buttonInMessages(peerHistory);
                     }
