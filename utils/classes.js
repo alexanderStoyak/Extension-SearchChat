@@ -3,15 +3,15 @@ class Filters {
     constructor() {
         this.title = '';
         this.link = '';
-        this.onlyWithFriends =  false;
+        this.onlyWithFriends = false;
         this.sortField = 'added';
         this.sortOrder = 'desc';
     }
 
-    remove () {
+    remove() {
         this.title = '';
         this.link = '';
-        this.onlyWithFriends =  false;
+        this.onlyWithFriends = false;
         this.sortField = 'added';
         this.sortOrder = 'desc';
     }
@@ -55,7 +55,7 @@ class Cache {
         return this.data[key]?.data;
     }
 
-    set({key, data, expired}) {
+    set({ key, data, expired }) {
         this.checkExpired(key);
 
         if (!this.data[key]) {
@@ -112,7 +112,7 @@ const newModalPage = title => new MessageBox({
 });
 
 class ModalPage {
-    constructor(title = {}) {}
+    constructor(title = {}) { }
 
     new(title = titleModalPage({})) {
         if (!this.modalPage || !this.modalPage.isVisible()) {
@@ -148,7 +148,7 @@ class ModalPage {
     }
 
     setContent(html) {
-        if(this.modalPage.isVisible()) {
+        if (this.modalPage.isVisible()) {
             this.boxBody.innerHTML = html;
             this.fixedTitle();
         } else {
@@ -159,7 +159,7 @@ class ModalPage {
     }
 
     setTitle(html) {
-        if(this.modalPage.isVisible()) {
+        if (this.modalPage.isVisible()) {
             this.boxTitle.innerHTML = html;
         }
 
@@ -203,14 +203,16 @@ class ModalPage {
             </div>
         `);
 
-        const updateTitleLoad = setInterval(() => {
-            const spanLoad = document.getElementById('spinner_info');
-            if (!spanLoad) {
-                return clearInterval(updateTitleLoad);
-            } else {
-                spanLoad.innerHTML = pick(titles);
-            }
-        }, 1_000);
+        if (titles.length > 1) {
+            const updateTitleLoad = setInterval(() => {
+                const spanLoad = document.getElementById('spinner_info');
+                if (!spanLoad) {
+                    return clearInterval(updateTitleLoad);
+                } else {
+                    spanLoad.innerHTML = pick(titles);
+                }
+            }, 1_500);
+        }
 
         return this;
     }

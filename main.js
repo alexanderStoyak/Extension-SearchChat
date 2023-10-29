@@ -15,7 +15,7 @@ const observeChange = async () => {
         return;
     }
     if (services.auth.expiresIn < +new Date) {
-        vkAuth();
+        await vkAuth();
     }
 
     services.profileFromSC = await SCAPI.call({method: "extension.getUser"});
@@ -28,7 +28,7 @@ const observeChange = async () => {
     const topProfileMenu = document.getElementById('top_profile_menu');
 
 
-    if (profileHeaderActions) {
+    if (profileHeaderActions) { 
         buttonInProfiles(profileHeaderActions);
     }
 
@@ -52,7 +52,7 @@ const observeChange = async () => {
                     }
                     continue;
                 }
-
+                
 
                 if (
                     node.classList.contains('_sticker_hints')
