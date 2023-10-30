@@ -1,14 +1,14 @@
-function onClicks (fromWhichFunction, args) {
+function onClicks(fromWhichFunction, args) {
     ({
-        'showUsersChat': ({indexChat, friends, backFunction, offset}) => {
+        'showUsersChat': ({ indexChatOrChat, friends, backFunction, offset }) => {
             const input = document.getElementById('search_users_chat');
 
             (document.getElementById('next_page_button') ?? {}).onclick = () => {
-                showUsersChat(indexChat, friends, backFunction, offset + 50, input?.value);
+                showUsersChat(indexChatOrChat, friends, backFunction, offset + 50, input?.value);
             };
 
             (document.getElementById('previous_page_button') ?? {}).onclick = () => {
-                showUsersChat(indexChat, friends, backFunction, offset - 50, input?.value);
+                showUsersChat(indexChatOrChat, friends, backFunction, offset - 50, input?.value);
             };
 
             (document.getElementById('back_button_modal_page') ?? {}).onclick = () => {
@@ -17,7 +17,7 @@ function onClicks (fromWhichFunction, args) {
 
             if (input) {
                 input.oninput = () => {
-                    showUsersChat(indexChat, friends, backFunction, offset, input.value);
+                    showUsersChat(indexChatOrChat, friends, backFunction, offset, input.value);
                 }
                 input.setSelectionRange(input.value.length, input.value.length);
                 input.focus();
@@ -33,7 +33,7 @@ function onClicks (fromWhichFunction, args) {
         },
 
 
-        'searchChats': ({offset, friends}) => {
+        'searchChats': ({ offset, friends }) => {
             (document.getElementById('reset_filters') ?? {}).onclick = () => {
                 filters.remove();
                 searchChats({});
@@ -114,10 +114,12 @@ function onClicks (fromWhichFunction, args) {
             (document.getElementById('add_chat') ?? {}).onclick = showAddChat;
 
             (document.getElementById('search_chats') ?? {}).onclick = () => searchChats({});
-            
+
             (document.getElementById('admin_panel') ?? {}).onclick = showAdminPanel;
 
             (document.getElementById('shop') ?? {}).onclick = showShop;
+
+            (document.getElementById('profile') ?? {}).onclick = () => showProfile({});
         },
 
 
@@ -126,20 +128,43 @@ function onClicks (fromWhichFunction, args) {
             (document.getElementById('subscription') ?? {}).onclick = () => showDescriptionProduct('subscription');
         },
 
-        
+
         'showDescriptionProduct': () => {
             (document.getElementById('back_button_modal_page') ?? {}).onclick = showShop;
         },
 
-        
+
         'warn': () => {
             (document.getElementById('restart_page') ?? {}).onclick = () => {
                 location.reload();
             }
-        
+
             (document.getElementById('shop') ?? {}).onclick = () => {
                 showShop();
             }
-        }
+        },
+
+
+        'showProfile': ({ id, friends, chat}) => {
+            const input = document.getElementById('search_user_profile');
+
+            if (input) {
+                input.setSelectionRange(input.value.length, input.value.length);
+                input.focus();
+
+                document.getElementById('searchChats_button').onclick = () => showProfile({ id: input.value });
+            }
+
+            (document.getElementById('full_chats_from_profile') ?? {}).onclick = () => {
+                filters.link = id;
+                searchChats({ isCurrent: false });
+            };
+
+            ([...document.getElementsByClassName('members_chat')]).forEach(
+                button =>
+                    button.onclick = () =>
+                        showUsersChat(chat, friends, showProfile)
+            );
+        },
     })[fromWhichFunction](args);
 }

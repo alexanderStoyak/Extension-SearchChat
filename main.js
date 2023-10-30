@@ -1,34 +1,19 @@
 const observeChange = async () => {
+    if (!await checkValidToken()) {
+        return;
+    }
+    
+
     moment.locale('ru');
     const body = document.querySelector('body');
     appearance.update(body);
     modalPage = new ModalPage();
 
-    if (!services.auth.accessToken) {
-        if (
-            !services.auth.accessToken
-            || !services.timeStampAuthModalPage
-            || services.timeStampAuthModalPage < +new Date
-        ) {
-            authModalPage();
-        }
-        return;
-    }
-    if (services.auth.expiresIn < +new Date) {
-        await vkAuth();
-    }
-
-    services.profileFromSC = await SCAPI.call({method: "extension.getUser"});
-    if(!services.profileFromSC) {
-        return;
-    }
-
     const [profileHeaderActions] = document.getElementsByClassName('ProfileHeaderButton');
     const pageActions = document.getElementById('page_actions');
     const topProfileMenu = document.getElementById('top_profile_menu');
 
-
-    if (profileHeaderActions) { 
+    if (profileHeaderActions) {
         buttonInProfiles(profileHeaderActions);
     }
 
@@ -40,10 +25,10 @@ const observeChange = async () => {
         buttonsInTopProfileMenu(topProfileMenu);
     }
 
-
     const observer = new MutationObserver(mutations => {
 
         for (const mutation of mutations) {
+            
             for (const node of mutation.addedNodes) {
 
                 if (!(node instanceof HTMLElement)) {
@@ -52,7 +37,6 @@ const observeChange = async () => {
                     }
                     continue;
                 }
-                
 
                 if (
                     node.classList.contains('_sticker_hints')
@@ -60,7 +44,7 @@ const observeChange = async () => {
                     || node.classList.contains('im-mess')
                 ) {
                     const [peerHistory] = document.getElementsByClassName('_im_peer_history');
-                    
+
                     if (peerHistory) {
                         buttonInMessages(peerHistory);
                     }

@@ -4,7 +4,7 @@ const logo = `
     </svg>
 `;
 
-function titleModalPage ({
+function titleModalPage({
     title = 'ПоискЧата',
     before = '',
     after = '',
@@ -15,13 +15,13 @@ function titleModalPage ({
         before = `
             <div style="display: flex; align-items: center; flex-direction: row; gap: 10px;">
                 ${before.title ? `<span style="font-weight: 400; color: #828282; max-width: 250px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"> > ${before.title} </span>` : ''}
-                ${before.icon ? 
-                    `
+                ${before.icon ?
+                `
                         <div style="width: 20px; height: 20px;" class="vkuiAvatar vkuiImageBase vkuiImageBase--size-20 vkuiImageBase--loaded" role="img">
                             <img class="vkuiImageBase__img" src="${before.icon}">
                         </div>
                     ` : ''
-                }
+            }
             </div>
         `
     } else if (before) {
@@ -47,7 +47,13 @@ function titleModalPage ({
     `
 }
 
-function blankChat({ chat, photo, creator, friends }) {
+
+function blankSeparator(style) {
+    return `<div ${style ? `style="${style}"` : ''} class="vkuiSeparator vkuiSeparator--padded ProfileGroupSeparator"><hr class="vkuiSeparator__in"></div>`;
+}
+
+
+function blankChat({ chat, creator, friends }) {
     const typeMention = creator?.first_name ? 'id' : 'club';
 
     const creatorUrl = `https://vk.com/${typeMention}${creator.id}`;
@@ -60,6 +66,10 @@ function blankChat({ chat, photo, creator, friends }) {
         : `Группа «${creator.name}»`
     );
 
+    const photo = chat.photo
+        ? chat.photo['200'] || chat.photo['150'] || chat.photo['50']
+        : 'https://vk.com/images/community_200.png';
+
     chat.title = deXSS(chat.title);
 
     const photoFriends = friends.filter(friend => chat.members.includes(friend.id)).map(friend => friend.photo_100);
@@ -67,8 +77,8 @@ function blankChat({ chat, photo, creator, friends }) {
     photoFriends.splice(3);
 
     return `
-        <div class="vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard" style="padding-bottom: 0px;">
-            <section class="vkuiInternalGroup vkuiGroup vkuiGroup--mode-plain vkuiInternalGroup--mode-plain vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo" style="font-weight: 500;">
+        <div class="${classGroup}" style="padding-bottom: 0px;">
+            <section style="font-weight: 500;">
                 
                 <div class="ProfileModalInfoHeadline" style="padding: 0px 0px 5px 0px;">
                        
@@ -78,7 +88,7 @@ function blankChat({ chat, photo, creator, friends }) {
                                 ? 'rgba(0, 0, 0, .8), rgba(0, 0, 0, .8)'
                                 : 'rgba(255, 255, 255, .8), rgba(255, 255, 255, .8)'
                             }), 
-                            url(${photo || 'https://vk.com/images/community_200.png'});
+                            url(${photo});
                     ">      
                     </div>
             
@@ -87,12 +97,12 @@ function blankChat({ chat, photo, creator, friends }) {
                         <div id="raw" style="margin-bottom: 10px; gap: 15px;">
                             <div title="Скопировать ссылку на чат" style="width: 58px; height: 58px; box-shadow: 0 0 0 0.1em;" link="vk.me/join/${chat.key}"
                                 class="vkuiAvatar vkuiImageBase vkuiImageBase--size-58 vkuiImageBase--loaded copy_link_for_chat" role="img">
-                                <img class="vkuiImageBase__img" src="${photo || 'https://vk.com/images/community_200.png'}">
+                                <img class="vkuiImageBase__img" src="${photo}">
                             </div>
 
                             <div>
                                 <h4 title="${chat.title}" class="vkuiHeadline vkuiHeadline--sizeY-compact vkuiHeadline--level-1 vkuiTypography--normalize vkuiTypography--weight-1" style="font-size: 15px; max-width: 230px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
-                                    ${chat.membersCount > 7_000 
+                                    ${chat.membersCount > 7_000
                                         ? `<span style="display: flex; flex-direction: row; gap: 5px; align-items: center; font-size: 12px; color: #99a2ad;"> 
                                                 ${icons({ name: 'archive_outline', size: 16, fill: 'secondary' })} Канал
                                             </span>`
@@ -126,39 +136,42 @@ function blankChat({ chat, photo, creator, friends }) {
                     </div>
                     
                     
+                    ${blankSeparator('margin-top: 5px; margin-bottom: 10px;')}
+
+                    
                     <div style="gap: 5px; display: flex; align-items: center; justify-content: space-between;">
-                        <div class="vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard">
-                            <div style="display: flex; flex-direction: column;">
+
+                        <div style="display: flex; flex-direction: column;">
     
-                                <div style="display: flex; gap: 5px; font-weight: 400; color: #99a2ad; align-items: center;">
-                                    <span>
-                                        ${icons({ name: 'crown_outline', size: 16, fill: 'secondary' })}
-                                    </span>
-    
-                                    <a title="${nameString}" target="_blank" href="${creatorUrl}" style="display: flex;">
-                                        ${nameHTML}
-                                    </a>
-    
-                                    <div style="width: 16px; height: 16px;" 
-                                        class="vkuiAvatar vkuiImageBase vkuiImageBase--size-16 vkuiImageBase--loaded" role="img">
-                                        <img class="vkuiImageBase__img" src="${creator.photo_100 || ''}">
-                                    </div>
-                                </div>
-    
-                                
-                                <span style="color: #99a2ad; display: flex; align-items: center; flex-direction: row; gap: 5px">
-                                    ${icons({ name: 'add', size: 16, fill: 'secondary' })}
-                                    <p style="max-width: 185px; margin: 0px;">Добавлен ${moment(chat.added).fromNow()}</p>
+                            <div style="display: flex; gap: 5px; font-weight: 400; color: #99a2ad; align-items: center;">
+                                <span>
+                                    ${icons({ name: 'crown_outline', size: 16, fill: 'secondary' })}
                                 </span>
     
+                                <a title="${nameString}" target="_blank" href="${creatorUrl}" style="display: flex;">
+                                    ${nameHTML}
+                                </a>
+    
+                                <div style="width: 16px; height: 16px;" 
+                                    class="vkuiAvatar vkuiImageBase vkuiImageBase--size-16 vkuiImageBase--loaded" role="img">
+                                    <img class="vkuiImageBase__img" src="${creator.photo_100 || ''}">
+                                </div>
                             </div>
+    
+                                
+                            <span style="color: #99a2ad; display: flex; align-items: center; flex-direction: row; gap: 5px">
+                                ${icons({ name: 'add', size: 16, fill: 'secondary' })}
+                                <p style="max-width: 185px; margin: 0px;">Добавлен ${moment(chat.added).fromNow()}</p>
+                            </span>
+    
                         </div>
+
                         
                         <div style="display: flex; align-items: flex-end; flex-direction: column;">
                             <a target="_blank"
                                 style="padding: 2px; text-decoration: none;"
                                     href="https://vk.me/join/${chat.key}"
-                                        class="btn vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard" 
+                                        class="btn ${classGroup}" 
                             >
                                 ${icons({ name: 'door_enter_arrow_right_outline', realSize: 16, size: 16, fill: 'secondary' })}
                                 <span style="font-size: 13px; font-weight: 500; color: #99a2ad; padding: 0px 4px 0px 4px;">
@@ -206,23 +219,22 @@ function blankMembersList({ member, creator, friends, subTitle }) {
                                 <span style="font-weight: bold;">${memberName}</span>
                             </a>
                             ${Math.abs(creator) === member.id
-                                ? `    
+            ? `    
                                         <span style="color: #828282; padding-left: 5px;">
                                             ${icons({ name: 'crown_outline', size: 20, fill: 'secondary' })}
                                         </span>
                                       `
-                                : ''
-                            }
+            : ''
+        }
                         </div>
                         <div class="Entity__description">
                             <span style="color: #828282;">
-                                ${
-                                    subTitle ? subTitle : 
-                                        `
+                                ${subTitle ? subTitle :
+            `
                                             ${member?.online ? 'В сети' : member?.last_seen ? `${member.sex === 2 ? 'Был ' : 'Была '}` + moment(member.last_seen.time * 1_000).fromNow() : ''}
                                             ${typeMention === 'club' ? 'Бот' : ''}
                                         `
-                                }
+        }
                             </span>
                         </div>
                     </div>
@@ -290,8 +302,8 @@ function blankNotFound(icon, text, button) {
                 <span style="font-size: 13px; padding-top: 3px; text-align: center; max-width: 250px;">
                     ${text}
                 </span>
-                ${button ? 
-                    `
+                ${button ?
+            `
                         <div style="padding-top: 15px;">
                             <button id="${button.id}" class="FlatButton FlatButton--primary FlatButton--size-m" type="button">
                                 <span class="FlatButton__in">
@@ -299,16 +311,16 @@ function blankNotFound(icon, text, button) {
                                 </span>
                             </button>
                         </div>
-                    ` 
-                    : ''
-                }
+                    `
+            : ''
+        }
             </div>
         <div>
     `
 }
 
 
-function blankInputSearch ({id = 'search', value = '', placeholder = 'Поиск'}) {
+function blankInputSearch({ id = 'search', value = '', placeholder = 'Поиск' }) {
     return `
         <div style="display: flex; justify-content: center; align-items: center; gap: 5px; margin-bottom: 3px">
             <input
@@ -329,11 +341,11 @@ function blankInputSearch ({id = 'search', value = '', placeholder = 'Поиск
 }
 
 
-function blankPages ({found = undefined, totalPage = 0, currentPage = 0, offset = 0, inOnePage = undefined}) {
+function blankPages({ found = undefined, totalPage = 0, currentPage = 0, offset = 0, inOnePage = undefined }) {
     return `
         <div style="display: flex; color: #99a2ad; align-items: center; height: 20px;"> 
             <span style="display: flex; gap: 5px;">
-                ${icons({name: 'document_text_outline', size: 16, realSize: 20, fill: 'secondary'})}
+                ${icons({ name: 'document_text_outline', size: 16, realSize: 20, fill: 'secondary' })}
                 <span style="padding-right: 10px; color: #99a2ad;">
                     Страница ${found !== undefined && found !== 0 ? `${currentPage}/${totalPage}` : found === 0 ? 'пуста' : 'загружается'}
                     ${inOnePage ? ` (${inOnePage.toLocaleString('ru-RU')})` : ''}
@@ -341,29 +353,29 @@ function blankPages ({found = undefined, totalPage = 0, currentPage = 0, offset 
             </span>
                     
             ${found ?
-                `
+            `
                     <span style="display: flex; gap: 5px;">
                         ${offset > 0 ?
-                            `
+                `
                                 <a id="previous_page_button" style="${!(currentPage < totalPage) ? 'padding-right: 15px;' : ''}"> 
                                     Назад
                                 </a>
                             `
-                            : ''
-                        }
+                : ''
+            }
                         ${currentPage < totalPage && offset > 0 ? '<span style="padding-left: 2px; padding-right: 2px; ">•</span>' : ''}
                         ${currentPage < totalPage ?
-                            `
+                `
                                 <a id="next_page_button" style="padding-right: 15px;">
                                     Далее
                                 </a>
                             `
-                            : ''
-                        }
-                    </span>
-                `
                 : ''
             }
+                    </span>
+                `
+            : ''
+        }
         </div>
     `
 }
@@ -454,7 +466,7 @@ function blankFiltersSearchChats({
             <input type="checkbox" id="filter_only_with_friends" ${filters.onlyWithFriends ? 'checked' : ''} />
         </div>
         
-        ${blankPages({found: foundChats, inOnePage: countListChats, offset, currentPage, totalPage})}
+        ${blankPages({ found: foundChats, inOnePage: countListChats, offset, currentPage, totalPage })}
         
     </div>
     `

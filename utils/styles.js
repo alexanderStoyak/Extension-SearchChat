@@ -1,3 +1,5 @@
+const classGroup = 'vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard';
+
 function setStyles () {
 GM_addStyle(`
     #raw {
@@ -54,7 +56,7 @@ GM_addStyle(`
     
     .separator:before {
         content: '';
-        background: linear-gradient(to right, transparent, #818078, transparent);
+        background: var(--vkui--color_separator_primary);
         position: absolute;
         left: 0;
         top: 50%;
@@ -73,6 +75,14 @@ GM_addStyle(`
         background-color: #818078;
         border-radius: 50px;
     }
+
+    .ver-separator {
+        border-left: 1px solid var(--vkui--color_separator_primary);
+    }
+
+    .ver-separator:after {
+        border-radius: 50px;
+    }
     
     .group-stats {
         display: flex; 
@@ -86,6 +96,10 @@ GM_addStyle(`
         justify-content: center;
         transition: all 0.2s ease;
         cursor: default;
+    }
+
+    .ver-separator {
+        border-right:1px #ff0000;
     }
     
     .color-text-subhead {

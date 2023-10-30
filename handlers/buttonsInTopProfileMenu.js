@@ -45,6 +45,11 @@ function buttonsInTopProfileMenu(topProfileMenu) {
                 </span>
             </a>
             
+            <a id="profile" class="top_profile_mrow">
+                <span style="display: flex; align-items: center; gap: 5px;">
+                    ${icons({ name: 'profile', fill: 'iconsAccent', realSize: 28 ,size: 22 })} Профиль
+                </span>
+            </a>
             <a id="search_chats" class="top_profile_mrow">
                 <span style="display: flex; align-items: center; gap: 5px;">
                     ${icons({ name: 'list_bullet_outline', fill: 'iconsAccent', realSize: 20 , size: 22 })} Список чатов

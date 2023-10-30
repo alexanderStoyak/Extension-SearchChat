@@ -1,16 +1,14 @@
-function random(x, y)
-{
+function random(x, y) {
     return y ? Math.round(Math.random() * (y - x)) + x : Math.round(Math.random() * x);
 }
 
 
-function pick(array)
-{
+function pick(array) {
     return array[random(array.length - 1)]
 }
 
 
-function noSpecialCharacters (text) {
+function noSpecialCharacters(text) {
     return text.replace(/[^a-zA-Z0-9а-яА-Я ]/g, (match) => '\\' + match);
 }
 
@@ -46,6 +44,34 @@ function chunk(array, offset) {
     }
 
     return task;
+}
+
+
+async function checkValidToken() {
+    if (!services.auth.accessToken) {
+        if (
+            !services.auth.accessToken
+            || !services.timeStampAuthModalPage
+            || services.timeStampAuthModalPage < +new Date
+        ) {
+            authModalPage();
+        }
+        return false;
+    } else {
+        const user = await VKAPI.isValid();
+        if (!user) {
+            await vkAuth();
+        } else {
+            GM_setValue('VKMainUser', services.VKMainUser = user);
+        }
+
+        services.profileFromSC = await SCAPI.call({ method: "extension.getUser" });
+        if (!services.profileFromSC) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 
@@ -102,8 +128,8 @@ async function getUsersOrGroupsFromVK(links, explicitIds) {
 
 
     const code = `
-        var i = 0;
         var idsOrSreensNames = ${JSON.stringify(idsOrSreensNames)};
+        var i = 0;
         var returns = [];
 
         while(i < idsOrSreensNames.length) {
@@ -155,6 +181,7 @@ async function getUsersOrGroupsFromVK(links, explicitIds) {
 
     const response = await VKAPI.call('execute', { code });
 
+
     return [].concat.apply([], response);
 }
 
@@ -175,7 +202,11 @@ const load = {
     chats: false,
     addChats: false
 };
-let currentChats = {};
+let currentChats = {
+    foundChats: {
+        chats: []
+    }
+};
 async function searchChats({ isCurrent = false, offset = 0 }) {
 
     if (load.chats) return;
@@ -229,6 +260,8 @@ async function searchChats({ isCurrent = false, offset = 0 }) {
         return load.chats = false;
     }
 
+    console.log(foundChats);
+
     if (!foundChats.found) {
         load.chats = false;
         modalPage.setContent(
@@ -244,7 +277,7 @@ async function searchChats({ isCurrent = false, offset = 0 }) {
             )
         );
 
-        return onClicks('searchChats', {offset});
+        return onClicks('searchChats', { offset });
     }
 
     const [creators, friends] = await Promise.all([
@@ -256,13 +289,12 @@ async function searchChats({ isCurrent = false, offset = 0 }) {
     ]);
 
 
-    const listChatsHTML = foundChats.chats.map(chat => {
-        const photo = chat.photo
-            ? chat.photo['200'] || chat.photo['150'] || chat.photo['50']
-            : '';
-
-        return blankChat({ chat, photo, friends, creator: creators.find(creator => creator.id === Math.abs(chat.creator)) });
-    }).join('<br style="display: block; margin: 5px; content: \'\';">');
+    const listChatsHTML = foundChats.chats.map(chat => blankChat({
+        chat,
+        friends,
+        creator: creators.find(creator => creator.id === Math.abs(chat.creator))
+    })
+    ).join('<br style="display: block; margin: 10px; content: \'\';">');
 
     modalPage.setContent(listChatsHTML)
         .setTitle(
@@ -272,7 +304,7 @@ async function searchChats({ isCurrent = false, offset = 0 }) {
             )
         );
 
-    onClicks('searchChats', {offset, friends});
+    onClicks('searchChats', { offset, friends });
 
     load.chats = false;
 }
@@ -287,17 +319,17 @@ async function authModalPage() {
                     <br/>С помощью расширения Вы можете осуществлять поиск чатов по их названиям, что позволяет быстро найти нужную беседу. Кроме того, Вы можете использовать различные фильтры для уточнения результатов поиска. Например, Вы можете фильтровать чаты по участникам, чтобы найти только те, в которых участвует определенный пользователь или группа людей. Также есть возможность фильтровать чаты по Вашим друзьям, чтобы быстро найти те беседы, в которых они присутствуют.
                     <br/>
                     
-                    <hr style="margin-top: 30px"  class="separator" data-content="Получение Вашего токена"/>
+                    ${blankSeparator('margin-top: 12px; margin-bottom: 12px;')}
                     <span style="color: ${appearance.get() === 'dark' ? '#f6c254' : '#df9700'};">
                         Для использования расширения необходима авторизация, которая будет выполняться путем получения Вашего токена ВКонтакте с помощью приложения «<a style="color: #71aaeb;" target="_blank" href="${services.auth.urlByGetCode}">ПоискЧата</a>».
                     </span>
           
-                    <hr style="margin-top: 25px;" class="separator" data-content="Обратите внимание"/>
+                    ${blankSeparator('margin-top: 12px; margin-bottom: 12px;')}
                     <span> 
                         Ваш токен будет сохранен только на Вашем компьютере (локально) и будет действителен только в течение 24 часов. По истечении этого времени будет получен новый токен, чтобы гарантировать его актуальность во время использования расширения. Таким образом, фактическое хранение токена на сервере невозможно. 
                     </span>
                     
-                    <hr style="margin-top: 25px" class="separator" data-content="Авторизация"/>
+                    ${blankSeparator('margin-top: 12px; margin-bottom: 12px;')}
                     Пожалуйста, нажмите на кнопку: 
                     <span style="
                         display: inline-block; 
@@ -316,12 +348,12 @@ async function authModalPage() {
             </div>
     `;
 
-    modalPage.new(titleModalPage({before: 'Авторизация'})).setContent(html).visible();
+    modalPage.new(titleModalPage({ before: 'Авторизация' })).setContent(html).visible();
 
 
     const buttonAuthForModalPage = document.getElementById('button_auth_for_modal_page');
     buttonAuthForModalPage.onclick = async () => {
-        let info = 'Регистрация учетной записи в расширении ПоискЧата..</br>';
+        let info = 'Регистрация учетной записи в расширении ПоискЧата..</br></br>';
 
         modalPage.setLoad([info]);
         const isValid = await vkAuth();
@@ -330,16 +362,22 @@ async function authModalPage() {
             return modalPage.setLoad([info + 'Неизвестная ошибка, попробуйте еще раз']);
         }
 
-        modalPage.setLoad([info + 'Авторизованный, VK токен получен.</br>Перезагружаю вкладку для начала работы расширения']);
-        setTimeout(() => location.reload(), 1_000);
+        modalPage.setLoad([info + 'Авторизованный, VK токен получен.</br></br>Перезагружаю вкладку для начала работы расширения']);
+        setTimeout(() => location.reload(), 2_000);
     };
 
     GM_setValue('timeStampAuthModalPage', services.timeStampAuthModalPage = Infinity);
 }
 
 
-async function showUsersChat(indexChat, friends, backFunction, offset = 0, search) {
-    const chat = currentChats.foundChats.chats[indexChat];
+async function showUsersChat(indexChatOrChat, friends, backFunction, offset = 0, search) {
+    let chat = {};
+    if (typeof indexChatOrChat === 'object') {
+        chat = indexChatOrChat;
+    } else {
+        chat = currentChats.foundChats.chats[indexChatOrChat];
+    }
+
     const chatPhoto = chat.photo
         ? chat.photo['200'] || chat.photo['150'] || chat.photo['50']
         : 'https://vk.com/images/community_200.png';
@@ -354,7 +392,7 @@ async function showUsersChat(indexChat, friends, backFunction, offset = 0, searc
         before: { title: deXSS(chat.title), icon: chatPhoto },
         after: `${chat.membersCount.toLocaleString('ru-RU')}уч.`,
         subTitle: `
-            ${blankInputSearch({ id: 'search_users_chat', value: search})}
+            ${blankInputSearch({ id: 'search_users_chat', value: search })}
             ${subTitle || blankPages({})}
         `
     });
@@ -428,9 +466,9 @@ async function showUsersChat(indexChat, friends, backFunction, offset = 0, searc
         .setTitle(
             title(
                 `
-                    ${blankPages({found: membersCount, inOnePage: sortedMembersList.length, offset, currentPage, totalPage})}
+                    ${blankPages({ found: membersCount, inOnePage: sortedMembersList.length, offset, currentPage, totalPage })}
                     <span style="display: flex; gap: 5px;">
-                        ${icons({name: 'users_outline', size: 16, realSize: 20, fill: 'secondary'})}
+                        ${icons({ name: 'users_outline', size: 16, realSize: 20, fill: 'secondary' })}
                         <span style="padding-right: 10px; color: #99a2ad;">
                             ${onlineMembers.toLocaleString('ru-RU')} ${decOfNum(onlineMembers, ['участник', 'участника', 'участников'])} в сети
                         </span>
@@ -439,7 +477,7 @@ async function showUsersChat(indexChat, friends, backFunction, offset = 0, searc
             )
         );
 
-    onClicks('showUsersChat', {indexChat, friends, backFunction, offset});
+    onClicks('showUsersChat', { indexChatOrChat, friends, backFunction, offset });
 }
 
 function usersStack(arrayLinks) {
@@ -512,7 +550,7 @@ function icons({ name, realSize = 24, size = realSize, fill = 'accent' }) {
 
 
 async function showStatistics() {
-    modalPage.new(titleModalPage({before: 'Статистика хранилища и топы'}))
+    modalPage.new(titleModalPage({ before: 'Статистика хранилища и топы' }))
         .setLoad().visible();
 
 
@@ -716,7 +754,7 @@ async function showAddChat() {
        
     `
 
-    modalPage.new(titleModalPage({before: 'Добавление чата'})).setContent(html).visible();
+    modalPage.new(titleModalPage({ before: 'Добавление чата' })).setContent(html).visible();
 
     const input = document.getElementById('add_сhat_search');
     input.setSelectionRange(input.value.length, input.value.length);
@@ -769,7 +807,7 @@ async function showAddChat() {
 }
 
 
-async function showTopUseExtension () {
+async function showTopUseExtension() {
     modalPage.new(titleModalPage({
         title: 'Админ панель',
         before: 'Использования',
@@ -780,12 +818,12 @@ async function showTopUseExtension () {
         `
     })).setLoad().visible();
 
-    
+
     (document.getElementById('back_button_modal_page') ?? {}).onclick = () => {
         showAdminPanel({ isCurrent: true });
     };
 
-    const users = await SCAPI.call({method: "extension.getTopUse"});
+    const users = await SCAPI.call({ method: "extension.getTopUse" });
 
     const usersFromVK = await getUsersOrGroupsFromVK(users.map(user => user.id), true);
 
@@ -808,10 +846,10 @@ async function showTopUseExtension () {
 }
 
 
-async function showAdminPanel () {
+async function showAdminPanel() {
     modalPage.new(titleModalPage({
         title: 'Админ панель',
-        icon: icons({ name: 'wrench_outline', fill: 'iconsAccent', realSize: 28 , size: 28 })
+        icon: icons({ name: 'wrench_outline', fill: 'iconsAccent', realSize: 28, size: 28 })
     })).setLoad().visible();
 
     const html = `
@@ -835,7 +873,7 @@ async function showAdminPanel () {
 }
 
 
-async function showShop () {
+async function showShop() {
     modalPage.new(titleModalPage({
         before: 'Товары',
     })).setLoad().visible();
@@ -867,16 +905,16 @@ async function showShop () {
 
             </div>
 
-            ${services.profileFromSC.isSubscriptionValid ? 
-                `
+            ${services.profileFromSC.isSubscriptionValid ?
+            `
                     <p style="margin-bottom: 15px;"></p>
                     <span style="display: flex; flex-direction: row; align-items: center; gap: 5px;">
-                        ${icons({name: 'donut_circle_fill_yellow', size: 20, realSize: 20, fill: 'original'})}
+                        ${icons({ name: 'donut_circle_fill_yellow', size: 20, realSize: 20, fill: 'original' })}
                         Ваша подписка активна до ${moment(services.profileFromSC.subscription.expired).calendar()}
                     </span>
-                ` 
-                : ''
-            }
+                `
+            : ''
+        }
 
         </div>
     `;
@@ -951,4 +989,118 @@ function showDescriptionProduct(productId) {
     `);
 
     onClicks('showDescriptionProduct', {});
+}
+
+
+async function showProfile({ id }) {
+    if (!id) {
+        id = services.VKMainUser.id;
+    }
+
+    modalPage.new(titleModalPage({
+        before: 'Профиль',
+        subTitle: blankInputSearch({ id: 'search_user_profile', placeholder: 'Ссылка на страницу', value: id }),
+    })).setLoad(['Загружаем...']).visible();
+
+    const [userFromVK] = await getUsersOrGroupsFromVK([id]);
+    if (!userFromVK || !userFromVK.first_name) {
+        modalPage.setContent(
+            blankNotFound(
+                icons({ name: 'user_slash_outline', realSize: 20, size: 48 }),
+                'Такого профиля ВКонтакте не существует '
+            )
+        );
+
+        return onClicks('showProfile', {});
+    }
+
+    const [userFromSC] = await Promise.all([
+        SCAPI.call({
+            method: 'extension.getUser',
+            parameters: { id: userFromVK.id, full: true }
+        })
+    ]);
+
+    let HTMLNewChat = '';
+
+    let fields = [], creator = {};
+
+    if (userFromSC.newChat) {
+        [friends, [creator]] = await Promise.all([
+            getFriends(),
+            getUsersOrGroupsFromVK([userFromSC.newChat.creator])
+        ]);
+
+        HTMLNewChat = `
+            <br/>
+            <div style="margin-left: 3px; margin-bottom: 3px; font-size: 15px; font-weight: bold;">Самый новый чат с ${userFromVK.sex === 1 ? 'ней' : 'ним'}</div>
+            ${
+                blankChat({
+                    chat: userFromSC.newChat,
+                    friends: friends,
+                    creator: creator
+                })
+            }
+            ${userFromSC.stats.member > 1 ?
+                `
+                        <span style="display: flex; justify-content: center; text-align: center; margin-top: 3px;">
+                            <a id="full_chats_from_profile">Полный список</a>
+                        </span>
+                `
+                : ''
+            }
+        `;
+    }
+
+    modalPage.setContent(`
+        <div class="${classGroup}">
+        
+            <div style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
+                    <div style="width: 100px; height: 100px;" class="vkuiAvatar vkuiImageBase vkuiImageBase--size-100 vkuiImageBase--loaded" role="img">
+                        <img class="vkuiImageBase__img" src="${userFromVK.photo_100 || ''}">
+                    </div>
+
+                    <a href="https://vk.com/id${userFromVK.id}" target="_blank" style="display: flex; gap: 5px; align-items: center; flex-direction: row; font-size: 20px;  font-weight: bold; padding-top: 10px; color: var(--vkui--color_text_primary); text-decoration-color: var(--vkui--color_text_primary);">
+                        ${userFromSC.isSubscriptionValid ?
+                            `
+                                <span title="Подписка активна до ${moment(userFromSC.subscription.expired).calendar()}">
+                                    ${icons({ name: 'donut_circle_fill_yellow', size: 24, realSize: 20, fill: 'original' })}
+                                </span>
+                            `
+                            : ''
+                        }
+                        ${userFromVK.first_name} ${userFromVK.last_name}
+                    </a>
+            </div>
+
+        </div>
+
+        <br style="display: block; margin: 10px; content: '';">
+
+        <div class="${classGroup}" style="display: flex; justify-content: space-between;">
+            <span style="display: flex; flex-direction: row; gap: 5px; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
+                ${icons({ name: 'archive_outline', size: 16, fill: 'secondary' })}
+                ${userFromVK.sex === 1 ? 'Найдена' : 'Найден'} в ${userFromSC.stats.member.toLocaleString('ru-RU')} ${decOfNum(userFromSC.stats.member, ['чате', 'чатах', 'чатах'])}
+            </span>
+
+            <div class="ver-separator"></div>
+
+            <span style="display: flex; flex-direction: row; gap: 5px; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
+                ${icons({ name: 'crown_outline', size: 16, realSize: 28, fill: 'secondary' })}
+                Создатель в ${userFromSC.stats.creator.toLocaleString('ru-RU')} ${decOfNum(userFromSC.stats.creator, ['чате', 'чатах', 'чатах'])}
+            </span>
+
+            <div class="ver-separator"></div>
+
+            <span style="display: flex; flex-direction: row; gap: 5px; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
+                ${icons({ name: 'add', size: 16, fill: 'secondary' })}
+                ${userFromVK.sex === 1 ? 'Добавила' : 'Добавил'} ${userFromSC.stats.added.toLocaleString('ru-RU')} ${decOfNum(userFromSC.stats.added, ['чат', 'чата', 'чатов'])}
+            </span>
+        </div>
+
+
+        ${HTMLNewChat}
+    `);
+
+    onClicks('showProfile', { id: userFromVK.id, friends, chat: userFromSC.newChat });
 }
