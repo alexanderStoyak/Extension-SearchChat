@@ -1,13 +1,12 @@
 const observeChange = async () => {
-    if (!await checkValidToken()) {
-        return;
-    }
-    
-
     moment.locale('ru');
     const body = document.querySelector('body');
     appearance.update(body);
     modalPage = new ModalPage();
+
+    if (!await checkValidToken()) {
+        return;
+    }
 
     const [profileHeaderActions] = document.getElementsByClassName('ProfileHeaderButton');
     const pageActions = document.getElementById('page_actions');
