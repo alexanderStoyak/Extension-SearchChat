@@ -26,14 +26,16 @@ class Appearance {
     }
 
     update(body) {
-        if (body.className.includes('vkui--vkBase--dark')) {
-            this.appearance = 'dark';
-            setStyles();
-        }
-        if (body.className.includes('vkui--vkBase--light')) {
-            this.appearance = 'light';
-            setStyles();
-        }
+        setTimeout(() => {
+            if (body.className.includes('vkui--vkBase--dark')) {
+                this.appearance = 'dark';
+                setStyles();
+            }
+            if (body.className.includes('vkui--vkBase--light')) {
+                this.appearance = 'light';
+                setStyles();
+            }
+        }, 500);
     }
 
     get() {

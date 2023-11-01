@@ -260,8 +260,6 @@ async function searchChats({ isCurrent = false, offset = 0 }) {
         return load.chats = false;
     }
 
-    console.log(foundChats);
-
     if (!foundChats.found) {
         load.chats = false;
         modalPage.setContent(

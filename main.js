@@ -1,3 +1,15 @@
+const classesHandlers = [
+    'im-mess',
+    '_sticker_hints',
+    'post_field_warning',
+    'chat_onl_wrap',
+    'page_block',
+    'Profile',
+    'nim-conversation-search-row',
+    'idd_selected_value'
+];
+
+
 const observeChange = async () => {
     moment.locale('ru');
     const body = document.querySelector('body');
@@ -24,37 +36,45 @@ const observeChange = async () => {
         buttonsInTopProfileMenu(topProfileMenu);
     }
 
+
+
+
     const observer = new MutationObserver(mutations => {
+        const mutationsForTargets = mutations.filter(mutation =>
+            mutation.target instanceof HTMLElement
+            && classesHandlers.find(className => mutation.target.classList.contains(className))
+        )
 
-        for (const mutation of mutations) {
-            
-            for (const node of mutation.addedNodes) {
+        if (mutationsForTargets.find(mutation => mutation.target.classList.contains('im-mess'))) {
+            const [peerHistory] = document.getElementsByClassName('_im_peer_history');
 
-                if (!(node instanceof HTMLElement)) {
-                    if (node.textContent === 'Системная' || node.textContent === 'Светлая' || node.textContent === 'Тёмная') {
-                        appearance.update(body);
-                    }
+            if (peerHistory) {
+                buttonInMessages(peerHistory);
+            }
+        }
+
+        if (mutationsForTargets.find(mutation => mutation.target.classList.contains('idd_selected_value'))) {
+            appearance.update(body);
+        }
+
+
+
+
+        const mutationsForAddedNodes = mutations.filter(mutation =>
+            [...mutation.addedNodes].find(node =>
+                node instanceof HTMLElement
+                && classesHandlers.find(className => node.classList.contains(className))
+            )
+        )
+
+        for (const mutation of mutationsForAddedNodes) {
+            for (const { classList } of mutation.addedNodes) {
+                if (!classList) {
                     continue;
                 }
 
-                if (
-                    node.classList.contains('_sticker_hints')
-                    || node.classList.contains('im-page--title')
-                    || node.classList.contains('im-mess')
-                ) {
-                    const [peerHistory] = document.getElementsByClassName('_im_peer_history');
 
-                    if (peerHistory) {
-                        buttonInMessages(peerHistory);
-                    }
-                }
-
-
-                if (
-                    node.classList.contains('post_field_warning')
-                    || node.classList.contains('chat_onl_wrap')
-                    || node.classList.contains('page_block')
-                ) {
+                if (classList.contains('page_block')) {
                     const pageActions = document.getElementById('page_actions');
 
                     if (pageActions) {
@@ -63,7 +83,7 @@ const observeChange = async () => {
                 }
 
 
-                if (node.classList.contains('Profile')) {
+                if (classList.contains('Profile')) {
                     const [profileHeaderActions] = document.getElementsByClassName('ProfileHeaderButton');
 
                     if (profileHeaderActions) {
@@ -72,12 +92,29 @@ const observeChange = async () => {
                 }
 
 
-                if (node.classList.contains('_im_dialog')) {
-                    const dialogsSearch = document.getElementById('im_dialogs_search');
+                if (classList.contains('_sticker_hints')) {
+                    const [peerHistory] = document.getElementsByClassName('_im_peer_history');
 
-                    buttonInDialogsSearch(dialogsSearch);
+                    if (peerHistory) {
+                        buttonInMessages(peerHistory);
+                    }
                 }
             }
+        }
+
+
+
+
+        const mutationsForNextSibling = mutations.filter(mutation =>
+            mutation.nextSibling instanceof HTMLElement
+            && classesHandlers.find(className => mutation.nextSibling.classList.contains(className))
+        )
+
+        if (mutationsForNextSibling.find(mutation => mutation.nextSibling.classList.contains('nim-conversation-search-row'))) {
+            console.log('added dialogs search button')
+            const dialogsSearch = document.getElementById('im_dialogs_search');
+
+            buttonInDialogsSearch(dialogsSearch);
         }
     });
 
