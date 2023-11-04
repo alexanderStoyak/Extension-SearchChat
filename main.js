@@ -99,6 +99,14 @@ const observeChange = async () => {
                         buttonInMessages(peerHistory);
                     }
                 }
+
+                if (classList.contains('im-mess')) {
+                    const [peerHistory] = document.getElementsByClassName('_im_peer_history');
+        
+                    if (peerHistory) {
+                        buttonInMessages(peerHistory);
+                    }
+                }
             }
         }
 
@@ -111,7 +119,6 @@ const observeChange = async () => {
         )
 
         if (mutationsForNextSibling.find(mutation => mutation.nextSibling.classList.contains('nim-conversation-search-row'))) {
-            console.log('added dialogs search button')
             const dialogsSearch = document.getElementById('im_dialogs_search');
 
             buttonInDialogsSearch(dialogsSearch);

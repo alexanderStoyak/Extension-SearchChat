@@ -105,6 +105,58 @@ function onClicks(fromWhichFunction, args) {
 
                 document.getElementById('searchChats_button').onclick = () => searchChats({});
             }
+
+            const rangeUsersMin = document.getElementById('range_users_input_min');
+            const rangeUsersMax = document.getElementById('range_users_input_max');
+
+            if (rangeUsersMin) {
+                rangeUsersMin.oninput = () => {
+                    let value = +rangeUsersMin.value || +(rangeUsersMin.value = 0);
+
+                    if (value > 199998) {
+                        value = 199998;
+                    } else if (value < 0) {
+                        value = 0;
+                    }
+
+                    [filters.minUsers, rangeUsersMin.value] = [value, value];
+
+                    if (filters.maxUsers <= filters.minUsers) {
+                        rangeUsersMax.value = +(filters.maxUsers = filters.minUsers + 1);
+                        rangeUsersMax.style.width = `${((String(rangeUsersMax.value).length + 1) * 8) - 8}px`;
+                    }
+
+                    rangeUsersMin.style.width = `${((String(rangeUsersMin.value).length + 1) * 8) - 8}px`;
+                }
+            }
+
+            if (rangeUsersMax) {
+                rangeUsersMax.oninput = () => {
+                    let value = +rangeUsersMax.value || +(rangeUsersMax.value = 0);
+                    if (value > 200_000) {
+                        value = 200_000;
+                    } else if (value < 1) {
+                        value = 1;
+                    }
+
+                    [filters.maxUsers, rangeUsersMax.value] = [value, value];
+                    
+                    if (filters.minUsers >= filters.maxUsers) {
+                        const value = +(filters.minUsers = filters.maxUsers - 1);
+                        rangeUsersMin.value = value < 0 ? 1 : value;
+                        rangeUsersMin.style.width = `${((String(rangeUsersMin.value).length + 1) * 8) - 8}px`;
+                    }
+
+                    rangeUsersMax.style.width = `${((String(rangeUsersMax.value).length + 1) * 8) - 8}px`;
+                }
+            }
+
+
+            (document.getElementById('clear_range_users') ?? {}).onclick = () => {
+                filters.minUsers = rangeUsersMin.value = 0;
+                filters.maxUsers = rangeUsersMax.value = 200_000;
+                searchChats({});
+            }
         },
 
 

@@ -72,9 +72,16 @@ function blankChat({ chat, creator, friends }) {
 
     chat.title = deXSS(chat.title);
 
-    const photoFriends = friends.filter(friend => chat.members.includes(friend.id)).map(friend => friend.photo_100);
-    const countFriendsInChat = photoFriends.length;
-    photoFriends.splice(3);
+    const infoFriends = friends.filter(friend => chat.members.includes(friend.id))
+        .map(friend => { 
+            return { 
+                photo: friend.photo_100, 
+                name: `${friend.first_name} ${friend.last_name}`,
+                id: friend.id,
+            }
+        });
+    const countFriendsInChat = infoFriends.length;
+    infoFriends.splice(3);
 
     return `
         <div class="${classGroup}" style="padding-bottom: 0px;">
@@ -95,10 +102,12 @@ function blankChat({ chat, creator, friends }) {
                     <div id="raw" style="align-items: center; margin-bottom: 5px; position: relative; gap: 15px; z-index: 3; justify-content: space-between;">
 
                         <div id="raw" style="margin-bottom: 10px; gap: 15px;">
-                            <div title="Скопировать ссылку на чат" style="width: 58px; height: 58px; box-shadow: 0 0 0 0.1em;" link="vk.me/join/${chat.key}"
-                                class="vkuiAvatar vkuiImageBase vkuiImageBase--size-58 vkuiImageBase--loaded copy_link_for_chat" role="img">
-                                <img class="vkuiImageBase__img" src="${photo}">
-                            </div>
+                            <a title="Скопировать ссылку на чат" style="width: 58px; height: 58px;">
+                                <div style="width: 58px; height: 58px; box-shadow: 0 0 0 0.1em;" link="vk.me/join/${chat.key}"
+                                    class="vkuiAvatar vkuiImageBase vkuiImageBase--size-58 vkuiImageBase--loaded copy_link_for_chat" role="img">
+                                    <img class="vkuiImageBase__img" src="${photo}">
+                                </div>
+                            </a>
 
                             <div>
                                 <h4 title="${chat.title}" class="vkuiHeadline vkuiHeadline--sizeY-compact vkuiHeadline--level-1 vkuiTypography--normalize vkuiTypography--weight-1" style="font-size: 15px; max-width: 230px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
@@ -115,7 +124,7 @@ function blankChat({ chat, creator, friends }) {
                                         <div style="display: flex; justify-content: flex-start; gap: 3px; align-items: center;">
                                             <div class="UsersStack-module__root--HKcQf UsersStack-module__sizeS--O9MMO UsersStack-module__directionRow--HjNuZ ProfileFullStacks__stacks">
                                                 <div class="UsersStack-module__photos--bCsMG" aria-hidden="true">
-                                                    ${blankUsersStack(photoFriends)}
+                                                    ${blankUsersStack(infoFriends)}
                                                 </div>
                                             </div>
                                             <span style="color: #99a2ad; font-weight: 400;">
@@ -466,16 +475,45 @@ function blankFiltersSearchChats({
             <input type="checkbox" id="filter_only_with_friends" ${filters.onlyWithFriends ? 'checked' : ''} />
         </div>
         
-        ${blankPages({ found: foundChats, inOnePage: countListChats, offset, currentPage, totalPage })}
         
+        <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
+            <span>
+                ${icons({ name: 'poll_outline', size: 16, realSize: 32, fill: 'secondary' })}
+            </span>
+            <label style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;" id="range_users_label" for="range_users_label">
+                Диапазон участников от 
+                <input class="sort-select" type="number" 
+                    id="range_users_input_min" 
+                    name="range_users" 
+                    min="0" 
+                    max="199998" 
+                    value="${filters.minUsers}" 
+                    style="width: ${((filters.minUsers.toString().length + 1) * 8) - 8}px; margin: 0px;"
+                />
+                до 
+                <input class="sort-select" type="number" 
+                    id="range_users_input_max" 
+                    name="range_users" 
+                    min="1" 
+                    max="200000"
+                    value="${filters.maxUsers}" 
+                    style="width: ${((filters.maxUsers.toString().length + 1) * 8) - 8}px; margin: 0px;"
+                /> 
+            </label>
+            <a id="clear_range_users">Сбросить</a>
+        </div>
+
+
+        ${blankPages({ found: foundChats, inOnePage: countListChats, offset, currentPage, totalPage })}
     </div>
     `
 }
 
 
-function blankUsersStack(arrayLinks) {
-    return arrayLinks.map((link, index) => {
+function blankUsersStack(arrayInfoFriends) {
+    return arrayInfoFriends.map((friend, index) => {
         return `<svg xmlns="http://www.w3.org/2000/svg" className="UsersStack-module__photo--iCBco" aria-hidden="true" style="width: 24px; height: 24px">
+        <a href="https://vk.com/id${friend.id}" target="_blank">
         <defs>
             ${index === 0
                 ? `<circle cx="12" cy="12" r="12" id=":r0:${index}"/>`
@@ -487,9 +525,11 @@ function blankUsersStack(arrayLinks) {
         </clipPath>
         <g clip-path="url(#UsersStackMask:r0:${index})">
             <use href="#:r0:${index}" className="SVGStackMask-module__fill--pL05i"/>
-            <image href="${link}" width="24" height="24"/>
+            <image href="${friend.photo}" width="24" height="24"/>
             <use href="#:r0:${index}" fill="none" className="SVGStackMask-module__useElement--usICi"/>
         </g>
+        <title>${friend.name}</title>
+        </a>
     </svg>`
 
     }).join('');

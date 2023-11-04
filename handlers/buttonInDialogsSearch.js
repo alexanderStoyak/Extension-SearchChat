@@ -35,5 +35,11 @@ function buttonInDialogsSearch(dialogsSearch) {
         } else if(oldButton && !dialogsSearch.value) {
             oldButton.remove();
         }
+
+        dialogsSearch.onfocus = () => {
+            if(dialogsSearch.value.length === 0 && oldButton) {
+                oldButton.remove();
+            }
+        }
     };
 }

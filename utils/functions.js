@@ -217,6 +217,8 @@ async function searchChats({ isCurrent = false, offset = 0 }) {
         onlyWithFriends: filters.onlyWithFriends,
         sortField: filters.sortField,
         sortOrder: filters.sortOrder,
+        maxMembers: filters.maxUsers,
+        minMembers: filters.minUsers,
         offset,
     }
 
@@ -313,7 +315,7 @@ async function authModalPage() {
             <div class="ProfileModalInfoHeadline" style="padding: 10px;">
                 <span style="display: block; gap: 5px; text-align: center; font-size: 13px;">
                     Расширение «ПоискЧата» — это инструмент, разработанный для удобного поиска чатов в социальной сети ВКонтакте. Оно предоставляет возможность пользователям быстро найти нужный чат, используя различные фильтры и параметры.
-                    <br/>В настоящее время расширение находится на стадии активной разработки, поэтому мы регулярно выпускаем обновления, внедряем новые функции и исправляем ошибки. Чтобы быть в курсе всех последних обновлений, рекомендуем подписаться на наш <a style="color: #71aaeb;" target="_blank" href="${services.telegramChannelURL}">телеграм-канале</a>, где мы делимся информацией о новых возможностях расширения.
+                    <br/>В настоящее время расширение находится на стадии активной разработки, поэтому мы регулярно выпускаем обновления, внедряем новые функции и исправляем ошибки. Чтобы быть в курсе всех последних обновлений, рекомендуем подписаться на наш <a style="color: #71aaeb;" target="_blank" href="${services.telegramChannelURL}">телеграм-канал</a>, где мы делимся информацией о новых возможностях расширения.
                     <br/>С помощью расширения Вы можете осуществлять поиск чатов по их названиям, что позволяет быстро найти нужную беседу. Кроме того, Вы можете использовать различные фильтры для уточнения результатов поиска. Например, Вы можете фильтровать чаты по участникам, чтобы найти только те, в которых участвует определенный пользователь или группа людей. Также есть возможность фильтровать чаты по Вашим друзьям, чтобы быстро найти те беседы, в которых они присутствуют.
                     <br/>
                     
@@ -442,7 +444,7 @@ async function showUsersChat(indexChatOrChat, friends, backFunction, offset = 0,
                 search ? 'Пользователи не найдены' : 'Этот чат без участников'
             )
         ).setTitle(title(blankPages({ found: 0 })));
-        return onClicks('showUsersChat', { indexChat, friends, backFunction, offset });
+        return onClicks('showUsersChat', { indexChatOrChat, friends, backFunction, offset });
     }
 
 

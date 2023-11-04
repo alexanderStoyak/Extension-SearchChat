@@ -6,6 +6,8 @@ class Filters {
         this.onlyWithFriends = false;
         this.sortField = 'added';
         this.sortOrder = 'desc';
+        this.minUsers = 0;
+        this.maxUsers = 200000;
     }
 
     remove() {
@@ -14,6 +16,8 @@ class Filters {
         this.onlyWithFriends = false;
         this.sortField = 'added';
         this.sortOrder = 'desc';
+        this.minUsers = 0;
+        this.maxUsers = 200000;
     }
 }
 const filters = new Filters();

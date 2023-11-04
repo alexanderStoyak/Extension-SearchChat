@@ -254,5 +254,38 @@ GM_addStyle(`
     .sort-select:hover {
         background-color: var(--vkui--color_background_secondary--active);
     }
+
+    .sort-select {
+        display: flex;
+        border: none;
+        color: #99a2ad;
+        border-radius: 5px;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 3px;
+   }
+
+    .input-number:focus {
+        outline: none;
+    }
+
+    .input-number:hover {
+        background-color: var(--vkui--color_background_secondary--active);
+    }
+
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
+
+    input[type="number"]:hover,
+    input[type="number"]:focus {
+            -moz-appearance: number-input;
+    }
 `)
 }
