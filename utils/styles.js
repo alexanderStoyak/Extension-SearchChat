@@ -61,7 +61,7 @@ GM_addStyle(`
         left: 0;
         top: 50%;
         width: 100%;
-        height: 1px;
+        height: 2px;
     }
     
     .separator:after {
@@ -197,13 +197,37 @@ GM_addStyle(`
         filter: blur(5px);
    }
 
+
    .btn-chat {
+        display: flex;
+        text-align: center; 
+        align-items: center; 
+        flex-direction: row; 
+        gap: 5px;
+        justify-content: center; 
+        cursor: default;
+        background-color: ${appearance.get() === 'dark' ? '#2b2b2b' : '#ebf2fa'};
+        transition: all 0.2s ease;
+        height: 100%;
+        width: 100%;
+    }
+
+    .btn-chat:hover {
+        background-color: var(--vkui--color_background_secondary--active);
+    }
+
+    .btn-chat:active {
+        transition: all 0s ease;
+        background-color: ${appearance.get() === 'dark' ? '#2b2b2b' : '#ebf2fa'};
+    }
+
+   .btn-chat-users-show {
         cursor: default;
         color: #99a2ad;
         transition: all 0.2s ease;
    }
 
-   .btn-chat:hover {
+   .btn-chat-users-show:hover {
        color: ${appearance.get() === 'dark' ? '#babfc4' : '#86888b'};
    }
 
@@ -213,10 +237,11 @@ GM_addStyle(`
         align-items: center; 
         flex-direction: row; 
         gap: 5px;
-        background-color: ${appearance.get() === 'dark' ? '#2b2b2b' : '#ebf2fa'};
         justify-content: center; 
         cursor: default;
         transition: all 0.2s ease;
+        height: 100%;
+        width: 100%;
    }
 
    .btn:hover {
@@ -286,6 +311,33 @@ GM_addStyle(`
     input[type="number"]:hover,
     input[type="number"]:focus {
             -moz-appearance: number-input;
+    }
+
+    .quote {
+        color: #99a2ad;
+        padding: 1px 5px 1px 5px;
+        border-radius: 5px;
+        background-color: var(--vkui--color_background_secondary);
+        transition: all 0.2s ease;
+        cursor: default;
+        box-shadow: -4px  0px 0px 0px var(--vkui--color_background_secondary--active);
+    }
+
+    .quote__text {
+        font-weight: bold;
+        display: flex; 
+        align-items: center; 
+        flex-direction: column;
+    }
+
+    li {
+        list-style-type: none;
+        padding: 3px 5px 3px 5px;
+    }
+      
+    ul {
+        margin-left: 0;
+        padding-left: 0;
     }
 `)
 }

@@ -288,7 +288,7 @@ async function searchChats({ isCurrent = false, offset = 0 }) {
         getFriends()
     ]);
 
-
+    
     const listChatsHTML = foundChats.chats.map(chat => blankChat({
         chat,
         friends,
@@ -550,7 +550,7 @@ function icons({ name, realSize = 24, size = realSize, fill = 'accent' }) {
 
 
 async function showStatistics() {
-    modalPage.new(titleModalPage({ before: 'Статистика хранилища и топы' }))
+    modalPage.new(titleModalPage({ before: 'Статистика и топы' }))
         .setLoad().visible();
 
 
@@ -602,26 +602,16 @@ async function showStatistics() {
             
             <p style="margin-bottom: 15px;"></p>
             
-            <div style="display: flex; width: 100%; flex-direction: column; align-items: center;" class="vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard">
-                <span style="
-                    display: flex; 
-                    flex-direction: row; 
-                    margin-bottom: 3px; 
-                    align-items: center; 
-                    gap: 5px;
-                "> 
-                    ${icons({ name: 'smile_outline', size: 16, realSize: 24, fill: 'secondary' })}
+            ${blankQuote(`
+                <span style="display: flex; flex-direction: row; align-items: center; gap: 5px;">
+                    ${icons({ name: 'smile_outline', size: 16, realSize: 24, fill: 'accent' })}
                     В среднем на 1 чат приходиться ${mediumCountMembersPerOneChat} ${decOfNum(membersPerOneChat, ['участник', 'участников', 'участников'])}
                 </span>
-                <span style="
-                    display: flex; 
-                    flex-direction: row; 
-                    align-items: center; 
-                    gap: 5px;
-                ">
-                    ${icons({ name: 'globe_outline', size: 16, realSize: 24, fill: 'secondary' })}
+                <span style="display: flex; flex-direction: row; align-items: center; gap: 5px;">
+                    ${icons({ name: 'globe_outline', size: 16, realSize: 24, fill: 'accent' })}
                     Почти каждый участник есть хотя бы в ${membersPerOneChat} ${decOfNum(membersPerOneChat, ['чате', 'чатах', 'чатах'])}
                 </span>
+            `)}
             </div>
         </div>
     `;
@@ -633,17 +623,19 @@ async function showStatistics() {
 
 
 async function showTopUsers() {
-    modalPage.new(`
-        <div style="display: flex; flex-direction: row; align-items: center; gap: 10px; line-height: 49px;">
-            <a id="back_button_modal_page" class="btn" style="border-radius: 10px;"> 
-                ${icons({ name: 'browser_back', size: 20, fill: 'secondary' })} Назад 
-            </a> 
-            ${icons({ name: 'users_outline', realSize: 20, size: 28 })}
-            <span style="font-size: 18px; display: flex; font-weight: 500;"> 
-                Топ пользователей по чатам
+    modalPage.new(titleModalPage({
+        icon: `
+            <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px;">
+                ${icons({ name: 'browser_back', size: 20, fill: 'secondary' })}
             </span>
-        </div>
-    `).setLoad().visible();
+        `,
+        title: 'Топ',
+        before: { 
+            title: 'Пользователи', 
+            icon: icons({ name: 'users_outline', realSize: 20, size: 28 }) 
+        }
+    })).setLoad().visible();
+
 
     const topUsers = await SCAPI.call({
         method: 'extension.getUsersTop',
@@ -669,17 +661,18 @@ async function showTopUsers() {
 
 
 async function showTopGroups() {
-    modalPage.new(`
-        <div style="display: flex; flex-direction: row; align-items: center; gap: 10px; line-height: 49px;">
-            <a id="back_button_modal_page" class="btn" style="border-radius: 10px;"> 
-                ${icons({ name: 'browser_back', size: 20, fill: 'secondary' })} Назад 
-            </a> 
-            ${icons({ name: 'users_3_outline', realSize: 24, size: 28 })}
-            <span style="font-size: 18px; display: flex; font-weight: 500;"> 
-                Топ групп по чатам
+    modalPage.new(    titleModalPage({
+        icon: `
+            <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px;">
+                ${icons({ name: 'browser_back', size: 20, fill: 'secondary' })}
             </span>
-        </div>
-    `).setLoad().visible();
+        `,
+        title: 'Топ',
+        before: { 
+            title: 'Группы', 
+            icon: icons({ name: 'users_3_outline', realSize: 24, size: 28 })
+        }
+    })).setLoad().visible();
 
     const topGroups = await SCAPI.call({
         method: 'extension.getGroupsTop',
@@ -739,17 +732,11 @@ async function showAddChat() {
         </div>
         <br>
         <div style="display: flex; align-items: center; flex-direction: column; margin: 10px;">
-            <span style="
-                display: flex; 
-                flex-direction: column; 
-                align-items: center;
-                gap: 5px;
-                color: var(--vkui--color_text_subhead); 
-                font-weight: 500;
-                text-align: center;
-            ">
-                Добавляя чат, Вы помогаете улучшить работу сервиса. Сервису важен каждый чат во ВКонтакте, чтобы он мог предоставить Вам любой чат, который Вы только пожелаете.
-            </span>
+            ${blankQuote(`
+                <span style="text-align: center;">
+                    Добавляя чат, Вы помогаете улучшить работу сервиса. Сервису важен каждый чат во ВКонтакте, чтобы он мог предоставить Вам любой чат, который Вы только пожелаете.
+                </span>
+            `)}
         </div>
        
     `
@@ -884,7 +871,7 @@ async function showShop() {
             <div style="display: flex; flex-direction: row; align-items: center;">
 
                 <span id="subscription" class="group-stats vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard" title="Описание товара"> 
-                    ${icons({ name: 'star_circle', realSize: 16, size: 45 })}
+                    ${icons({ name: 'donut_circle_fill_yellow', realSize: 20, size: 45, fill: 'original' })}
                     <span class="color-text-subhead" style="font-size: 12px">месяц</span>
                     <span class="button" style="font-size: 12px;">Подписка</span>
                     <span class="button color-text-subhead" style="font-size: 12px;">
@@ -906,15 +893,17 @@ async function showShop() {
             </div>
 
             ${services.profileFromSC.isSubscriptionValid ?
-            `
-                    <p style="margin-bottom: 15px;"></p>
-                    <span style="display: flex; flex-direction: row; align-items: center; gap: 5px;">
-                        ${icons({ name: 'donut_circle_fill_yellow', size: 20, realSize: 20, fill: 'original' })}
-                        Ваша подписка активна до ${moment(services.profileFromSC.subscription.expired).calendar()}
-                    </span>
                 `
-            : ''
-        }
+                    <p style="margin-bottom: 10px;"></p>
+                    ${blankQuote(`
+                        <span style="display: flex; flex-direction: row; align-items: center; gap: 5px; line-height: 30px;">
+                            ${icons({ name: 'donut_circle_fill_yellow', size: 12, realSize: 20, fill: 'original' })}
+                            Ваша подписка активна до ${moment(services.profileFromSC.subscription.expired).calendar()}
+                        </span>
+                    `)}
+                `
+                : ''
+            }
 
         </div>
     `;
@@ -928,34 +917,68 @@ async function showShop() {
 const descriptionProduct = {
     'subscription': {
         title: 'Подписка',
-        tableСontents: 'Больше возможностей с подпиской',
+        tableСontents: `
+            <b style="display: flex; flex-direction: row; align-items: center; gap: 5px; font-size: 16px; justify-content: center;">
+                ${icons({name: 'star_circle_fill_yellow', realSize: 16, size: 14, fill: 'original'})} Больше возможностей с подпиской!
+            </b>
+        `,
         price: 250,
         description: `
-            Доступ к чатам любого пользователя или группы ВКонтакте.
+            ${blankQuote(
+                `
+                    <span style="display: flex; flex-direction: row; align-items: center; gap: 5px; font-size: 16px; color: #828282;"> 
+                        ${icons({name: 'unlock', realSize: 12, size: 14})} Доступ к чатам любого пользователя или группы ВКонтакте.
+                    </span>
+                    <br/>
+                    <ui>
+                        <li> # Вызывает удивление у Вашей жертвы, так как не каждый способен заходить в чаты пользователя при помощи всего двух кнопок. </li>
+                        <li> # При необходимости использовать чаты для обхода черного списка (ЧС) или закрытых личных сообщений (ЛС) </li>
+                        <li> # Исходя из найденных чатов и их тематики, можно узнать, чем увлекается или где живет ваша жертва. </li>
+                        <li> # Можно найти школьные, рабочие, городские беседы и другие подобные чаты. </li>
+                        <li> # Если Вы увидели чат у пользователя и хотите войти в него, попробуйте найти его у нас. </li>
+                        <li> # Активные чаты: как правило, чем общительнее Ваш друг, тем активнее его чаты. </li>
+                    </ui>
+                `
+            )}
             <br/>
-            Увеличения лимитов на страницы при просмотре чатов, по стандарту 15, у подписчиков 500. Одна страница включает в себя 15 чатов.
+            ${blankQuote(`
+                <span style="display: flex; flex-direction: row; align-items: center; gap: 5px; font-size: 16px; color: #828282;"> 
+                    ${icons({name: 'cards_2', realSize: 12, size: 14})} Увеличения лимитов на страницы при просмотре чатов.
+                </span>
+                <br/>
+                # У обычных пользователей максимальное количество страниц, которые они могут просмотреть, составляет 15. У пользователей с подпиской максимальное количество страниц увеличено до 500, что дает возможность пролистать 7,500 чатов.
+            `)}
             <br/>
             <br/>
-            Мы сделали подписку платной, поскольку функции с подпиской требуют дополнительных расходов, в том числе на аренду серверов. Вклад подписчиков позволяет нам покрывать эти расходы и помогает «ПоискЧата» оставаться бесплатным для всех пользователей.
+            ${blankQuote(
+                `
+                    Мы сделали подписку платной, поскольку функции с подпиской требуют дополнительных расходов, в том числе на аренду серверов. 
+                    Вклад подписчиков позволяет нам покрывать эти расходы и помогает «ПоискЧата» оставаться бесплатным для всех пользователей.
+                `
+            )}
         `,
     },
     'myHide': {
-        title: 'Скрыть все свои чаты',
-        tableСontents: 'Гарантированная конфиденциальность',
-        price: 500,
-        description: `
-        Мы понимаем, что многим пользователям не нравится, когда кто-то несанкционированно заходит в их любимые чаты. Это может серьезно нарушить комфорт и безопасность пользователей, особенно если чат является школьным или городским. Кроме того, информация, представленная в профиле чата, может раскрыть много о человеке, его интересах, месте жительства, образовании и месте работы.
-        Мы предлагаем функцию скрытия чатов, чтобы Вы могли защитить свою приватность. Это позволит Вам контролировать доступ к Вашим чатам и предотвратить несанкционированный доступ.
-        Скрытие чатов - это важная функция, которая помогает защитить Вас от нежелательного вмешательства и сохранить Вашу приватность.
-        Ваши чаты останутся полностью скрыты от посторонних глаз.
-        <br/>
-        Ни один сервис, который использует наше API, такие как
-        <a href="https://t.me/HowToFind" target="_blank" > HowToFind</a>,
-        <a href="https://vk.com/luxury__cb" target="_blank" > luxury</a>,
-        <a href="https://vk.com/lapik_bot" target="_blank" > lapik bot</a> и
-        <a href="https://t.me/QuickLeaks_Bot" target="_blank" > Quick OSINT</a>
-        не сможет получить доступ к Вашим чатам, включая и это расширение.
+        title: 'Скрыть чаты',
+        tableСontents: `
+            <b style="display: flex; flex-direction: row; align-items: center; gap: 5px; font-size: 16px; justify-content: center;">
+                ${icons({name: 'lock', realSize: 12, size: 14})} Гарантированная конфиденциальность
+            </b>
         `,
+        price: 500,
+        description: blankQuote(`
+            <span style="display: flex; flex-direction: row; align-items: center; gap: 5px; font-size: 16px; color: #828282;"> 
+                ${icons({name: 'brain_outline', realSize: 28, size: 15})} Мы понимаем,
+            </span>
+            что многим пользователям не нравится, когда кто-то несанкционированно заходит в их любимые чаты. 
+            Это может серьезно нарушить комфорт и безопасность пользователей, особенно если чат является школьным или городским. Кроме того, информация, представленная в профиле чата, может раскрыть много о человеке, его интересах, месте жительства, образовании и месте работы.
+            Мы предлагаем функцию скрытия чатов, чтобы Вы могли защитить свою приватность. 
+            Это позволит предотвратить несанкционированный доступ к Вашим чатам.
+            Скрытие чатов — это важная функция, которая помогает защитить Вас от нежелательного вмешательства и сохранить Вашу приватность.
+            Ваши чаты останутся полностью скрыты от посторонних глаз.
+            <br/>
+            Ни один сервис, который использует наше API не сможет получить доступ к Вашим чатам, включая и это расширение.
+        `)
     }
 }
 function showDescriptionProduct(productId) {
@@ -974,8 +997,8 @@ function showDescriptionProduct(productId) {
 
     modalPage.setContent(`
         <div style="display: block; gap: 5px; text-align: center; margin-top: 3px; padding: 10px;">
-            <span style="font-size: 15px; font-weight: 500;">${product.tableСontents}</span>
-            <p style="margin-bottom: 15px;"></p>
+            ${product.tableСontents}
+            <div class="separator"></div>
             <span style="font-size: 13px;">${product.description}</span>
 
             <div style="display: flex; padding-top: 15px; align-items: flex-end; justify-content: flex-end;">
@@ -1023,7 +1046,7 @@ async function showProfile({ id }) {
 
     let HTMLNewChat = '';
 
-    let fields = [], creator = {};
+    let friends = [], creator = {};
 
     if (userFromSC.newChat) {
         [friends, [creator]] = await Promise.all([
@@ -1060,17 +1083,19 @@ async function showProfile({ id }) {
                         <img class="vkuiImageBase__img" src="${userFromVK.photo_100 || ''}">
                     </div>
 
-                    <a href="https://vk.com/id${userFromVK.id}" target="_blank" style="display: flex; gap: 5px; align-items: center; flex-direction: row; font-size: 20px;  font-weight: bold; padding-top: 10px; color: var(--vkui--color_text_primary); text-decoration-color: var(--vkui--color_text_primary);">
+                    <div style="display: flex; gap: 5px; align-items: center; flex-direction: row; justify-content: center;">
                         ${userFromSC.isSubscriptionValid ?
                             `
-                                <span title="Подписка активна до ${moment(userFromSC.subscription.expired).calendar()}">
-                                    ${icons({ name: 'donut_circle_fill_yellow', size: 24, realSize: 20, fill: 'original' })}
+                                <span style="padding-top: 10px" title="Подписка активна до ${moment(userFromSC.subscription.expired).calendar()}">
+                                    ${icons({ name: 'donut_circle_fill_yellow', size: 20, realSize: 20, fill: 'original' })}
                                 </span>
                             `
                             : ''
                         }
-                        ${userFromVK.first_name} ${userFromVK.last_name}
-                    </a>
+                        <a href="https://vk.com/id${userFromVK.id}" target="_blank" style="display: flex; gap: 5px; align-items: center; flex-direction: row; font-size: 20px; font-weight: bold; padding-top: 10px; color: var(--vkui--color_text_primary); text-decoration-color: var(--vkui--color_text_primary);">
+                            ${userFromVK.first_name} ${userFromVK.last_name}
+                        </a>
+                    </div>
             </div>
 
         </div>
