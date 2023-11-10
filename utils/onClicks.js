@@ -26,6 +26,11 @@ function onClicks(fromWhichFunction, args) {
             }
         },
 
+        'showHistoryChat': ({backFunction}) => {
+            (document.getElementById('back_button_modal_page') ?? {}).onclick = () => {
+                backFunction({ isCurrent: true });
+            };
+        },
 
         'showStatistics': () => {
             (document.getElementById('top_users') ?? {}).onclick = showTopUsers;
@@ -85,6 +90,12 @@ function onClicks(fromWhichFunction, args) {
                     notifiers(`Ссылка на чат скопирована <a href="${copyText}" target="_blank">${copyText}</a>`);
                 }
             }
+
+            ([...document.getElementsByClassName('history_chat')]).forEach(
+                (button, index) =>
+                    button.onclick = () =>
+                        showHistoryChat(index, searchChats)
+            );
 
             const input = document.getElementById('searchChats_input');
 
@@ -157,6 +168,10 @@ function onClicks(fromWhichFunction, args) {
                 filters.maxUsers = rangeUsersMax.value = 200_000;
                 searchChats({});
             }
+
+            (document.getElementById('get_profile') ?? {}).onclick = () => {
+                showProfile({ id: filters.link });
+            }
         },
 
 
@@ -216,6 +231,12 @@ function onClicks(fromWhichFunction, args) {
                 button =>
                     button.onclick = () =>
                         showUsersChat(chat, friends, showProfile)
+            );
+
+            ([...document.getElementsByClassName('history_chat')]).forEach(
+                button =>
+                    button.onclick = () =>
+                        showHistoryChat(chat, showProfile)
             );
         },
     })[fromWhichFunction](args);

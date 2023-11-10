@@ -168,7 +168,7 @@ function blankChat({ chat, creator, friends }) {
                                 
                             <span style="color: #99a2ad; display: flex; align-items: center; flex-direction: row; gap: 5px">
                                 ${icons({ name: 'add', size: 16, fill: 'secondary' })}
-                                <p style="max-width: 173px; margin: 0px;">Добавлен ${moment(chat.added).fromNow()}</p>
+                                <p style="max-width: 173px; margin: 0px;">Добавлен ${moment(chat.added).fromNow().toLowerCase()}</p>
                             </span>
     
                         </div>
@@ -177,16 +177,27 @@ function blankChat({ chat, creator, friends }) {
                         <div style="display: flex; align-items: flex-end; flex-direction: column;">
                             <span style="color: #99a2ad; display: flex; flex-direction: row; gap: 5px; align-items: center; text-align: end;">
                                 <p style="max-width: 173px; margin: 0px;">
-                                    Обновлен ${moment(chat.lastUpdate).fromNow()}
+                                    Обновлен ${moment(chat.lastUpdate).fromNow().toLowerCase()}
                                  </p>
                                 ${icons({ name: 'switch', size: 12, realSize: 12, fill: 'secondary' })}
                             </span>
+                            ${chat.views ? 
+                                `
+                                    <span style="color: #99a2ad; display: flex; flex-direction: row; gap: 5px; align-items: center; text-align: end;">
+                                        <p style="max-width: 173px; margin: 0px;">
+                                            ${chat.views.toLocaleString('ru-RU')} ${decOfNum(chat.views, ['просмотр', 'просмотра', 'просмотров'])}
+                                        </p>
+                                        ${icons({ name: 'view', size: 14, realSize: 16, fill: 'secondary' })}
+                                    </span>
+                                ` 
+                                : ''
+                            }
                         </div>
                     </div>
 
                     ${blankSeparator('margin-top: 5px; margin-bottom: 10px;')}
 
-                    <div style="gap: 5px; display: flex; align-items: center; justify-content: space-between; padding: 0px 0px 5px 0px;">
+                    <div style="gap: 15px; display: flex; align-items: center; justify-content: space-between; padding: 0px 0px 5px 0px;">
                         <a style="padding: 2px; padding-left: 4px; text-decoration: none;" 
                             link="vk.me/join/${chat.key}"
                                 class="btn-chat ${classGroup} copy_link_for_chat">
@@ -204,6 +215,16 @@ function blankChat({ chat, creator, friends }) {
                             ${icons({ name: 'door_enter_arrow_right_outline', realSize: 16, size: 16, fill: 'secondary' })}
                             <span style="font-size: 13px; font-weight: 500; color: #99a2ad; padding: 0px 4px 0px 4px;">
                                 ${chat.members.includes(services.VKMainUser.id) ? 'Открыть чат' : 'Присоединиться'}
+                            </span>
+                        </a>
+
+                        <a target="_blank"
+                            style="padding: 2px; text-decoration: none;"
+                                    class="btn-chat ${classGroup} history_chat" 
+                        >
+                            ${icons({ name: 'history_backward_outline', realSize: 28, size: 16, fill: 'secondary' })}
+                            <span style="font-size: 13px; font-weight: 500; color: #99a2ad; padding: 0px 4px 0px 4px;">
+                                История чата
                             </span>
                         </a>
                     </div>
@@ -252,7 +273,7 @@ function blankMembersList({ member, creator, friends, subTitle }) {
                             <span style="color: #828282;">
                                 ${subTitle ? subTitle :
             `
-                                            ${member?.online ? 'В сети' : member?.last_seen ? `${member.sex === 2 ? 'Был ' : 'Была '}` + moment(member.last_seen.time * 1_000).fromNow() : ''}
+                                            ${member?.online ? 'В сети' : member?.last_seen ? `${member.sex === 2 ? 'Был ' : 'Была '}` + moment(member.last_seen.time * 1_000).fromNow().toLowerCase() : ''}
                                             ${typeMention === 'club' ? 'Бот' : ''}
                                         `
         }
@@ -448,6 +469,7 @@ function blankFiltersSearchChats({
                     <option value="membersCount" ${filters.sortField === 'membersCount' ? 'selected' : ''}>количеству участников</option>
                     <option value="added" ${filters.sortField === 'added' ? 'selected' : ''}>дате добавления</option>
                     <option value="lastUpdate" ${filters.sortField === 'lastUpdate' ? 'selected' : ''}>дате обновления</option>
+                    <option value="views" ${filters.sortField === 'views' ? 'selected' : ''}>количеству просмотров</option>
                 </select>
                 <span class="btn" style="border-radius: 3px;" id="filter_set_sort_order" title="${filters.sortOrder === 'desc' ? 'по убыванию' : 'по возрастанию'}">
                     ${icons({ name: filters.sortOrder === 'desc' ? 'arrow_down_outline' : 'arrow_up_outline', size: 16, fill: 'secondary' })}
@@ -463,7 +485,7 @@ function blankFiltersSearchChats({
                             ${icons({ name: 'user_outline', size: 16, fill: 'secondary' })}
                         </span>
                         Чаты, в которых есть
-                        <a title="${nameString}" target="_blank" href="${userUrl}" style="display: flex;">
+                        <a id="get_profile" title="${nameString}" style="display: flex;">
                             ${nameHTML}
                         </a>
 

@@ -39,6 +39,7 @@ function notifiers(text, title = 'ПоискЧата') {
 
 function chunk(array, offset) {
     let task = [];
+
     while (array.length) {
         task.push(array.splice(0, offset));
     }
@@ -399,7 +400,16 @@ async function showUsersChat(indexChatOrChat, friends, backFunction, offset = 0,
 
     modalPage.new(title()).setLoad(services.pick.showUsersChat).visible();
 
-    let membersList = await getUsersOrGroupsFromVK(chat.members, true);
+
+    const chunksMembersList = chunk(chat.members, 5_000);
+    let promises = [];
+    for (const chunk of chunksMembersList) {
+        promises.push(getUsersOrGroupsFromVK(chunk, true));
+    }
+
+    chat.members = [].concat.apply([], chunksMembersList);
+    let membersList = [].concat.apply([], await Promise.all(promises));
+
     const onlineMembers = membersList.filter(member => member.online).length;
 
     membersList = membersList.filter(member =>
@@ -526,16 +536,14 @@ const iconColors = {
         : 'brightness(0) saturate(100%) invert(78%) sepia(22%) saturate(6954%) hue-rotate(184deg) brightness(100%) contrast(84%);',
     original: ''
 }
-function icons({ name, realSize = 24, size = realSize, fill = 'accent' }) {
-    fill = iconColors[fill] ? `style="filter: ${iconColors[fill]}"` : '';
-
+function icons({ name, realSize = 24, size = realSize, fill = 'accent', leftGap = 0, rightGap = 0 }) {
     return `
         <svg 
             fill="currentColor" 
             stroke="currentColor"
-            width="${size}" 
+            width="${size + rightGap}" 
             height="${size}"
-            ${fill}
+            style="${iconColors[fill] ? `filter: ${iconColors[fill]};` : ''} padding-left: ${leftGap}px; padding-right: ${rightGap}px;"
             class="vkuiIcon vkuiIcon--${size} vkuiIcon--w-${size} vkuiIcon--h-${size}"
             display="block"
         >
@@ -599,15 +607,28 @@ async function showStatistics() {
                 </span>
 
             </div>
+
+            <div class="separator" style="width: 100%;"></div>
+
+            <div style="display: flex; flex-direction: row; align-items: center;">
+                <span class="group-stats"> 
+                    ${icons({ name: 'view', size: 56, realSize: 16 })}
+                    <span class="color-text-subhead" style="font-size: 14px;">
+                        ${stats.totalViews.toLocaleString('ru-RU')}
+                    </span>
+                    <span style="font-size: 16px;">${decOfNum(stats.totalViews, ['Просмотр', 'Просмотра', 'Просмотров'])}</span>
+                    <span class="color-text-subhead" style="font-size: 12px">у всех чатов</span>
+                </span>
+            </div>
             
             <p style="margin-bottom: 15px;"></p>
             
             ${blankQuote(`
-                <span style="display: flex; flex-direction: row; align-items: center; gap: 5px;">
+                <span style="display: flex; flex-direction: row; align-items: center;">
                     ${icons({ name: 'smile_outline', size: 16, realSize: 24, fill: 'accent' })}
                     В среднем на 1 чат приходиться ${mediumCountMembersPerOneChat} ${decOfNum(membersPerOneChat, ['участник', 'участников', 'участников'])}
                 </span>
-                <span style="display: flex; flex-direction: row; align-items: center; gap: 5px;">
+                <span style="display: flex; flex-direction: row; align-items: center;">
                     ${icons({ name: 'globe_outline', size: 16, realSize: 24, fill: 'accent' })}
                     Почти каждый участник есть хотя бы в ${membersPerOneChat} ${decOfNum(membersPerOneChat, ['чате', 'чатах', 'чатах'])}
                 </span>
@@ -898,7 +919,7 @@ async function showShop() {
                     ${blankQuote(`
                         <span style="display: flex; flex-direction: row; align-items: center; gap: 5px; line-height: 30px;">
                             ${icons({ name: 'donut_circle_fill_yellow', size: 12, realSize: 20, fill: 'original' })}
-                            Ваша подписка активна до ${moment(services.profileFromSC.subscription.expired).calendar()}
+                            Ваша подписка активна до ${moment(services.profileFromSC.subscription.expired).fromNow().toLowerCase()}
                         </span>
                     `)}
                 `
@@ -1048,6 +1069,7 @@ async function showProfile({ id }) {
 
     let friends = [], creator = {};
 
+
     if (userFromSC.newChat) {
         [friends, [creator]] = await Promise.all([
             getFriends(),
@@ -1075,27 +1097,72 @@ async function showProfile({ id }) {
         `;
     }
 
+    if (!userFromSC.viewChats.self) userFromSC.viewChats.self = 0;
+    if (!userFromSC.viewChats.other) userFromSC.viewChats.other = 0;
+
+    const nameHTML = `
+        <span style="max-width: 240px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+            ${deXSS(`${userFromVK.first_name} ${userFromVK.last_name}`)}
+        </span>
+    `;
+
+    const nameString = deXSS(`${userFromVK.first_name} ${userFromVK.last_name}`);
+
     modalPage.setContent(`
         <div class="${classGroup}">
+
+            ${userFromSC.isSubscriptionValid ? 
+                `
+                    <span style="display: flex; flex-direction: row; font-size: 14px; color: #99a2ad; font-weight: bold; justify-content: center; gap: 5px;">
+                        ${icons({ name: 'donut_circle_fill_yellow', size: 16, realSize: 20, fill: 'original' })}
+                        <div>${userFromSC.isSubscriptionValid ? 'Подписчик' : `${userFromVK.sex === 1 ? 'Была' : 'Был'} подписчиком`}. Активно до ${moment(userFromSC.subscription.expired).format('DD.MM.YYYY')}, куплена ${moment(userFromSC.subscription.created).fromNow().toLowerCase()}</div>
+                    </span>
+                    <div class="separator" style="padding-top: 5px;"></div>
+                `
+                : ''
+            }
         
-            <div style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
+            <div style="display: flex; align-items: center; justify-content: space-between; padding-left: 10px; padding-right: 10px;">
+
+                <div style="display: flex; align-items: center; flex-direction: column;">
                     <div style="width: 100px; height: 100px;" class="vkuiAvatar vkuiImageBase vkuiImageBase--size-100 vkuiImageBase--loaded" role="img">
                         <img class="vkuiImageBase__img" src="${userFromVK.photo_100 || ''}">
                     </div>
 
-                    <div style="display: flex; gap: 5px; align-items: center; flex-direction: row; justify-content: center;">
-                        ${userFromSC.isSubscriptionValid ?
-                            `
-                                <span style="padding-top: 10px" title="Подписка активна до ${moment(userFromSC.subscription.expired).calendar()}">
-                                    ${icons({ name: 'donut_circle_fill_yellow', size: 20, realSize: 20, fill: 'original' })}
-                                </span>
-                            `
-                            : ''
-                        }
-                        <a href="https://vk.com/id${userFromVK.id}" target="_blank" style="display: flex; gap: 5px; align-items: center; flex-direction: row; font-size: 20px; font-weight: bold; padding-top: 10px; color: var(--vkui--color_text_primary); text-decoration-color: var(--vkui--color_text_primary);">
-                            ${userFromVK.first_name} ${userFromVK.last_name}
+                    <div style="display: flex; align-items: center; flex-direction: row; justify-content: center;">
+                        <a title="${nameString}" href="https://vk.com/id${userFromVK.id}" target="_blank" style="display: flex; align-items: center; flex-direction: row; font-size: 20px; font-weight: bold; padding-top: 10px; color: var(--vkui--color_text_primary); text-decoration-color: var(--vkui--color_text_primary);">
+                            ${nameHTML}
                         </a>
                     </div>
+
+                </div>
+
+                <div style="display: flex; justify-content: center; align-items: center; flex-direction: column; width: 100%; height: 100%;">
+                    <span style="display: flex; flex-direction: row; gap: 5px; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
+                        ${icons({ name: 'face_id_outline', size: 16, realSize: 28, fill: 'secondary' })}
+                        Интересовались профилем ${userFromSC.views.toLocaleString('ru-RU')} ${decOfNum(userFromSC.views, ['раз', 'раза', 'раз'])}.
+                    </span>
+
+                    ${userFromSC.isBanned ? 
+                        `
+                            <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #fce100; font-weight: bold;"> 
+                                ${icons({ name: 'user_slash_outline', size: 16, realSize: 20, fill: 'secondary' })}
+                                Аккаунт заблокирован.
+                            </span>
+                        `
+                        : ''
+                    }
+
+                    ${userFromSC.isHide ? 
+                        `
+                            <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
+                                ${icons({ name: 'hide_outline', size: 16, fill: 'secondary' })}
+                                Чаты и профиль этого аккаунта скрыты.
+                            </span>
+                        `
+                        : ''
+                    }
+                </div>
             </div>
 
         </div>
@@ -1103,23 +1170,37 @@ async function showProfile({ id }) {
         <br style="display: block; margin: 10px; content: '';">
 
         <div class="${classGroup}" style="display: flex; justify-content: space-between;">
-            <span style="display: flex; flex-direction: row; gap: 5px; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
+            <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
                 ${icons({ name: 'archive_outline', size: 16, fill: 'secondary' })}
                 ${userFromVK.sex === 1 ? 'Найдена' : 'Найден'} в ${userFromSC.stats.member.toLocaleString('ru-RU')} ${decOfNum(userFromSC.stats.member, ['чате', 'чатах', 'чатах'])}
             </span>
 
             <div class="ver-separator"></div>
 
-            <span style="display: flex; flex-direction: row; gap: 5px; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
+            <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
                 ${icons({ name: 'crown_outline', size: 16, realSize: 28, fill: 'secondary' })}
                 Создатель в ${userFromSC.stats.creator.toLocaleString('ru-RU')} ${decOfNum(userFromSC.stats.creator, ['чате', 'чатах', 'чатах'])}
             </span>
 
             <div class="ver-separator"></div>
 
-            <span style="display: flex; flex-direction: row; gap: 5px; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
+            <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
                 ${icons({ name: 'add', size: 16, fill: 'secondary' })}
                 ${userFromVK.sex === 1 ? 'Добавила' : 'Добавил'} ${userFromSC.stats.added.toLocaleString('ru-RU')} ${decOfNum(userFromSC.stats.added, ['чат', 'чата', 'чатов'])}
+            </span>
+        </div>
+
+        <div class="${classGroup}" style="display: flex; justify-content: space-between;">
+            <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold; padding-left: 50px;"> 
+                ${icons({ name: 'view', size: 16, fill: 'secondary' })}
+                ${userFromVK.sex === 1 ? 'Просмотрела' : 'Просмотрел'} ${userFromSC.viewChats.self.toLocaleString('ru-RU')} ${decOfNum(userFromSC.viewChats.self, ['чат', 'чата', 'чатов'])}
+            </span>
+
+            <div class="ver-separator"></div>
+
+            <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold; padding-right: 50px;"> 
+                ${icons({ name: 'chats_outline', size: 16, realSize: 28, fill: 'secondary' })}
+                ${decOfNum(userFromSC.viewChats.other, ['Просмотрен', 'Просмотрено', 'Просмотрено'])} ${userFromSC.viewChats.other.toLocaleString('ru-RU')} ${userFromVK.sex === 1 ? 'её' : 'его'} ${decOfNum(userFromSC.viewChats.other, ['чат', 'чата', 'чатов'])}
             </span>
         </div>
 
@@ -1128,4 +1209,168 @@ async function showProfile({ id }) {
     `);
 
     onClicks('showProfile', { id: userFromVK.id, friends, chat: userFromSC.newChat });
+}
+
+
+
+async function showHistoryChat(indexChatOrChat, backFunction) {
+    let chat = {};
+    if (typeof indexChatOrChat === 'object') {
+        chat = indexChatOrChat;
+    } else {
+        chat = currentChats.foundChats.chats[indexChatOrChat];
+    }
+
+    const chatPhoto = chat.photo
+        ? chat.photo['200'] || chat.photo['150'] || chat.photo['50']
+        : 'https://vk.com/images/community_200.png'; 
+
+
+    modalPage.new(
+        titleModalPage({
+            icon: `
+                <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px;">
+                    ${icons({ name: 'browser_back', size: 20, fill: 'secondary' })}
+                </span>
+            `,
+            title: 'История чата',
+            before: { title: deXSS(chat.title), icon: chatPhoto },
+        })
+    ).setLoad('Загружаем историю чата...').visible();
+
+
+    if (!chat.history) {
+        modalPage.setContent(blankNotFound(
+            icons({ name: 'story_outline', size: 56, realSize: 56 }),
+            'В этом чате еще нет истории',
+        ))
+
+        onClicks('showHistoryChat', {backFunction});
+        return;
+    }
+    
+
+    const history = [].concat.apply([], [
+        chat.history.exitedUsers, 
+        chat.history.newUsers, 
+        chat.history.titles, 
+        chat.history.photos,
+    ])
+    .filter(id => id !== undefined)
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+
+    if (!history.length) {
+        modalPage.setContent(blankNotFound(
+            icons({ name: 'article_box_outline', size: 56, realSize: 16 }),
+            'В этом чате еще нет истории',
+        ))
+
+        onClicks('showHistoryChat', {backFunction});
+        return;
+    }
+
+
+    let HTML = '';
+
+    const chunksHistory = chunk(history.map(({id}) => id).filter(id => id !== undefined), 5_000);
+    let promises = [];
+
+    for (const chunk of chunksHistory) {
+        promises.push(getUsersOrGroupsFromVK(chunk, true));
+    }
+
+    const usersFromVK = [].concat.apply([], await Promise.all(promises));
+
+
+    history.forEach(story => {
+        const typeStory = story.id ? 'user' : story.title ? 'title' : story.photo ? 'photo' : '';
+
+        if (typeStory === 'user') {
+            const from = chat.history.exitedUsers.find(exitUser => exitUser.id === story.id) ? 'exitedUsers' : 'newUsers';
+            const member = usersFromVK.find(member => (member?.first_name ? member.id : -member.id) === story.id);
+            const typeMention = member?.first_name ? 'id' : 'club';
+
+            const linkMember = `https://vk.com/${typeMention}${member.id}`;
+            const nameHTML = typeMention === 'id'
+                ? `<span style="max-width: 150px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${deXSS(member.first_name)} ${deXSS(member.last_name)}</span>`
+                : `Группа «<span style="max-width: 150px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${deXSS(member.name)}</span>»`;
+        
+            const nameString = deXSS(typeMention === 'id'
+                ? `${member.first_name} ${member.last_name}`
+                : `Группа «${member.name}»`
+            );
+
+            HTML += `
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <div style="display: flex; gap: 5px; font-weight: 400; color: #99a2ad; align-items: center;">
+
+                        <div style="width: 20px; height: 20px;" class="vkuiAvatar vkuiImageBase vkuiImageBase--size-20 vkuiImageBase--loaded" role="img">
+                            <img class="vkuiImageBase__img" src="${member.photo_100 || ''}">
+                        </div>
+
+                        <a title="${nameString}" target="_blank" href="${linkMember}" style="display: flex;">
+                            ${nameHTML}
+                        </a>
+
+                        <span> 
+                            ${
+                                from === 'exitedUsers' 
+                                    ?
+                                        member.sex !== 1 ? 'вышла' : 'вышел'
+                                    :
+                                        member.sex !== 2 ? 'присоединилась' : 'присоединился'
+                            }
+                            ${moment(story.date).fromNow().toLowerCase()} 
+                        </span>
+                    </div>
+                </div>
+            `
+        }
+
+        if (typeStory === 'title') {
+            story.title = deXSS(story.title);
+
+            HTML += `
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <div style="display: flex; gap: 5px; font-weight: 400; color: #99a2ad; align-items: center;">
+                        <span title="${moment(story.date).fromNow().toLowerCase()}" style="display: flex;">
+                            Новое название чата, старое —
+                            «<span title="${story.title}" style="max-width: 150px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+                                ${story.title}
+                            </span>»
+                        </span>
+                    </div>
+                </div>
+            `
+        }
+
+        if (typeStory === 'photo') {
+            const linkPhoto = (story.photo['200'] || story.photo['100'] || story.photo['50']) || 'https://vk.com/images/community_200.png';
+
+            HTML += `
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <div style="display: flex; gap: 5px; font-weight: 400; color: #99a2ad; align-items: center;">
+                        <span title="${moment(story.date).fromNow().toLowerCase()}" style="display: flex; gap: 10px; align-items: center; text-align: center;">
+                            Новое фото чата, старое ${linkPhoto === 'https://vk.com/images/community_200.png' ? 'удаленое' : ''} —
+                            <div style="width: 58px; height: 58px;">
+                                <div style="width: 58px; height: 58px; box-shadow: 0 0 0 0.1em;"
+                                    class="vkuiAvatar vkuiImageBase vkuiImageBase--size-58 vkuiImageBase--loaded" role="img">
+                                    <img class="vkuiImageBase__img" src="${linkPhoto}">
+                                </div>
+                            </div>
+                        </span>
+                    </div>
+                </div>
+            `
+        }
+    });
+
+    modalPage.setContent(`
+        <div style="display: flex; flex-direction: column; gap: 10px; min-height: 400px; padding-top: 10px; padding-bottom: 10px;">
+            ${HTML}
+        </div>
+    `);
+
+    onClicks('showHistoryChat', {backFunction});
 }
