@@ -220,6 +220,7 @@ async function searchChats({ isCurrent = false, offset = 0 }) {
         sortOrder: filters.sortOrder,
         maxMembers: filters.maxUsers,
         minMembers: filters.minUsers,
+        isHistory: filters.isHistory,
         offset,
     }
 
@@ -401,13 +402,13 @@ async function showUsersChat(indexChatOrChat, friends, backFunction, offset = 0,
     modalPage.new(title()).setLoad(services.pick.showUsersChat).visible();
 
 
-    const chunksMembersList = chunk(chat.members, 5_000);
+    const chunksMembersList = chunk(chat.members.map(x=>x), 5_000);
     let promises = [];
     for (const chunk of chunksMembersList) {
         promises.push(getUsersOrGroupsFromVK(chunk, true));
     }
 
-    chat.members = [].concat.apply([], chunksMembersList);
+
     let membersList = [].concat.apply([], await Promise.all(promises));
 
     const onlineMembers = membersList.filter(member => member.online).length;
@@ -934,6 +935,9 @@ async function showShop() {
     onClicks('showShop', {})
 }
 
+const styleLi = 'list-style-type: none; padding: 3px 5px 3px 5px;';
+const styleUi = 'margin-left: 0; padding-left: 0;';
+
 
 const descriptionProduct = {
     'subscription': {
@@ -951,13 +955,13 @@ const descriptionProduct = {
                         ${icons({name: 'unlock', realSize: 12, size: 14})} Доступ к чатам любого пользователя или группы ВКонтакте.
                     </span>
                     <br/>
-                    <ui>
-                        <li> # Вызывает удивление у Вашей жертвы, так как не каждый способен заходить в чаты пользователя при помощи всего двух кнопок. </li>
-                        <li> # При необходимости использовать чаты для обхода черного списка (ЧС) или закрытых личных сообщений (ЛС) </li>
-                        <li> # Исходя из найденных чатов и их тематики, можно узнать, чем увлекается или где живет ваша жертва. </li>
-                        <li> # Можно найти школьные, рабочие, городские беседы и другие подобные чаты. </li>
-                        <li> # Если Вы увидели чат у пользователя и хотите войти в него, попробуйте найти его у нас. </li>
-                        <li> # Активные чаты: как правило, чем общительнее Ваш друг, тем активнее его чаты. </li>
+                    <ui style="${styleUi}">
+                        <li style="${styleLi}"> # Вызывает удивление у Вашей жертвы, так как не каждый способен заходить в чаты пользователя при помощи всего двух кнопок. </li>
+                        <li style="${styleLi}"> # При необходимости использовать чаты для обхода черного списка (ЧС) или закрытых личных сообщений (ЛС) </li>
+                        <li style="${styleLi}"> # Исходя из найденных чатов и их тематики, можно узнать, чем увлекается или где живет ваша жертва. </li>
+                        <li style="${styleLi}"> # Можно найти школьные, рабочие, городские беседы и другие подобные чаты. </li>
+                        <li style="${styleLi}"> # Если Вы увидели чат у пользователя и хотите войти в него, попробуйте найти его у нас. </li>
+                        <li style="${styleLi}"> # Активные чаты: как правило, чем общительнее Ваш друг, тем активнее его чаты. </li>
                     </ui>
                 `
             )}
@@ -1213,7 +1217,7 @@ async function showProfile({ id }) {
 
 
 
-async function showHistoryChat(indexChatOrChat, backFunction) {
+async function showHistoryChat(indexChatOrChat, backFunction, friends) {
     let chat = {};
     if (typeof indexChatOrChat === 'object') {
         chat = indexChatOrChat;
@@ -1226,6 +1230,43 @@ async function showHistoryChat(indexChatOrChat, backFunction) {
         : 'https://vk.com/images/community_200.png'; 
 
 
+    const title = (countTitles, countPhotos, countExitedUsers, countNewUsers) => 
+        titleModalPage({
+            icon: `
+                <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px;">
+                    ${icons({ name: 'browser_back', size: 20, fill: 'secondary' })}
+                </span>
+            `,
+            title: 'История чата',
+            before: { title: deXSS(chat.title), icon: chatPhoto },
+            subTitle: `
+                <span style="display: flex; gap: 5px;">
+                    ${icons({ name: 'pencil', size: 16, realSize: 12, fill: 'secondary' })}
+                    <span style="padding-right: 10px; color: #99a2ad;">
+                        ${countTitles.toLocaleString('ru-RU')} ${decOfNum(countTitles, ['раз', 'раза', 'раз'])} обновлялось название
+                    </span>
+                </span>
+                <span style="display: flex; gap: 5px;">
+                    ${icons({ name: 'photos_stack_outline', size: 16, realSize: 24, fill: 'secondary' })}
+                    <span style="padding-right: 10px; color: #99a2ad;">
+                        ${countPhotos.toLocaleString('ru-RU')} ${decOfNum(countPhotos, ['раз', 'раза', 'раз'])} обновлялось фото
+                    </span>
+                </span>
+                <span style="display: flex; gap: 5px;">
+                    ${icons({ name: 'user_minus_outline', size: 16, realSize: 28, fill: 'secondary' })}
+                    <span style="padding-right: 10px; color: #99a2ad;">
+                        ${countExitedUsers.toLocaleString('ru-RU')} ${decOfNum(countExitedUsers, ['вышедший участник', 'вышедших участника', 'вышедших участников'])}
+                    </span>
+                </span>
+                <span style="display: flex; gap: 5px;">
+                ${icons({ name: 'user_add_outline', size: 16, realSize: 28, fill: 'secondary' })}
+                    <span style="padding-right: 10px; color: #99a2ad;">
+                        ${countNewUsers.toLocaleString('ru-RU')} ${decOfNum(countNewUsers, ['присоединившийся участник', 'присоединившихся участника', 'присоединившихся участников'])}
+                    </span>
+                </span>
+            `
+        });
+
     modalPage.new(
         titleModalPage({
             icon: `
@@ -1236,7 +1277,7 @@ async function showHistoryChat(indexChatOrChat, backFunction) {
             title: 'История чата',
             before: { title: deXSS(chat.title), icon: chatPhoto },
         })
-    ).setLoad('Загружаем историю чата...').visible();
+    ).setLoad(['Загружаем историю чата...']).visible();
 
 
     if (!chat.history) {
@@ -1245,16 +1286,16 @@ async function showHistoryChat(indexChatOrChat, backFunction) {
             'В этом чате еще нет истории',
         ))
 
-        onClicks('showHistoryChat', {backFunction});
+        onClicks('showHistoryChat', { backFunction });
         return;
     }
     
 
     const history = [].concat.apply([], [
-        chat.history.exitedUsers, 
-        chat.history.newUsers, 
-        chat.history.titles, 
-        chat.history.photos,
+        chat.history.titles?.map(x=>x).reverse(), 
+        chat.history.photos?.map(x=>x).reverse(),
+        chat.history.exitedUsers?.map(x=>x).reverse(),
+        chat.history.newUsers?.map(x=>x).reverse(),
     ])
     .filter(id => id !== undefined)
     .sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -1266,11 +1307,19 @@ async function showHistoryChat(indexChatOrChat, backFunction) {
             'В этом чате еще нет истории',
         ))
 
-        onClicks('showHistoryChat', {backFunction});
+        onClicks('showHistoryChat', { backFunction });
         return;
     }
 
-
+    modalPage.setTitle(
+        title(
+            chat.history.titles?.length || 0,
+            chat.history.photos?.length || 0,
+            chat.history.exitedUsers?.length || 0,
+            chat.history.newUsers?.length || 0
+        )
+    )
+    
     let HTML = '';
 
     const chunksHistory = chunk(history.map(({id}) => id).filter(id => id !== undefined), 5_000);
@@ -1293,13 +1342,15 @@ async function showHistoryChat(indexChatOrChat, backFunction) {
 
             const linkMember = `https://vk.com/${typeMention}${member.id}`;
             const nameHTML = typeMention === 'id'
-                ? `<span style="max-width: 150px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${deXSS(member.first_name)} ${deXSS(member.last_name)}</span>`
-                : `Группа «<span style="max-width: 150px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${deXSS(member.name)}</span>»`;
+                ? `<span style="max-width: 180px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${deXSS(member.first_name)} ${deXSS(member.last_name)}</span>`
+                : `Группа «<span style="max-width: 180px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${deXSS(member.name)}</span>»`;
         
             const nameString = deXSS(typeMention === 'id'
                 ? `${member.first_name} ${member.last_name}`
                 : `Группа «${member.name}»`
             );
+            
+            const isFriend = friends.find(friend => member.id === friend.id) !== undefined;
 
             HTML += `
                 <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
@@ -1309,19 +1360,21 @@ async function showHistoryChat(indexChatOrChat, backFunction) {
                             <img class="vkuiImageBase__img" src="${member.photo_100 || ''}">
                         </div>
 
-                        <a title="${nameString}" target="_blank" href="${linkMember}" style="display: flex;">
+                        <a title="${nameString}" target="_blank" href="${linkMember}" style="display: flex; font-weight: bold; ${isFriend ? `color: ${appearance.get() === 'dark' ? '#A8E4A0' : '#258b17'};` : ''}">
                             ${nameHTML}
                         </a>
 
-                        <span> 
+                        <span style="display: flex; flex-direction: row; gap: 5px;">
                             ${
                                 from === 'exitedUsers' 
                                     ?
-                                        member.sex !== 1 ? 'вышла' : 'вышел'
+                                        member.sex !== 2 ? 'вышла' : 'вышел'
                                     :
                                         member.sex !== 2 ? 'присоединилась' : 'присоединился'
                             }
-                            ${moment(story.date).fromNow().toLowerCase()} 
+                            <a style="text-decoration-color: #99a2ad; color: #99a2ad;">
+                                ${moment(story.date).format('DD.MM.YYYY HH:mm')}
+                            </a>
                         </span>
                     </div>
                 </div>
@@ -1330,36 +1383,90 @@ async function showHistoryChat(indexChatOrChat, backFunction) {
 
         if (typeStory === 'title') {
             story.title = deXSS(story.title);
+            const newTitle = deXSS(chat.history.titles[
+                chat.history.titles.findIndex(title => title.title === story.title) - 1
+            ] || chat.title);
+            const oldTitle = story.title;
 
             HTML += `
-                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                    <div style="display: flex; gap: 5px; font-weight: 400; color: #99a2ad; align-items: center;">
-                        <span title="${moment(story.date).fromNow().toLowerCase()}" style="display: flex;">
-                            Новое название чата, старое —
-                            «<span title="${story.title}" style="max-width: 150px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
-                                ${story.title}
-                            </span>»
+                <div style="display: flex; align-items: center; justify-content: center;">
+                    <div style="display: flex; flex-direction: column; font-weight: 400; color: #99a2ad; align-items: center;">
+
+                        <span style="display: flex; font-weight: bold; flex-direction: row; gap: 5px;">
+                            Новое название чата 
+                            <a style="text-decoration-color: #99a2ad; font-weight: 500; color: #99a2ad;">
+                                ${moment(story.date).format('DD.MM.YYYY HH:mm')}
+                            </a>
                         </span>
+
+                        <span style="display: flex; gap: 10px; flex-direction: row; align-items: center;">
+                            <span title="${oldTitle}" style="max-width: 250px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+                                ${oldTitle}
+                            </span>
+                            
+                            ${icons({ name: 'arrow_right', realSize: 12, size: 20, fill: 'secondary' })}
+                            
+                            <span title="${newTitle}" style="max-width: 250px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+                                ${newTitle}
+                            </span>
+                        </span>
+
                     </div>
                 </div>
             `
         }
 
         if (typeStory === 'photo') {
-            const linkPhoto = (story.photo['200'] || story.photo['100'] || story.photo['50']) || 'https://vk.com/images/community_200.png';
+            const oldPhoto = (story.photo['200'] || story.photo['100'] || story.photo['50']) || 'https://vk.com/images/community_200.png';
+            const newPhoto = chat.history.photos[
+                    chat.history.photos.findIndex(photo => 
+                        (
+                            (
+                                photo.photo['200'] 
+                                || photo.photo['100']
+                                || photo.photo['50']
+                            ) || 'https://vk.com/images/community_200.png'
+                        ) === oldPhoto
+                    ) - 1
+                ] || (
+                    chat.photo['200']
+                    || chat.photo['100'] 
+                    || chat.photo['50']
+                ) || 'https://vk.com/images/community_200.png';
 
             HTML += `
-                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                    <div style="display: flex; gap: 5px; font-weight: 400; color: #99a2ad; align-items: center;">
-                        <span title="${moment(story.date).fromNow().toLowerCase()}" style="display: flex; gap: 10px; align-items: center; text-align: center;">
-                            Новое фото чата, старое ${linkPhoto === 'https://vk.com/images/community_200.png' ? 'удаленое' : ''} —
-                            <div style="width: 58px; height: 58px;">
-                                <div style="width: 58px; height: 58px; box-shadow: 0 0 0 0.1em;"
-                                    class="vkuiAvatar vkuiImageBase vkuiImageBase--size-58 vkuiImageBase--loaded" role="img">
-                                    <img class="vkuiImageBase__img" src="${linkPhoto}">
-                                </div>
-                            </div>
+                <div style="display: flex; align-items: center; justify-content: center;">
+                    <div style="display: flex; flex-direction: column; gap: 3px; font-weight: 400; color: #99a2ad; align-items: center;">
+
+                        <span style="display: flex; font-weight: bold; flex-direction: row; gap: 5px;">
+                            Новое фото чата
+                            <a style="text-decoration-color: #99a2ad; font-weight: 500; color: #99a2ad;">
+                                ${moment(story.date).format('DD.MM.YYYY HH:mm')}
+                            </a>
                         </span>
+
+                        <span style="display: flex; gap: 10px; flex-direction: row; align-items: center;">
+                            <a href="${oldPhoto}" target="_blank" style="text-decoration: none;" >
+                                <div style="width: 58px; height: 58px;">
+                                    <div style="width: 58px; height: 58px; box-shadow: 0 0 0 0.1em;"
+                                        class="vkuiAvatar vkuiImageBase vkuiImageBase--size-58 vkuiImageBase--loaded" role="img">
+                                        <img class="vkuiImageBase__img" src="${oldPhoto}">
+                                    </div>
+                                </div>
+                            </a>
+                            
+                            ${icons({ name: 'arrow_right', realSize: 12, size: 28, fill: 'secondary' })}
+                            
+                            <a href="${newPhoto}" target="_blank" style="text-decoration: none;" >
+                                <div style="width: 58px; height: 58px;">
+                                    <div style="width: 58px; height: 58px; box-shadow: 0 0 0 0.1em;"
+                                        class="vkuiAvatar vkuiImageBase vkuiImageBase--size-58 vkuiImageBase--loaded" role="img">
+                                        <img class="vkuiImageBase__img" src="${newPhoto}">
+                                    </div>
+                                </div>
+                            </a>
+                        </span>
+
                     </div>
                 </div>
             `
@@ -1372,5 +1479,5 @@ async function showHistoryChat(indexChatOrChat, backFunction) {
         </div>
     `);
 
-    onClicks('showHistoryChat', {backFunction});
+    onClicks('showHistoryChat', { backFunction });
 }

@@ -71,6 +71,7 @@ function blankChat({ chat, creator, friends }) {
         : 'https://vk.com/images/community_200.png';
 
     chat.title = deXSS(chat.title);
+    const chatTitleForHTMLTitle = `Названия чата\n\nСейчас: ${chat.title}${chat.history?.titles?.length ? `\n\nБыли:\n⠀${chat.history.titles.map(x=>x).reverse().map(({title}) => deXSS(title)).join('\n⠀⠀')}` : ''}`
 
     const infoFriends = friends.filter(friend => chat.members.includes(friend.id))
         .map(friend => { 
@@ -110,7 +111,7 @@ function blankChat({ chat, creator, friends }) {
                             </div>
 
                             <div>
-                                <h4 title="${chat.title}" class="vkuiHeadline vkuiHeadline--sizeY-compact vkuiHeadline--level-1 vkuiTypography--normalize vkuiTypography--weight-1" style="font-size: 15px; max-width: 230px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+                                <h4 title="${chatTitleForHTMLTitle}" class="vkuiHeadline vkuiHeadline--sizeY-compact vkuiHeadline--level-1 vkuiTypography--normalize vkuiTypography--weight-1" style="font-size: 15px; max-width: 230px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
                                     ${chat.membersCount > 7_000
                                         ? `<span style="display: flex; flex-direction: row; gap: 5px; align-items: center; font-size: 12px; color: #99a2ad;"> 
                                                 ${icons({ name: 'archive_outline', size: 16, fill: 'secondary' })} Канал
@@ -244,8 +245,7 @@ function blankMembersList({ member, creator, friends, subTitle }) {
         : `Группа «${member.name}»`
     );
 
-    const isFriend = friends.filter(friend => member.id === friend.id).length !== 0;
-
+    const isFriend = friends.find(friend => member.id === friend.id) !== undefined;
 
     return `
         <li class="ListItem ListItem--can-be-hovered" style="padding-left: 10px">
@@ -261,22 +261,23 @@ function blankMembersList({ member, creator, friends, subTitle }) {
                                 <span style="font-weight: bold;">${memberName}</span>
                             </a>
                             ${Math.abs(creator) === member.id
-            ? `    
+                                ? `    
                                         <span style="color: #828282; padding-left: 5px;">
                                             ${icons({ name: 'crown_outline', size: 20, fill: 'secondary' })}
                                         </span>
                                       `
-            : ''
-        }
+                                : ''
+                            }
                         </div>
                         <div class="Entity__description">
                             <span style="color: #828282;">
-                                ${subTitle ? subTitle :
-            `
-                                            ${member?.online ? 'В сети' : member?.last_seen ? `${member.sex === 2 ? 'Был ' : 'Была '}` + moment(member.last_seen.time * 1_000).fromNow().toLowerCase() : ''}
-                                            ${typeMention === 'club' ? 'Бот' : ''}
-                                        `
-        }
+                                ${subTitle 
+                                    ? subTitle
+                                    : `
+                                        ${member?.online ? 'В сети' : member?.last_seen ? `${member.sex === 2 ? 'Был ' : 'Была '}` + moment(member.last_seen.time * 1_000).fromNow().toLowerCase() : ''}
+                                        ${typeMention === 'club' ? 'Бот' : ''}
+                                    `
+                                }
                             </span>
                         </div>
                     </div>
@@ -345,7 +346,7 @@ function blankNotFound(icon, text, button) {
                     ${text}
                 </span>
                 ${button ?
-            `
+                    `
                         <div style="padding-top: 15px;">
                             <button id="${button.id}" class="FlatButton FlatButton--primary FlatButton--size-m" type="button">
                                 <span class="FlatButton__in">
@@ -354,8 +355,8 @@ function blankNotFound(icon, text, button) {
                             </button>
                         </div>
                     `
-            : ''
-        }
+                    : ''
+                }
             </div>
         <div>
     `
@@ -372,7 +373,7 @@ function blankInputSearch({ id = 'search', value = '', placeholder = 'Поиск
                 id="${id}"
                 placeholder="${placeholder}"
                 autoComplete="off"
-                value="${value}"
+                value="${deXSS(value)}"
                 maxLength="100"
             >
                 <button title="Поиск" id="searchChats_button" class="input-button">
@@ -395,29 +396,29 @@ function blankPages({ found = undefined, totalPage = 0, currentPage = 0, offset 
             </span>
                     
             ${found ?
-            `
+                `
                     <span style="display: flex; gap: 5px;">
                         ${offset > 0 ?
-                `
+                            `
                                 <a id="previous_page_button" style="${!(currentPage < totalPage) ? 'padding-right: 15px;' : ''}"> 
                                     Назад
                                 </a>
                             `
-                : ''
-            }
+                            : ''
+                        }
                         ${currentPage < totalPage && offset > 0 ? '<span style="padding-left: 2px; padding-right: 2px; ">•</span>' : ''}
                         ${currentPage < totalPage ?
-                `
+                            `
                                 <a id="next_page_button" style="padding-right: 15px;">
                                     Далее
                                 </a>
                             `
-                : ''
-            }
+                            : ''
+                        }
                     </span>
                 `
-            : ''
-        }
+                : ''
+            }
         </div>
     `
 }
@@ -430,14 +431,12 @@ function blankFiltersSearchChats({
     countListChats = 0
 }) {
     let typeMention;
-    let userUrl;
 
     let nameHTML;
     let nameString;
 
     if (user) {
         typeMention = user?.first_name ? 'id' : 'club';
-        userUrl = `https://vk.com/${typeMention}${user.id}`;
 
         nameHTML = typeMention === 'id'
             ? `<span style="max-width: 140px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${deXSS(user.first_name)} ${deXSS(user.last_name)}</span>`
@@ -457,7 +456,7 @@ function blankFiltersSearchChats({
 
     <div style="font-size: 13px; padding: 5px;">
         
-        ${blankInputSearch({ id: 'searchChats_input', value: filters.title, placeholder: 'Найдётся все, ну.. почти' })}
+        ${blankInputSearch({ id: 'searchChats_input', value: filters.title, placeholder: filters.isHistory ? 'Поиск из старых названий' : 'Найдётся все, ну.. почти' })}
 
         <div style="display: flex; align-items: center;">
             <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
@@ -484,7 +483,7 @@ function blankFiltersSearchChats({
                         <span>
                             ${icons({ name: 'user_outline', size: 16, fill: 'secondary' })}
                         </span>
-                        Чаты, в которых есть
+                        Чаты, в которых ${filters.isHistory ? user.sex !== 2 ? 'была' : 'был' : 'есть'}
                         <a id="get_profile" title="${nameString}" style="display: flex;">
                             ${nameHTML}
                         </a>
@@ -499,7 +498,7 @@ function blankFiltersSearchChats({
                         </span>
                     </div>
                 </div>
-            ` : ``
+            ` : ''
         }
 
 
@@ -507,8 +506,21 @@ function blankFiltersSearchChats({
             <span>
                 ${icons({ name: 'users_3_outline', size: 16, realSize: 20, fill: 'secondary' })}
             </span>
-            Чаты, в которых есть <a target="_blank" href="https://vk.com/friends">Ваши друзья</a>
+            Чаты, в которых ${filters.isHistory ? 'были' : 'есть'} <a target="_blank" href="https://vk.com/friends">Ваши друзья</a>
             <input type="checkbox" id="filter_only_with_friends" ${filters.onlyWithFriends ? 'checked' : ''} />
+        </div>
+
+        <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
+            <span>
+                ${icons({ name: 'article_box_outline', size: 16, realSize: 16, fill: 'secondary' })}
+            </span>
+
+            Поиск в истории чатов
+            <input type="checkbox" id="filter_is_history" ${filters.isHistory ? 'checked' : ''} />
+
+            <span title="Поиск в истории чатов будет осуществляться по старым названиям, а также по чатам, где участвовал участник или Ваши друзья." id="filter_button_add_user">
+                ${icons({ name: 'help_outline', size: 16, realSize: 16 })}
+            </span>
         </div>
         
         

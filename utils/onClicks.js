@@ -63,6 +63,11 @@ function onClicks(fromWhichFunction, args) {
                 searchChats({});
             }
 
+            (document.getElementById('filter_is_history') ?? {}).onclick = () => {
+                filters.isHistory = !filters.isHistory;
+                searchChats({});
+            }
+
             (document.getElementById('filter_set_sort_order') ?? {}).onclick = () => {
                 filters.sortOrder = filters.sortOrder === 'desc' ? 'asc' : 'desc';
                 searchChats({});
@@ -94,7 +99,7 @@ function onClicks(fromWhichFunction, args) {
             ([...document.getElementsByClassName('history_chat')]).forEach(
                 (button, index) =>
                     button.onclick = () =>
-                        showHistoryChat(index, searchChats)
+                        showHistoryChat(index, searchChats, friends)
             );
 
             const input = document.getElementById('searchChats_input');

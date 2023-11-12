@@ -8,6 +8,7 @@ class Filters {
         this.sortOrder = 'desc';
         this.minUsers = 0;
         this.maxUsers = 200000;
+        this.isHistory = false;
     }
 
     remove() {
@@ -18,6 +19,7 @@ class Filters {
         this.sortOrder = 'desc';
         this.minUsers = 0;
         this.maxUsers = 200000;
+        this.isHistory = false;
     }
 }
 const filters = new Filters();

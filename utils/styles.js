@@ -329,15 +329,5 @@ GM_addStyle(`
         align-items: center; 
         flex-direction: column;
     }
-
-    li {
-        list-style-type: none;
-        padding: 3px 5px 3px 5px;
-    }
-      
-    ul {
-        margin-left: 0;
-        padding-left: 0;
-    }
 `)
 }
