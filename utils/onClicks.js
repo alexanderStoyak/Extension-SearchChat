@@ -241,7 +241,7 @@ function onClicks(fromWhichFunction, args) {
             ([...document.getElementsByClassName('history_chat')]).forEach(
                 button =>
                     button.onclick = () =>
-                        showHistoryChat(chat, showProfile)
+                        showHistoryChat(chat, showProfile, friends)
             );
         },
     })[fromWhichFunction](args);

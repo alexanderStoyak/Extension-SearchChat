@@ -373,7 +373,7 @@ function blankInputSearch({ id = 'search', value = '', placeholder = 'Поиск
                 id="${id}"
                 placeholder="${placeholder}"
                 autoComplete="off"
-                value="${deXSS(value)}"
+                value="${deXSS(String(value))}"
                 maxLength="100"
             >
                 <button title="Поиск" id="searchChats_button" class="input-button">
