@@ -1322,6 +1322,7 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends) {
     
     let HTML = '';
 
+
     const chunksHistory = chunk(history.map(({id}) => id).filter(id => id !== undefined), 5_000);
     let promises = [];
 
@@ -1383,10 +1384,17 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends) {
 
         if (typeStory === 'title') {
             story.title = deXSS(story.title);
-            const newTitle = deXSS(chat.history.titles[
-                chat.history.titles.findIndex(title => title.title === story.title) - 1
-            ] || chat.title);
             const oldTitle = story.title;
+
+            const sortTitles = history.filter(obj => obj.title);
+            console.log(sortTitles)
+            const indexNewTitle = sortTitles.findIndex(title => title.title === oldTitle);
+
+            const newTitle = sortTitles[indexNewTitle - 1]?.title || chat.title;
+
+            // const newTitle = deXSS(sortTitles[
+            //     sortTitles.findIndex(title => title.title === story.title) - 1
+            // ]?.title || chat.title);
 
             HTML += `
                 <div style="display: flex; align-items: center; justify-content: center;">
@@ -1418,21 +1426,30 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends) {
 
         if (typeStory === 'photo') {
             const oldPhoto = (story.photo['200'] || story.photo['100'] || story.photo['50']) || 'https://vk.com/images/community_200.png';
-            const newPhoto = chat.history.photos[
-                    chat.history.photos.findIndex(photo => 
-                        (
-                            (
-                                photo.photo['200'] 
-                                || photo.photo['100']
-                                || photo.photo['50']
-                            ) || 'https://vk.com/images/community_200.png'
-                        ) === oldPhoto
-                    ) - 1
-                ] || (
+
+            const sortPhotos = history.filter(obj => obj.photo);
+
+            const indexNewPhoto = sortPhotos.findIndex(photo => 
+                (
+                    (
+                        photo.photo['200'] 
+                        || photo.photo['100']
+                        || photo.photo['50']
+                    ) || 'https://vk.com/images/community_200.png'
+                ) === oldPhoto
+            );
+
+            const newPhoto = 
+                (indexNewPhoto && (
+                    sortPhotos[indexNewPhoto - 1].photo['200'] 
+                    || sortPhotos[indexNewPhoto - 1].photo['100'] 
+                    || sortPhotos[indexNewPhoto - 1].photo['50']
+                )) || (
                     chat.photo['200']
                     || chat.photo['100'] 
                     || chat.photo['50']
                 ) || 'https://vk.com/images/community_200.png';
+
 
             HTML += `
                 <div style="display: flex; align-items: center; justify-content: center;">

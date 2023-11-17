@@ -48,6 +48,6 @@
 // @updateURL    https://github.com/alexanderStoyak/Extension-SearchChat/blob/main/searchChats.user.js
 // @downloadURL  https://github.com/alexanderStoyak/Extension-SearchChat/blob/main/searchChats.user.js
 
-// @version      4.2.6
+// @version      4.2.7
 
 // ==/UserScript==
