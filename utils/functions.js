@@ -1387,7 +1387,7 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends) {
             const oldTitle = story.title;
 
             const sortTitles = history.filter(obj => obj.title);
-            console.log(sortTitles)
+
             const indexNewTitle = sortTitles.findIndex(title => title.title === oldTitle);
 
             const newTitle = sortTitles[indexNewTitle - 1]?.title || chat.title;
