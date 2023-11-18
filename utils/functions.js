@@ -957,7 +957,6 @@ const descriptionProduct = {
                     <span style="display: flex; flex-direction: row; align-items: center; gap: 5px; font-size: 16px; color: #828282;"> 
                         ${icons({name: 'unlock', realSize: 12, size: 14})} Доступ к чатам любого пользователя или группы ВКонтакте.
                     </span>
-                    <br/>
                     <ui style="${styleUi}">
                         <li style="${styleLi}"> # Вызывает удивление у Вашей жертвы, так как не каждый способен заходить в чаты пользователя при помощи всего двух кнопок. </li>
                         <li style="${styleLi}"> # При необходимости использовать чаты для обхода черного списка (ЧС) или закрытых личных сообщений (ЛС) </li>
@@ -973,17 +972,32 @@ const descriptionProduct = {
                 <span style="display: flex; flex-direction: row; align-items: center; gap: 5px; font-size: 16px; color: #828282;"> 
                     ${icons({name: 'cards_2', realSize: 12, size: 14})} Увеличения лимитов на страницы при просмотре чатов.
                 </span>
-                <br/>
                 # У обычных пользователей максимальное количество страниц, которые они могут просмотреть, составляет 15. У пользователей с подпиской максимальное количество страниц увеличено до 500, что дает возможность пролистать 7,500 чатов.
             `)}
             <br/>
+            ${blankQuote(`
+                <span style="display: flex; flex-direction: row; align-items: center; gap: 5px; font-size: 16px; color: #828282;"> 
+                    ${icons({name: 'list_plus_outline', realSize: 20, size: 14})} Диапазон участников в чатах.
+                </span>
+                # Возможность установки диапазона количества участников в чатах, например, от 10 до 500.
+            `)}
             <br/>
-            ${blankQuote(
-                `
-                    Мы сделали подписку платной, поскольку функции с подпиской требуют дополнительных расходов, в том числе на аренду серверов. 
-                    Вклад подписчиков позволяет нам покрывать эти расходы и помогает «ПоискЧата» оставаться бесплатным для всех пользователей.
-                `
-            )}
+            ${blankQuote(`
+                <span style="display: flex; flex-direction: row; align-items: center; gap: 5px; font-size: 16px; color: #828282;"> 
+                    ${icons({name: 'archive_outline', realSize: 20, size: 16})} Поиск из истории чатов.
+                </span>
+                # Поиск в истории чатов будет осуществляться по старым названиям, а также по чатам, где участвовал участник или Ваши друзья.
+            `)}
+            <br/>
+            <br/>
+            ${blankQuote(`
+                <span style="display: flex; flex-direction: row; align-items: center; gap: 5px; font-size: 16px; color: #828282;"> 
+                    ${icons({name: 'help_outline', realSize: 24, size: 14})} Почему платно?
+                </span>
+                Мы сделали подписку платной, поскольку функции с подпиской требуют дополнительных расходов, в том числе на аренду серверов. 
+                Вклад подписчиков позволяет нам покрывать эти расходы и помогает «ПоискЧата» оставаться бесплатным для всех пользователей.
+                
+            `)}
         `,
     },
     'myHide': {
@@ -1009,6 +1023,8 @@ const descriptionProduct = {
         `)
     }
 }
+
+
 function showDescriptionProduct(productId) {
     const product = descriptionProduct[productId];
 
