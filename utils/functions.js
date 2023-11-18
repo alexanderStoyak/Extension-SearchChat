@@ -75,6 +75,9 @@ async function checkValidToken() {
     return true;
 }
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 async function getUsersOrGroupsFromVK(links, explicitIds) {
     let idsOrSreensNames = [];
@@ -625,11 +628,11 @@ async function showStatistics() {
             <p style="margin-bottom: 15px;"></p>
             
             ${blankQuote(`
-                <span style="display: flex; flex-direction: row; align-items: center;">
+                <span style="display: flex; flex-direction: row; align-items: center; gap: 5px;">
                     ${icons({ name: 'smile_outline', size: 16, realSize: 24, fill: 'accent' })}
                     В среднем на 1 чат приходиться ${mediumCountMembersPerOneChat} ${decOfNum(membersPerOneChat, ['участник', 'участников', 'участников'])}
                 </span>
-                <span style="display: flex; flex-direction: row; align-items: center;">
+                <span style="display: flex; flex-direction: row; align-items: center; gap: 5px;">
                     ${icons({ name: 'globe_outline', size: 16, realSize: 24, fill: 'accent' })}
                     Почти каждый участник есть хотя бы в ${membersPerOneChat} ${decOfNum(membersPerOneChat, ['чате', 'чатах', 'чатах'])}
                 </span>
@@ -816,10 +819,10 @@ async function showAddChat() {
 }
 
 
-async function showTopUseExtension() {
+async function showTopViewsChats() {
     modalPage.new(titleModalPage({
         title: 'Админ панель',
-        before: 'Использования',
+        before: 'Просмотры',
         icon: `
             <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px;">
                 ${icons({ name: 'browser_back', size: 20, fill: 'secondary' })}
@@ -832,13 +835,13 @@ async function showTopUseExtension() {
         showAdminPanel({ isCurrent: true });
     };
 
-    const users = await SCAPI.call({ method: "extension.getTopUse" });
+    const users = await SCAPI.call({ method: "extension.getTopViewsChats" });
 
     const usersFromVK = await getUsersOrGroupsFromVK(users.map(user => user.id), true);
 
     let htmlUsers = usersFromVK.map((member, index) => {
         const user = users[index];
-        const subTitle = user.useExtension ? `${user.useExtension.toLocaleString('ru-RU')} ${decOfNum(user.useExtension, ['запрос', 'запроса', 'запросов'])} к API` : '0 запросов к API';
+        const subTitle = user.viewChats.self ? ` Просмотрел ${user.viewChats.self.toLocaleString('ru-RU')} ${decOfNum(user.viewChats.self, ['чат', 'чата', 'чатов'])}` : 'Просмотрел 0 чатов';
 
         return blankMembersList({ member, creator: 0, friends: [{}], subTitle });
     }).join('');
@@ -865,9 +868,9 @@ async function showAdminPanel() {
         <div style="display: flex; align-items: center; flex-direction: column; margin: 10px;">
             <div style="display: flex; flex-direction: row; align-items: center;">
             
-                 <span id="top_use_extension" class="group-stats vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard" title="Топ пользователей по чатам"> 
+                 <span id="top_views_chats" class="group-stats vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard" title="Топ пользователей по чатам"> 
                     ${icons({ name: 'api_outline', realSize: 20, size: 48 })} 
-                    <span class="button" style="font-size: 12px;">Использования</span>
+                    <span class="button" style="font-size: 12px;">Просмотры</span>
                 </span>
 
             </div>
@@ -876,8 +879,8 @@ async function showAdminPanel() {
 
     modalPage.setContent(html);
 
-    document.getElementById('top_use_extension').onclick = () => {
-        showTopUseExtension();
+    document.getElementById('top_views_chats').onclick = () => {
+        showTopViewsChats();
     }
 }
 
@@ -1055,7 +1058,7 @@ async function showProfile({ id }) {
         modalPage.setContent(
             blankNotFound(
                 icons({ name: 'user_slash_outline', realSize: 20, size: 48 }),
-                'Такого профиля ВКонтакте не существует '
+                'Такого профиля ВКонтакте не существует'
             )
         );
 
@@ -1069,10 +1072,15 @@ async function showProfile({ id }) {
         })
     ]);
 
+    if (userFromSC.accessDenied) {
+        return;
+    }
+
     let HTMLNewChat = '';
 
     let friends = [], creator = {};
 
+    const queriesByUsers = await getUsersOrGroupsFromVK(userFromSC.history?.queriesByUsers ?? [], true);
 
     if (userFromSC.newChat) {
         [friends, [creator]] = await Promise.all([
@@ -1082,7 +1090,10 @@ async function showProfile({ id }) {
 
         HTMLNewChat = `
             <br/>
-            <div style="margin-left: 3px; margin-bottom: 3px; font-size: 15px; font-weight: bold;">Самый новый чат с ${userFromVK.sex === 1 ? 'ней' : 'ним'}</div>
+            <div style="margin-left: 3px; margin-bottom: 3px; font-size: 15px; font-weight: bold; gap: 5px; display: flex; align-items: center; justify-content: center;">
+                ${icons({ name: 'new', fill: 'secondary', size: 24, realSize: 16 })}
+                Самый новый чат с ${userFromVK.sex === 1 ? 'ней' : 'ним'}
+            </div>
             ${
                 blankChat({
                     chat: userFromSC.newChat,
@@ -1111,6 +1122,43 @@ async function showProfile({ id }) {
     `;
 
     const nameString = deXSS(`${userFromVK.first_name} ${userFromVK.last_name}`);
+
+
+    const userLastChekUsersChats = queriesByUsers.map(member => {
+        const typeMention = member?.first_name ? 'id' : 'club';
+
+        const linkMember = `https://vk.com/${typeMention}${member.id}`;
+        const nameHTML = typeMention === 'id'
+            ? `<span style="max-width: 180px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${deXSS(member.first_name)} ${deXSS(member.last_name)}</span>`
+            : `Группа «<span style="max-width: 180px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${deXSS(member.name)}</span>»`;
+    
+        const nameString = deXSS(typeMention === 'id'
+            ? `${member.first_name} ${member.last_name}`
+            : `Группа «${member.name}»`
+        );
+        
+        const isFriend = friends.find(friend => member.id === friend.id) !== undefined;
+
+        return `
+            <div style="display: flex; gap: 5px; font-weight: 400; color: #99a2ad; align-items: center;">
+                <div style="width: 20px; height: 20px;" class="vkuiAvatar vkuiImageBase vkuiImageBase--size-20 vkuiImageBase--loaded" role="img">
+                    <img class="vkuiImageBase__img" src="${member.photo_100 || ''}">
+                </div>
+
+                <a title="${nameString}" target="_blank" href="${linkMember}" style="display: flex; ${isFriend ? `color: ${appearance.get() === 'dark' ? '#A8E4A0' : '#258b17'};` : ''}">
+                    ${nameHTML}
+                </a>
+            </div>
+        `
+    }).join(',⠀');
+
+    const userLastChekByTitleChats = userFromSC.history?.queriesByTitle?.map(title => 
+        `
+            <div style="display: flex; gap: 5px; font-weight: 400; color: #99a2ad; align-items: center;">
+                ${deXSS(title)}
+            </div>
+        `    
+    ).join(',⠀');
 
     modalPage.setContent(`
         <div class="${classGroup}">
@@ -1147,6 +1195,11 @@ async function showProfile({ id }) {
                         Интересовались профилем ${userFromSC.views.toLocaleString('ru-RU')} ${decOfNum(userFromSC.views, ['раз', 'раза', 'раз'])}.
                     </span>
 
+                    <span style="display: flex; flex-direction: row; gap: 5px; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
+                        ${icons({ name: 'api_outline', size: 16, realSize: 20, fill: 'secondary' })}
+                        ${userFromVK.sex === 1 ? 'Использовала' : 'Использовал'} расширение ${userFromSC.useExtension.toLocaleString('ru-RU')} ${decOfNum(userFromSC.useExtension, ['раз', 'раза', 'раз'])}.
+                    </span>
+
                     ${userFromSC.isBanned ? 
                         `
                             <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #fce100; font-weight: bold;"> 
@@ -1175,7 +1228,7 @@ async function showProfile({ id }) {
 
         <div class="${classGroup}" style="display: flex; justify-content: space-between;">
             <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
-                ${icons({ name: 'archive_outline', size: 16, fill: 'secondary' })}
+                ${icons({ name: 'search_stars_outline', size: 16, fill: 'secondary' })}
                 ${userFromVK.sex === 1 ? 'Найдена' : 'Найден'} в ${userFromSC.stats.member.toLocaleString('ru-RU')} ${decOfNum(userFromSC.stats.member, ['чате', 'чатах', 'чатах'])}
             </span>
 
@@ -1195,21 +1248,72 @@ async function showProfile({ id }) {
         </div>
 
         <div class="${classGroup}" style="display: flex; justify-content: space-between;">
-            <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold; padding-left: 50px;"> 
+            <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold; padding-left: 5%;"> 
+                ${icons({ name: 'chats_outline', size: 16, realSize: 28, fill: 'secondary' })}
+                Просмотрели ${userFromSC.viewChats.other.toLocaleString('ru-RU')} ${decOfNum(userFromSC.viewChats.other, ['чат', 'чата', 'чатов'])} с ${userFromVK.sex === 1 ? 'ней' : 'ним'}
+            </span>
+
+            <div class="ver-separator"></div>
+            
+            <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold; padding-right: 5%;"> 
                 ${icons({ name: 'view', size: 16, fill: 'secondary' })}
                 ${userFromVK.sex === 1 ? 'Просмотрела' : 'Просмотрел'} ${userFromSC.viewChats.self.toLocaleString('ru-RU')} ${decOfNum(userFromSC.viewChats.self, ['чат', 'чата', 'чатов'])}
             </span>
 
-            <div class="ver-separator"></div>
+        </div>
 
-            <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold; padding-right: 50px;"> 
-                ${icons({ name: 'chats_outline', size: 16, realSize: 28, fill: 'secondary' })}
-                ${decOfNum(userFromSC.viewChats.other, ['Просмотрен', 'Просмотрено', 'Просмотрено'])} ${userFromSC.viewChats.other.toLocaleString('ru-RU')} ${userFromVK.sex === 1 ? 'её' : 'его'} ${decOfNum(userFromSC.viewChats.other, ['чат', 'чата', 'чатов'])}
+        ${HTMLNewChat}
+
+
+        <br/>
+        <div style="display: flex; margin-bottom: 3px; font-size: 15px; font-weight: bold; gap: 5px; flex-direction: row; justify-content: center; align-items: center;">
+            ${icons({ name: 'archive_outline', size: 24, realSize: 28, fill: 'secondary' })}
+            История пользователя
+        </div>
+
+        <div class="${classGroup}" style="display: flex; justify-content: space-between;">
+            <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold; padding-left: 5%;"> 
+                ${icons({ name: 'door_arrow_left_outline', size: 16, realSize: 24, fill: 'secondary' })}
+                ${userFromVK.sex === 1 ? 'Присоединилась' : 'Присоединился'} в ${userFromSC.stats.entered.toLocaleString('ru-RU')} ${decOfNum(userFromSC.stats.entered, ['чата', 'чата', 'чатов'])}
+            </span>
+
+            <div class="ver-separator"></div>
+            
+            <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold; padding-right: 5%;"> 
+                ${icons({ name: 'door_arrow_right_outline', size: 16, realSize: 24, fill: 'secondary' })}
+                ${userFromVK.sex === 1 ? 'Вышла' : 'Вышел'} из ${userFromSC.stats.exited.toLocaleString('ru-RU')} ${decOfNum(userFromSC.stats.exited, ['чата', 'чатов', 'чатов'])}
             </span>
         </div>
 
+        ${
+            userLastChekUsersChats 
+                ? `
+                    <div class="${classGroup}" style="display: flex; flex-direction: fow;">
+                        <span style="display: flex; word-break: break-all; flex-wrap: wrap; text-align: center;">
+                            <span style="font-size: 14px; color: #99a2ad; font-weight: bold;"> 
+                                Чьи чаты ${userFromVK.sex === 1 ? 'смотрела' : 'смотрел'} последний раз:⠀
+                            </span>
+                            ${userLastChekUsersChats}
+                        </span>
+                    </div>
+                ` 
+                : ''
+        }
 
-        ${HTMLNewChat}
+        ${
+            userLastChekByTitleChats
+                ? `
+                    <div class="${classGroup}" style="display: flex; flex-direction: fow;">
+                        <span style="display: flex; word-break: break-all; flex-wrap: wrap; text-align: center;">
+                            <span style="font-size: 14px; color: #99a2ad; font-weight: bold;"> 
+                                Последние запросы по названиям:⠀
+                            </span>
+                            ${userLastChekByTitleChats}
+                        </span>
+                    </div>
+                ` 
+                : ''
+        }
     `);
 
     onClicks('showProfile', { id: userFromVK.id, friends, chat: userFromSC.newChat });
@@ -1337,7 +1441,16 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends) {
         const typeStory = story.id ? 'user' : story.title ? 'title' : story.photo ? 'photo' : '';
 
         if (typeStory === 'user') {
-            const from = chat.history.exitedUsers.find(exitUser => exitUser.id === story.id) ? 'exitedUsers' : 'newUsers';
+            const from = [];
+
+            if (chat.history.exitedUsers.find(exitUser => exitUser.id === story.id)) {
+                from.push('exitedUsers');
+            }
+
+            if (chat.history.newUsers.find(newUser => newUser.id === story.id)) {
+                from.push('newUsers');
+            }
+
             const member = usersFromVK.find(member => (member?.first_name ? member.id : -member.id) === story.id);
             const typeMention = member?.first_name ? 'id' : 'club';
 
@@ -1353,33 +1466,35 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends) {
             
             const isFriend = friends.find(friend => member.id === friend.id) !== undefined;
 
-            HTML += `
-                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
-                    <div style="display: flex; gap: 5px; font-weight: 400; color: #99a2ad; align-items: center;">
+            for (const type of from) {
+                HTML += `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                        <div style="display: flex; gap: 5px; font-weight: 400; color: #99a2ad; align-items: center;">
 
-                        <div style="width: 20px; height: 20px;" class="vkuiAvatar vkuiImageBase vkuiImageBase--size-20 vkuiImageBase--loaded" role="img">
-                            <img class="vkuiImageBase__img" src="${member.photo_100 || ''}">
-                        </div>
+                            <div style="width: 20px; height: 20px;" class="vkuiAvatar vkuiImageBase vkuiImageBase--size-20 vkuiImageBase--loaded" role="img">
+                                <img class="vkuiImageBase__img" src="${member.photo_100 || ''}">
+                            </div>
 
-                        <a title="${nameString}" target="_blank" href="${linkMember}" style="display: flex; font-weight: bold; ${isFriend ? `color: ${appearance.get() === 'dark' ? '#A8E4A0' : '#258b17'};` : ''}">
-                            ${nameHTML}
-                        </a>
-
-                        <span style="display: flex; flex-direction: row; gap: 5px;">
-                            ${
-                                from === 'exitedUsers' 
-                                    ?
-                                        member.sex !== 2 ? 'вышла' : 'вышел'
-                                    :
-                                        member.sex !== 2 ? 'присоединилась' : 'присоединился'
-                            }
-                            <a style="text-decoration-color: #99a2ad; color: #99a2ad;">
-                                ${moment(story.date).format('DD.MM.YYYY HH:mm')}
+                            <a title="${nameString}" target="_blank" href="${linkMember}" style="display: flex; font-weight: bold; ${isFriend ? `color: ${appearance.get() === 'dark' ? '#A8E4A0' : '#258b17'};` : ''}">
+                                ${nameHTML}
                             </a>
-                        </span>
+
+                            <span style="display: flex; flex-direction: row; gap: 5px;">
+                                ${
+                                    type === 'exitedUsers' 
+                                        ?
+                                            member.sex !== 2 ? 'вышла' : 'вышел'
+                                        :
+                                            member.sex !== 2 ? 'присоединилась' : 'присоединился'
+                                }
+                                <a style="text-decoration-color: #99a2ad; color: #99a2ad;">
+                                    ${moment(chat.history[type].find(_story => _story.id === member.id)?.date || story.date).format('DD.MM.YYYY HH:mm')}
+                                </a>
+                            </span>
+                        </div>
                     </div>
-                </div>
-            `
+                `
+            }
         }
 
         if (typeStory === 'title') {
@@ -1391,10 +1506,6 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends) {
             const indexNewTitle = sortTitles.findIndex(title => title.title === oldTitle);
 
             const newTitle = sortTitles[indexNewTitle - 1]?.title || chat.title;
-
-            // const newTitle = deXSS(sortTitles[
-            //     sortTitles.findIndex(title => title.title === story.title) - 1
-            // ]?.title || chat.title);
 
             HTML += `
                 <div style="display: flex; align-items: center; justify-content: center;">

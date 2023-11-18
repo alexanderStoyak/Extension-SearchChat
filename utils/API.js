@@ -1,7 +1,7 @@
 const hashCode = s => s.split('').reduce((a, b) => { a = ((a << 5) - a) + b.charCodeAt(0); return a & a }, 0);
-const warns = {
+const errors = {
     18: {
-        title: 'Фильтр «Участник» требует подписки',
+        title: 'У Вас включен один или несколько платных фильтров, которые требуют подписку',
         button: {
             id: 'shop',
             text: 'В магазин',
@@ -90,32 +90,7 @@ const SCAPI = {
         const { response: { response, error } } = await GM_xmlhttpRequest(`https://api.search-for-chats-of-vk.ru/method/${method}`, parameters);
 
         if (error) {
-            if (error.code === 19 || error.code === 25 || error.code === 18) {
-
-                const warn = warns[error.code] ??
-                {
-                    title: 'Что-то пошло не так..',
-                    button: {
-                        id: 'restart_page',
-                        text: 'Перезагрузить страницу'
-                    }
-                }
-
-                modalPage.setContent(
-                    blankNotFound(
-                        icons({ name: 'privacy_outline', realSize: 28, size: 86 }),
-                        warn.title,
-                        warn.button
-                    )
-                )
-
-                onClicks('warn', {});
-
-                return { accessDenied: true };
-            }
-
-            console.log(error);
-            notifiers(`<span style="color: #FD324A; font-weight: bold;">Ошибка ПоискЧата API </span> код №${error.code}: ${error.message}`);
+            return errorAPI(error)
         };
 
         APICache.set({
@@ -130,9 +105,9 @@ const SCAPI = {
 
 
 async function vkAuth() {
-    const { response: Html } = await GM_xmlhttpRequest(services.auth.urlByGetCode);
+    const { response: html } = await GM_xmlhttpRequest(services.auth.urlByGetCode);
 
-    const urlGetByCode = Html.match(/location\.href = "(.*)"/i)[1];
+    const urlGetByCode = html.match(/location\.href = "(.*)"/i)[1];
 
     const { finalUrl } = await GM_xmlhttpRequest(urlGetByCode);
 
@@ -162,4 +137,35 @@ async function vkAuth() {
     GM_setValue('VKMainUser', services.VKMainUser = user);
 
     return true;
+}
+
+
+function errorAPI(_error) {
+
+    if (!(_error.code in errors)) {
+        console.log(_error);
+        notifiers(`<span style="color: #FD324A; font-weight: bold;">Ошибка API ПоискЧата </span> код №${_error.code}: ${_error.message}`);
+    }
+
+    const error = errors[_error.code] ?? {
+        title: 'Что-то пошло не так..',
+        button: {
+            id: 'restart_page',
+            text: 'Перезагрузить страницу'
+        }
+    };
+
+    modalPage.setContent(
+        blankNotFound(
+            icons({ name: 'privacy_outline', realSize: 28, size: 86 }),
+            error.title,
+            error.button
+        )
+    )
+
+    onClicks('error', {});
+
+    return { 
+        accessDenied: true 
+    }
 }

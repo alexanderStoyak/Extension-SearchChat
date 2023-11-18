@@ -156,11 +156,13 @@ class ModalPage {
     }
 
     setContent(html) {
-        if (this.modalPage.isVisible()) {
-            this.boxBody.innerHTML = html;
-            this.fixedTitle();
-        } else {
-            this.modalPage.content(html);
+        if (this.modalPage) {
+            if (this.modalPage.isVisible()) {
+                this.boxBody.innerHTML = html;
+                this.fixedTitle();
+            } else {
+                this.modalPage.content(html);
+            }
         }
 
         return this;

@@ -206,7 +206,7 @@ function onClicks(fromWhichFunction, args) {
         },
 
 
-        'warn': () => {
+        'error': () => {
             (document.getElementById('restart_page') ?? {}).onclick = () => {
                 location.reload();
             }
