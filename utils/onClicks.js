@@ -26,10 +26,22 @@ function onClicks(fromWhichFunction, args) {
             }
         },
 
-        'showHistoryChat': ({backFunction}) => {
+        'showHistoryChat': ({indexChatOrChat, backFunction, friends}) => {
+            const input = document.getElementById('search_users_history');
+
             (document.getElementById('back_button_modal_page') ?? {}).onclick = () => {
                 backFunction({ isCurrent: true });
             };
+
+            if (input) {
+                input.oninput = () => {
+                    showHistoryChat(indexChatOrChat, backFunction, friends, input.value);
+                }
+                input.setSelectionRange(input.value.length, input.value.length);
+                input.focus();
+
+                document.getElementById('searchChats_button').onclick = () => showHistoryChat(indexChatOrChat, backFunction, friends, input.value);
+            }
         },
 
         'showStatistics': () => {
@@ -65,6 +77,11 @@ function onClicks(fromWhichFunction, args) {
 
             (document.getElementById('filter_is_history') ?? {}).onclick = () => {
                 filters.isHistory = !filters.isHistory;
+                searchChats({});
+            }
+
+            (document.getElementById('filter_is_active') ?? {}).onclick = () => {
+                filters.isActive = !filters.isActive;
                 searchChats({});
             }
 

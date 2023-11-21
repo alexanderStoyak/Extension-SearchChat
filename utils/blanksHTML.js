@@ -458,98 +458,113 @@ function blankFiltersSearchChats({
         
         ${blankInputSearch({ id: 'searchChats_input', value: filters.title, placeholder: filters.isHistory ? 'Поиск из старых названий' : 'Найдётся все, ну.. почти' })}
 
-        <div style="display: flex; align-items: center;">
+        <span style="display: flex; word-break: break-all; flex-wrap: wrap; text-align: center; gap: 0px 10px;">
+            <div style="display: flex; align-items: center;">
+                <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
+                    <span>
+                        ${icons({ name: 'sort', size: 16, realSize: 24, fill: 'secondary' })}
+                    </span>
+                    <label for="sortField"> Сортировать по </label>
+                    <select name="sort_field" id="sort_field" class="sort-select">
+                        <option value="membersCount" ${filters.sortField === 'membersCount' ? 'selected' : ''}>количеству участников</option>
+                        <option value="added" ${filters.sortField === 'added' ? 'selected' : ''}>дате добавления</option>
+                        <option value="lastUpdate" ${filters.sortField === 'lastUpdate' ? 'selected' : ''}>дате обновления</option>
+                        <option value="views" ${filters.sortField === 'views' ? 'selected' : ''}>количеству просмотров</option>
+                    </select>
+                    <span class="btn" style="border-radius: 3px;" id="filter_set_sort_order" title="${filters.sortOrder === 'desc' ? 'по убыванию' : 'по возрастанию'}">
+                        ${icons({ name: filters.sortOrder === 'desc' ? 'arrow_down_outline' : 'arrow_up_outline', size: 16, fill: 'secondary' })}
+                    </span>
+                </div>
+            </div>
+
+            ${user ?
+                `
+                    <div style="display: flex; align-items: center;">
+                        <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
+                            <span>
+                                ${icons({ name: 'user_outline', size: 16, fill: 'secondary' })}
+                            </span>
+                            Чаты, в которых ${filters.isHistory ? user.sex !== 2 ? 'была' : 'был' : 'есть'}
+                            <a id="get_profile" title="${nameString}" style="display: flex;">
+                                ${nameHTML}
+                            </a>
+
+                            <div style="width: 16px; height: 16px;" 
+                                class="vkuiAvatar vkuiImageBase vkuiImageBase--size-16 vkuiImageBase--loaded" role="img">
+                                <img class="vkuiImageBase__img" src="${user.photo_100 || ''}">
+                            </div>
+
+                            <span class="btn" style="border-radius: 3px;" title="Удалить" id="filter_button_delete_user">
+                                ${icons({ name: 'cross_large_outline', size: 16, realSize: 28, fill: 'secondary' })}
+                            </span>
+                        </div>
+                    </div>
+                ` : ''
+            }
+
+
             <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
                 <span>
-                    ${icons({ name: 'sort', size: 16, realSize: 24, fill: 'secondary' })}
+                    ${icons({ name: 'users_3_outline', size: 16, realSize: 20, fill: 'secondary' })}
                 </span>
-                <label for="sortField"> Сортировать по </label>
-                <select name="sort_field" id="sort_field" class="sort-select">
-                    <option value="membersCount" ${filters.sortField === 'membersCount' ? 'selected' : ''}>количеству участников</option>
-                    <option value="added" ${filters.sortField === 'added' ? 'selected' : ''}>дате добавления</option>
-                    <option value="lastUpdate" ${filters.sortField === 'lastUpdate' ? 'selected' : ''}>дате обновления</option>
-                    <option value="views" ${filters.sortField === 'views' ? 'selected' : ''}>количеству просмотров</option>
-                </select>
-                <span class="btn" style="border-radius: 3px;" id="filter_set_sort_order" title="${filters.sortOrder === 'desc' ? 'по убыванию' : 'по возрастанию'}">
-                    ${icons({ name: filters.sortOrder === 'desc' ? 'arrow_down_outline' : 'arrow_up_outline', size: 16, fill: 'secondary' })}
+                Чаты, в которых ${filters.isHistory ? 'были' : 'есть'} <a target="_blank" href="https://vk.com/friends">Ваши друзья</a>
+                <input type="checkbox" id="filter_only_with_friends" ${filters.onlyWithFriends ? 'checked' : ''} />
+            </div>
+            
+            <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
+                <span>
+                    ${icons({ name: 'poll_outline', size: 16, realSize: 32, fill: 'secondary' })}
+                </span>
+                <label style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;" id="range_users_label" for="range_users_label">
+                    Диапазон участников от 
+                    <input class="sort-select" type="number" 
+                        id="range_users_input_min" 
+                        name="range_users" 
+                        min="0" 
+                        max="199998" 
+                        value="${filters.minUsers}" 
+                        style="width: ${((filters.minUsers.toString().length + 1) * 8) - 8}px; margin: 0px;"
+                    />
+                    до 
+                    <input class="sort-select" type="number" 
+                        id="range_users_input_max" 
+                        name="range_users" 
+                        min="1" 
+                        max="200000"
+                        value="${filters.maxUsers}" 
+                        style="width: ${((filters.maxUsers.toString().length + 1) * 8) - 8}px; margin: 0px;"
+                    /> 
+                </label>
+                <a id="clear_range_users">Сбросить</a>
+            </div>
+
+            <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
+                <span>
+                    ${icons({ name: 'article_box_outline', size: 16, realSize: 16, fill: 'secondary' })}
+                </span>
+
+                Поиск в истории чатов
+                <input type="checkbox" id="filter_is_history" ${filters.isHistory ? 'checked' : ''} />
+
+                <span title="Поиск в истории чатов будет осуществляться по старым названиям, а также по чатам, где участвовал участник или Ваши друзья.">
+                    ${icons({ name: 'help_outline', size: 16, realSize: 16 })}
                 </span>
             </div>
-        </div>
 
-        ${user ?
-            `
-                <div style="display: flex; align-items: center;">
-                    <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
-                        <span>
-                            ${icons({ name: 'user_outline', size: 16, fill: 'secondary' })}
-                        </span>
-                        Чаты, в которых ${filters.isHistory ? user.sex !== 2 ? 'была' : 'был' : 'есть'}
-                        <a id="get_profile" title="${nameString}" style="display: flex;">
-                            ${nameHTML}
-                        </a>
+            <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
+                <span>
+                    ${icons({ name: 'fire_alt_outline', size: 16, realSize: 20, fill: 'secondary' })}
+                </span>
 
-                        <div style="width: 16px; height: 16px;" 
-                            class="vkuiAvatar vkuiImageBase vkuiImageBase--size-16 vkuiImageBase--loaded" role="img">
-                            <img class="vkuiImageBase__img" src="${user.photo_100 || ''}">
-                        </div>
+                Только активные чаты
+                <input type="checkbox" id="filter_is_active" ${filters.isActive ? 'checked' : ''} />
 
-                        <span class="btn" style="border-radius: 3px;" title="Удалить" id="filter_button_delete_user">
-                            ${icons({ name: 'cross_large_outline', size: 16, realSize: 28, fill: 'secondary' })}
-                        </span>
-                    </div>
-                </div>
-            ` : ''
-        }
-
-
-        <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
-            <span>
-                ${icons({ name: 'users_3_outline', size: 16, realSize: 20, fill: 'secondary' })}
-            </span>
-            Чаты, в которых ${filters.isHistory ? 'были' : 'есть'} <a target="_blank" href="https://vk.com/friends">Ваши друзья</a>
-            <input type="checkbox" id="filter_only_with_friends" ${filters.onlyWithFriends ? 'checked' : ''} />
-        </div>
-
-        <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
-            <span>
-                ${icons({ name: 'article_box_outline', size: 16, realSize: 16, fill: 'secondary' })}
-            </span>
-
-            Поиск в истории чатов
-            <input type="checkbox" id="filter_is_history" ${filters.isHistory ? 'checked' : ''} />
-
-            <span title="Поиск в истории чатов будет осуществляться по старым названиям, а также по чатам, где участвовал участник или Ваши друзья." id="filter_button_add_user">
-                ${icons({ name: 'help_outline', size: 16, realSize: 16 })}
-            </span>
-        </div>
-        
-        
-        <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
-            <span>
-                ${icons({ name: 'poll_outline', size: 16, realSize: 32, fill: 'secondary' })}
-            </span>
-            <label style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;" id="range_users_label" for="range_users_label">
-                Диапазон участников от 
-                <input class="sort-select" type="number" 
-                    id="range_users_input_min" 
-                    name="range_users" 
-                    min="0" 
-                    max="199998" 
-                    value="${filters.minUsers}" 
-                    style="width: ${((filters.minUsers.toString().length + 1) * 8) - 8}px; margin: 0px;"
-                />
-                до 
-                <input class="sort-select" type="number" 
-                    id="range_users_input_max" 
-                    name="range_users" 
-                    min="1" 
-                    max="200000"
-                    value="${filters.maxUsers}" 
-                    style="width: ${((filters.maxUsers.toString().length + 1) * 8) - 8}px; margin: 0px;"
-                /> 
-            </label>
-            <a id="clear_range_users">Сбросить</a>
-        </div>
+                <span title="Это те чаты, в которых произошли какие-либо изменения за последние 7 дней.">
+                    ${icons({ name: 'help_outline', size: 16, realSize: 16 })}
+                </span>
+            </div>
+    
+        </span>
 
 
         ${blankPages({ found: foundChats, inOnePage: countListChats, offset, currentPage, totalPage })}

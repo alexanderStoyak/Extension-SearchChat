@@ -9,6 +9,7 @@ class Filters {
         this.minUsers = 0;
         this.maxUsers = 200000;
         this.isHistory = false;
+        this.isActive = false;
     }
 
     remove() {
@@ -19,7 +20,7 @@ class Filters {
         this.sortOrder = 'desc';
         this.minUsers = 0;
         this.maxUsers = 200000;
-        this.isHistory = false;
+        this.isActive = false;
     }
 }
 const filters = new Filters();
@@ -156,13 +157,11 @@ class ModalPage {
     }
 
     setContent(html) {
-        if (this.modalPage) {
-            if (this.modalPage.isVisible()) {
-                this.boxBody.innerHTML = html;
-                this.fixedTitle();
-            } else {
-                this.modalPage.content(html);
-            }
+        if (this.modalPage.isVisible()) {
+            this.boxBody.innerHTML = html;
+            this.fixedTitle();
+        } else {
+            this.modalPage.content(html);
         }
 
         return this;

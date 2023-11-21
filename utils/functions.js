@@ -224,6 +224,7 @@ async function searchChats({ isCurrent = false, offset = 0 }) {
         maxMembers: filters.maxUsers,
         minMembers: filters.minUsers,
         isHistory: filters.isHistory,
+        isActive: filters.isActive,
         offset,
     }
 
@@ -1337,7 +1338,7 @@ async function showProfile({ id }) {
 
 
 
-async function showHistoryChat(indexChatOrChat, backFunction, friends) {
+async function showHistoryChat(indexChatOrChat, backFunction, friends, search = '') {
     let chat = {};
     if (typeof indexChatOrChat === 'object') {
         chat = indexChatOrChat;
@@ -1360,6 +1361,7 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends) {
             title: 'История чата',
             before: { title: deXSS(chat.title), icon: chatPhoto },
             subTitle: `
+                ${blankInputSearch({ id: 'search_users_history', value: search })}
                 <span style="display: flex; gap: 5px;">
                     ${icons({ name: 'pencil', size: 16, realSize: 12, fill: 'secondary' })}
                     <span style="padding-right: 10px; color: #99a2ad;">
@@ -1417,7 +1419,7 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends) {
         chat.history.exitedUsers?.map(x=>x).reverse(),
         chat.history.newUsers?.map(x=>x).reverse(),
     ])
-    .filter(id => id !== undefined)
+    .filter(obj => obj !== undefined)
     .sort((a, b) => new Date(b.date) - new Date(a.date));
 
 
@@ -1443,29 +1445,30 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends) {
     let HTML = '';
 
 
-    const chunksHistory = chunk(history.map(({id}) => id).filter(id => id !== undefined), 5_000);
+    const chunksHistory = chunk(history.map(({ id }) => id).filter(id => id !== undefined), 5_000);
     let promises = [];
 
     for (const chunk of chunksHistory) {
         promises.push(getUsersOrGroupsFromVK(chunk, true));
     }
 
-    const usersFromVK = [].concat.apply([], await Promise.all(promises));
+    const usersFromVK = ([].concat.apply([], await Promise.all(promises))).filter(member =>
+        search ?
+            new RegExp(noSpecialCharacters(search), 'i')
+                .test(member.first_name ? `${member.first_name} ${member.last_name}` : member.name)
+            : true
+    );
 
+    const skipMembers = [];
 
-    history.forEach(story => {
-        const typeStory = story.id ? 'user' : story.title ? 'title' : story.photo ? 'photo' : '';
+    history.filter(({ id, title, photo }) => usersFromVK.find(member => (member?.first_name ? member.id : -member.id) === id) || photo || title).forEach(story => {
+        const typeStory = story.id ? 'member' : story.title ? 'title' : story.photo ? 'photo' : '';
 
-        if (typeStory === 'user') {
-            const from = [];
+        if (typeStory === 'member' && !skipMembers.find(id => id === story.id)) {
+            skipMembers.push(story.id);
 
-            if (chat.history.exitedUsers.find(exitUser => exitUser.id === story.id)) {
-                from.push('exitedUsers');
-            }
-
-            if (chat.history.newUsers.find(newUser => newUser.id === story.id)) {
-                from.push('newUsers');
-            }
+            const news = chat.history.newUsers.filter(newUser => newUser.id === story.id);
+            const exits = chat.history.exitedUsers.filter(exitUser => exitUser.id === story.id);
 
             const member = usersFromVK.find(member => (member?.first_name ? member.id : -member.id) === story.id);
             const typeMention = member?.first_name ? 'id' : 'club';
@@ -1482,7 +1485,7 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends) {
             
             const isFriend = friends.find(friend => member.id === friend.id) !== undefined;
 
-            for (const type of from) {
+            for (const { date } of exits) {
                 HTML += `
                     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
                         <div style="display: flex; gap: 5px; font-weight: 400; color: #99a2ad; align-items: center;">
@@ -1496,20 +1499,39 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends) {
                             </a>
 
                             <span style="display: flex; flex-direction: row; gap: 5px;">
-                                ${
-                                    type === 'exitedUsers' 
-                                        ?
-                                            member.sex !== 2 ? 'вышла' : 'вышел'
-                                        :
-                                            member.sex !== 2 ? 'присоединилась' : 'присоединился'
-                                }
+                                ${member.sex !== 2 ? 'вышла' : 'вышел'}
                                 <a style="text-decoration-color: #99a2ad; color: #99a2ad;">
-                                    ${moment(chat.history[type].find(_story => _story.id === member.id)?.date || story.date).format('DD.MM.YYYY HH:mm')}
+                                    ${moment(date).format('DD.MM.YYYY HH:mm')}
                                 </a>
                             </span>
                         </div>
                     </div>
-                `
+                `;
+            }
+
+
+            for (const { date } of news) {
+                HTML += `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                        <div style="display: flex; gap: 5px; font-weight: 400; color: #99a2ad; align-items: center;">
+
+                            <div style="width: 20px; height: 20px;" class="vkuiAvatar vkuiImageBase vkuiImageBase--size-20 vkuiImageBase--loaded" role="img">
+                                <img class="vkuiImageBase__img" src="${member.photo_100 || ''}">
+                            </div>
+
+                            <a title="${nameString}" target="_blank" href="${linkMember}" style="display: flex; font-weight: bold; ${isFriend ? `color: ${appearance.get() === 'dark' ? '#A8E4A0' : '#258b17'};` : ''}">
+                                ${nameHTML}
+                            </a>
+
+                            <span style="display: flex; flex-direction: row; gap: 5px;">
+                                ${member.sex !== 2 ? 'присоединилась' : 'присоединился'}
+                                <a style="text-decoration-color: #99a2ad; color: #99a2ad;">
+                                    ${moment(date).format('DD.MM.YYYY HH:mm')}
+                                </a>
+                            </span>
+                        </div>
+                    </div>
+                `;
             }
         }
 
@@ -1623,5 +1645,5 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends) {
         </div>
     `);
 
-    onClicks('showHistoryChat', { backFunction });
+    onClicks('showHistoryChat', { indexChatOrChat, backFunction, friends, search });
 }
