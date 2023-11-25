@@ -61,7 +61,7 @@ class Cache {
     get(key) {
         this.checkExpired(key);
 
-        return this.data[key]?.data;
+        return structuredClone(this.data[key]?.data);
     }
 
     set({ key, data, expired }) {
@@ -72,7 +72,7 @@ class Cache {
         }
 
         this.data[key].expired = expired;
-        return this.data[key].data = data;
+        return structuredClone(this.data[key].data = data);
     }
 
     delete(key) {
@@ -157,11 +157,13 @@ class ModalPage {
     }
 
     setContent(html) {
-        if (this.modalPage.isVisible()) {
-            this.boxBody.innerHTML = html;
-            this.fixedTitle();
-        } else {
-            this.modalPage.content(html);
+        if (this.modalPage) {
+            if (this.modalPage.isVisible()) {
+                this.boxBody.innerHTML = html;
+                this.fixedTitle();
+            } else {
+                this.modalPage.content(html);
+            }
         }
 
         return this;

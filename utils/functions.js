@@ -186,7 +186,7 @@ async function getUsersOrGroupsFromVK(links, explicitIds) {
     const response = await VKAPI.call('execute', { code });
 
 
-    return [].concat.apply([], response);
+    return response.flat();
 }
 
 
@@ -384,6 +384,8 @@ async function showUsersChat(indexChatOrChat, friends, backFunction, offset = 0,
         chat = currentChats.foundChats.chats[indexChatOrChat];
     }
 
+    chat = structuredClone(chat);
+
     const chatPhoto = chat.photo
         ? chat.photo['200'] || chat.photo['150'] || chat.photo['50']
         : 'https://vk.com/images/community_200.png';
@@ -406,14 +408,14 @@ async function showUsersChat(indexChatOrChat, friends, backFunction, offset = 0,
     modalPage.new(title()).setLoad(services.pick.showUsersChat).visible();
 
 
-    const chunksMembersList = chunk(chat.members.map(x=>x), 5_000);
+    const chunksMembersList = chunk(chat.members, 5_000);
     let promises = [];
     for (const chunk of chunksMembersList) {
         promises.push(getUsersOrGroupsFromVK(chunk, true));
     }
 
 
-    let membersList = [].concat.apply([], await Promise.all(promises));
+    let membersList = (await Promise.all(promises)).flat();
 
     const onlineMembers = membersList.filter(member => member.online).length;
 
@@ -526,7 +528,9 @@ async function getFriends() {
         return firstChunk + secondChunk;
     `;
 
-    return await VKAPI.call('execute', { code });
+    const response = await VKAPI.call('execute', { code });
+
+    return response;
 }
 
 
@@ -1346,6 +1350,8 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends, search = 
         chat = currentChats.foundChats.chats[indexChatOrChat];
     }
 
+    chat = structuredClone(chat);
+
     const chatPhoto = chat.photo
         ? chat.photo['200'] || chat.photo['150'] || chat.photo['50']
         : 'https://vk.com/images/community_200.png'; 
@@ -1413,12 +1419,12 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends, search = 
     }
     
 
-    const history = [].concat.apply([], [
-        chat.history.titles?.map(x=>x).reverse(), 
-        chat.history.photos?.map(x=>x).reverse(),
-        chat.history.exitedUsers?.map(x=>x).reverse(),
-        chat.history.newUsers?.map(x=>x).reverse(),
-    ])
+    const history = [
+        chat.history.titles?.reverse(),
+        chat.history.photos?.reverse(),
+        chat.history.exitedUsers?.reverse(),
+        chat.history.newUsers?.reverse(),
+    ].flat()
     .filter(obj => obj !== undefined)
     .sort((a, b) => new Date(b.date) - new Date(a.date));
 
@@ -1452,7 +1458,7 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends, search = 
         promises.push(getUsersOrGroupsFromVK(chunk, true));
     }
 
-    const usersFromVK = ([].concat.apply([], await Promise.all(promises))).filter(member =>
+    const usersFromVK = (await Promise.all(promises)).flat().filter(member =>
         search ?
             new RegExp(noSpecialCharacters(search), 'i')
                 .test(member.first_name ? `${member.first_name} ${member.last_name}` : member.name)
