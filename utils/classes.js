@@ -59,13 +59,13 @@ class Cache {
     }
 
     get(key) {
-        this.checkExpired(key);
+        this.checkExpired();
 
         return structuredClone(this.data[key]?.data);
     }
 
     set({ key, data, expired }) {
-        this.checkExpired(key);
+        this.checkExpired();
 
         if (!this.data[key]) {
             this.data[key] = {};
@@ -79,9 +79,11 @@ class Cache {
         return delete this.data[key];
     }
 
-    checkExpired(key) {
-        if (this.data[key]?.expired < +new Date) {
-            this.delete(key);
+    checkExpired() {
+        for(const key in this.data) {
+            if (this.data[key]?.expired < +new Date) {
+                this.delete(key);
+            }
         }
     }
 }

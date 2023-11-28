@@ -37,8 +37,6 @@ const observeChange = async () => {
     }
 
 
-
-
     const observer = new MutationObserver(mutations => {
         const mutationsForTargets = mutations.filter(mutation =>
             mutation.target instanceof HTMLElement
@@ -59,7 +57,6 @@ const observeChange = async () => {
 
 
 
-
         const mutationsForAddedNodes = mutations.filter(mutation =>
             [...mutation.addedNodes].find(node =>
                 node instanceof HTMLElement
@@ -68,6 +65,7 @@ const observeChange = async () => {
         )
 
         for (const mutation of mutationsForAddedNodes) {
+
             for (const { classList } of mutation.addedNodes) {
                 if (!classList) {
                     continue;
@@ -109,7 +107,6 @@ const observeChange = async () => {
                 }
             }
         }
-
 
 
 

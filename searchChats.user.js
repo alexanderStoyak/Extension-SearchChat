@@ -45,9 +45,9 @@
 // @grant        GM_addStyle
 // @grant        GM_xmlhttpRequest
 
-// @updateURL    https://github.com/alexanderStoyak/Extension-SearchChat/blob/main/searchChats.user.js
-// @downloadURL  https://github.com/alexanderStoyak/Extension-SearchChat/blob/main/searchChats.user.js
+// @updateURL    https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/searchChats.user.js
+// @downloadURL  https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/searchChats.user.js
 
-// @version      4.7.16
+// @version      4.8.16
 
 // ==/UserScript==

@@ -220,6 +220,24 @@ function onClicks(fromWhichFunction, args) {
 
         'showDescriptionProduct': () => {
             (document.getElementById('back_button_modal_page') ?? {}).onclick = showShop;
+
+            const donats = document.getElementsByClassName('donate');
+
+            for (const donat of donats) {
+                donat.onclick = () => {
+                    const data = JSON.parse(donat.getAttribute('data'));
+                    
+                    redirectPost('https://yoomoney.ru/quickpay/confirm', {
+                        receiver: 4100117442562201,
+                        'quickpay-form': 'button',
+                        sum: data.sum,
+                        label: JSON.stringify({
+                            productId: data.productId,
+                            userId: services.VKMainUser.id
+                        })
+                    })
+                };
+            }
         },
 
 
@@ -252,13 +270,13 @@ function onClicks(fromWhichFunction, args) {
             ([...document.getElementsByClassName('members_chat')]).forEach(
                 button =>
                     button.onclick = () =>
-                        showUsersChat(chat, friends, showProfile)
+                        showUsersChat(chat, friends, () => showProfile({ id }))
             );
 
             ([...document.getElementsByClassName('history_chat')]).forEach(
                 button =>
                     button.onclick = () =>
-                        showHistoryChat(chat, showProfile, friends)
+                        showHistoryChat(chat, () => showProfile({ id }), friends)
             );
         },
     })[fromWhichFunction](args);

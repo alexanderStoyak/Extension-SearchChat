@@ -14,7 +14,7 @@ function noSpecialCharacters(text) {
 
 
 function deXSS(text) {
-    return text.replace(/</g, "&lt;")
+    return text.toString().replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/['"`]/g, "&quot;");
 }
@@ -45,6 +45,28 @@ function chunk(array, offset) {
     }
 
     return task;
+}
+
+function redirectPost(url, data) {
+    const form = document.createElement('form');
+    document.body.appendChild(form);
+    form.method = 'POST';
+    form.action = url;
+    for (const name in data) {
+        const input = document.createElement('input');
+        const value = data[name];
+
+        input.type = 'hidden';
+        input.name = name;
+        input.value = value;
+
+        if (+value) {
+            input['data-type'] = 'number';
+        }
+
+        form.appendChild(input);
+    }
+    form.submit();
 }
 
 
@@ -316,7 +338,7 @@ async function searchChats({ isCurrent = false, offset = 0 }) {
         getFriends()
     ]);
 
-    
+
     const listChatsHTML = foundChats.chats.map(chat => blankChat({
         chat,
         friends,
@@ -682,9 +704,9 @@ async function showTopUsers() {
             </span>
         `,
         title: 'Топ',
-        before: { 
-            title: 'Пользователи', 
-            icon: icons({ name: 'users_outline', realSize: 20, size: 28 }) 
+        before: {
+            title: 'Пользователи',
+            icon: icons({ name: 'users_outline', realSize: 20, size: 28 })
         }
     })).setLoad().visible();
 
@@ -713,15 +735,15 @@ async function showTopUsers() {
 
 
 async function showTopGroups() {
-    modalPage.new(    titleModalPage({
+    modalPage.new(titleModalPage({
         icon: `
             <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px;">
                 ${icons({ name: 'browser_back', size: 20, fill: 'secondary' })}
             </span>
         `,
         title: 'Топ',
-        before: { 
-            title: 'Группы', 
+        before: {
+            title: 'Группы',
             icon: icons({ name: 'users_3_outline', realSize: 24, size: 28 })
         }
     })).setLoad().visible();
@@ -927,7 +949,7 @@ async function showShop() {
                     <span class="color-text-subhead" style="font-size: 12px">месяц</span>
                     <span class="button" style="font-size: 12px;">Подписка</span>
                     <span class="button color-text-subhead" style="font-size: 12px;">
-                        250 руб.
+                        150 руб.
                     </span>
                 </span>
 
@@ -938,14 +960,14 @@ async function showShop() {
                     <span class="color-text-subhead" style="font-size: 12px">навсегда</span>
                     <span class="button" style="font-size: 12px;">Скрыть себя</span>
                     <span class="button color-text-subhead" style="font-size: 12px;">
-                        500 руб.
+                        75 руб.
                     </span>
                 </span>
 
             </div>
 
             ${services.profileFromSC.isSubscriptionValid ?
-                `
+            `
                     <p style="margin-bottom: 10px;"></p>
                     ${blankQuote(`
                         <span style="display: flex; flex-direction: row; align-items: center; gap: 5px; line-height: 30px;">
@@ -954,8 +976,8 @@ async function showShop() {
                         </span>
                     `)}
                 `
-                : ''
-            }
+            : ''
+        }
 
         </div>
     `;
@@ -974,15 +996,15 @@ const descriptionProduct = {
         title: 'Подписка',
         tableСontents: `
             <b style="display: flex; flex-direction: row; align-items: center; gap: 5px; font-size: 16px; justify-content: center;">
-                ${icons({name: 'star_circle_fill_yellow', realSize: 16, size: 14, fill: 'original'})} Больше возможностей с подпиской!
+                ${icons({ name: 'star_circle_fill_yellow', realSize: 16, size: 14, fill: 'original' })} Больше возможностей с подпиской!
             </b>
         `,
-        price: 250,
+        price: [75, 100, 150],
         description: `
             ${blankQuote(
-                `
+            `
                     <span style="display: flex; flex-direction: row; align-items: center; gap: 5px; font-size: 16px; color: #828282;"> 
-                        ${icons({name: 'unlock', realSize: 12, size: 14})} Доступ к чатам любого пользователя или группы ВКонтакте.
+                        ${icons({ name: 'unlock', realSize: 12, size: 14 })} Доступ к чатам любого пользователя или группы ВКонтакте.
                     </span>
                     <ui style="${styleUi}">
                         <li style="${styleLi}"> # Вызывает удивление у Вашей жертвы, так как не каждый способен заходить в чаты пользователя при помощи всего двух кнопок. </li>
@@ -993,25 +1015,25 @@ const descriptionProduct = {
                         <li style="${styleLi}"> # Активные чаты: как правило, чем общительнее Ваш друг, тем активнее его чаты. </li>
                     </ui>
                 `
-            )}
+        )}
             <br/>
             ${blankQuote(`
                 <span style="display: flex; flex-direction: row; align-items: center; gap: 5px; font-size: 16px; color: #828282;"> 
-                    ${icons({name: 'cards_2', realSize: 12, size: 14})} Увеличения лимитов на страницы при просмотре чатов.
+                    ${icons({ name: 'cards_2', realSize: 12, size: 14 })} Увеличения лимитов на страницы при просмотре чатов.
                 </span>
                 # У обычных пользователей максимальное количество страниц, которые они могут просмотреть, составляет 15. У пользователей с подпиской максимальное количество страниц увеличено до 500, что дает возможность пролистать 7,500 чатов.
             `)}
             <br/>
             ${blankQuote(`
                 <span style="display: flex; flex-direction: row; align-items: center; gap: 5px; font-size: 16px; color: #828282;"> 
-                    ${icons({name: 'list_plus_outline', realSize: 20, size: 14})} Диапазон участников в чатах.
+                    ${icons({ name: 'list_plus_outline', realSize: 20, size: 14 })} Диапазон участников в чатах.
                 </span>
                 # Возможность установки диапазона количества участников в чатах, например, от 10 до 500.
             `)}
             <br/>
             ${blankQuote(`
                 <span style="display: flex; flex-direction: row; align-items: center; gap: 5px; font-size: 16px; color: #828282;"> 
-                    ${icons({name: 'archive_outline', realSize: 20, size: 16})} Поиск из истории чатов.
+                    ${icons({ name: 'archive_outline', realSize: 20, size: 16 })} Поиск из истории чатов.
                 </span>
                 # Поиск в истории чатов будет осуществляться по старым названиям, а также по чатам, где участвовал участник или Ваши друзья.
             `)}
@@ -1019,7 +1041,7 @@ const descriptionProduct = {
             <br/>
             ${blankQuote(`
                 <span style="display: flex; flex-direction: row; align-items: center; gap: 5px; font-size: 16px; color: #828282;"> 
-                    ${icons({name: 'help_outline', realSize: 24, size: 14})} Почему платно?
+                    ${icons({ name: 'help_outline', realSize: 24, size: 14 })} Почему платно?
                 </span>
                 Мы сделали подписку платной, поскольку функции с подпиской требуют дополнительных расходов, в том числе на аренду серверов. 
                 Вклад подписчиков позволяет нам покрывать эти расходы и помогает «ПоискЧата» оставаться бесплатным для всех пользователей.
@@ -1031,13 +1053,13 @@ const descriptionProduct = {
         title: 'Скрыть чаты',
         tableСontents: `
             <b style="display: flex; flex-direction: row; align-items: center; gap: 5px; font-size: 16px; justify-content: center;">
-                ${icons({name: 'lock', realSize: 12, size: 14})} Гарантированная конфиденциальность
+                ${icons({ name: 'lock', realSize: 12, size: 14 })} Гарантированная конфиденциальность
             </b>
         `,
-        price: 500,
+        price: [75],
         description: blankQuote(`
             <span style="display: flex; flex-direction: row; align-items: center; gap: 5px; font-size: 16px; color: #828282;"> 
-                ${icons({name: 'brain_outline', realSize: 28, size: 15})} Мы понимаем,
+                ${icons({ name: 'brain_outline', realSize: 28, size: 15 })} Мы понимаем,
             </span>
             что многим пользователям не нравится, когда кто-то несанкционированно заходит в их любимые чаты. 
             Это может серьезно нарушить комфорт и безопасность пользователей, особенно если чат является школьным или городским. Кроме того, информация, представленная в профиле чата, может раскрыть много о человеке, его интересах, месте жительства, образовании и месте работы.
@@ -1066,18 +1088,61 @@ function showDescriptionProduct(productId) {
         after: 'описание'
     })).visible();
 
+    let buttonText = `Купить за ${product.price}₽`;
+
+    if (productId === subscription) {
+        
+    }
+
+    const buttons = product.price.map(price => {
+        let term = '';
+        let percent = 0;
+        if (productId === 'subscription') {
+            if (price < 100) {
+                curse = 15;
+            } else if (price < 150) {
+                curse = 10;
+            } else if (price >= 150) {
+                curse = 5;
+            }
+
+            percent = curse / 15 * 100
+
+            term = price / curse;
+            buttonText = `Купить за ${price}₽`;
+        }
+
+        return `
+            <a style="padding: 2px; text-decoration: none;"
+                class="btn-chat ${classGroup} donate" 
+                    data="${deXSS(`{"sum": ${price}, "productId": "${productId}"}`)}"
+            >
+                <span style="display: flex; font-size: 13px; font-weight: 500; color: #99a2ad; padding: 0px 4px 0px 4px; flex-direction: column;">
+                    ${buttonText}
+                    ${
+                        term 
+                            ? `
+                                <span>
+                                    на ${term} ${decOfNum(term, ['день', 'дня', 'дней'])}
+                                    ${percent < 100 ? `(-${(100 - percent).toFixed(0)}%)` : ''}
+                                </span>
+                                
+                            ` 
+                            : ''
+                    }
+                </span>
+            </a>
+        `;
+    }).join('');
+
     modalPage.setContent(`
         <div style="display: block; gap: 5px; text-align: center; margin-top: 3px; padding: 10px;">
             ${product.tableСontents}
             <div class="separator"></div>
             <span style="font-size: 13px;">${product.description}</span>
 
-            <div style="display: flex; padding-top: 15px; align-items: flex-end; justify-content: flex-end;">
-                <a href="https://t.me/istoyak" target="_blank" class="FlatButton FlatButton--primary FlatButton--size-m" type="button">
-                    <span class="FlatButton__in">
-                        <span class="FlatButton__content">Купить за ${product.price}₽</span>
-                    </span>
-                </a>
+            <div style="display: flex; padding-top: 15px; align-items: center; justify-content: space-between; gap: 15px;">
+                ${buttons}
             </div>
         </div>
     `);
@@ -1137,12 +1202,11 @@ async function showProfile({ id }) {
                 ${icons({ name: 'new', fill: 'secondary', size: 24, realSize: 16 })}
                 Самый новый чат с ${userFromVK.sex === 1 ? 'ней' : 'ним'}
             </div>
-            ${
-                blankChat({
-                    chat: userFromSC.newChat,
-                    friends: friends,
-                    creator: creator
-                })
+            ${blankChat({
+            chat: userFromSC.newChat,
+            friends: friends,
+            creator: creator
+        })
             }
             ${userFromSC.stats.member > 1 ?
                 `
@@ -1174,12 +1238,12 @@ async function showProfile({ id }) {
         const nameHTML = typeMention === 'id'
             ? `<span style="max-width: 180px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${deXSS(member.first_name)} ${deXSS(member.last_name)}</span>`
             : `Группа «<span style="max-width: 180px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${deXSS(member.name)}</span>»`;
-    
+
         const nameString = deXSS(typeMention === 'id'
             ? `${member.first_name} ${member.last_name}`
             : `Группа «${member.name}»`
         );
-        
+
         const isFriend = friends.find(friend => member.id === friend.id) !== undefined;
 
         return `
@@ -1195,27 +1259,27 @@ async function showProfile({ id }) {
         `
     }).join(',⠀');
 
-    const userLastChekByTitleChats = userFromSC.history?.queriesByTitle?.map(title => 
+    const userLastChekByTitleChats = userFromSC.history?.queriesByTitle?.map(title =>
         `
             <div style="display: flex; gap: 5px; font-weight: 400; color: #99a2ad; align-items: center;">
                 ${deXSS(title)}
             </div>
-        `    
+        `
     ).join(',⠀');
 
     modalPage.setContent(`
         <div class="${classGroup}">
 
-            ${userFromSC.isSubscriptionValid ? 
-                `
+            ${userFromSC.isSubscriptionValid ?
+            `
                     <span style="display: flex; flex-direction: row; font-size: 14px; color: #99a2ad; font-weight: bold; justify-content: center; gap: 5px;">
                         ${icons({ name: 'donut_circle_fill_yellow', size: 16, realSize: 20, fill: 'original' })}
                         <div>${userFromSC.isSubscriptionValid ? 'Подписчик' : `${userFromVK.sex === 1 ? 'Была' : 'Был'} подписчиком`}. Активно до ${moment(userFromSC.subscription.expired).format('DD.MM.YYYY')}, куплена ${moment(userFromSC.subscription.created).fromNow().toLowerCase()}</div>
                     </span>
                     <div class="separator" style="padding-top: 5px;"></div>
                 `
-                : ''
-            }
+            : ''
+        }
         
             <div style="display: flex; align-items: center; justify-content: space-between; padding-left: 10px; padding-right: 10px;">
 
@@ -1243,25 +1307,25 @@ async function showProfile({ id }) {
                         ${userFromVK.sex === 1 ? 'Использовала' : 'Использовал'} расширение ${userFromSC.useExtension.toLocaleString('ru-RU')} ${decOfNum(userFromSC.useExtension, ['раз', 'раза', 'раз'])}.
                     </span>
 
-                    ${userFromSC.isBanned ? 
-                        `
+                    ${userFromSC.isBanned ?
+            `
                             <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #fce100; font-weight: bold;"> 
                                 ${icons({ name: 'user_slash_outline', size: 16, realSize: 20, fill: 'secondary' })}
                                 Аккаунт заблокирован.
                             </span>
                         `
-                        : ''
-                    }
+            : ''
+        }
 
-                    ${userFromSC.isHide ? 
-                        `
+                    ${userFromSC.isHide ?
+            `
                             <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
                                 ${icons({ name: 'hide_outline', size: 16, fill: 'secondary' })}
                                 Чаты и профиль этого аккаунта скрыты.
                             </span>
                         `
-                        : ''
-                    }
+            : ''
+        }
                 </div>
             </div>
 
@@ -1328,9 +1392,8 @@ async function showProfile({ id }) {
             </span>
         </div>
 
-        ${
-            userLastChekUsersChats 
-                ? `
+        ${userLastChekUsersChats
+            ? `
                     <div class="${classGroup}" style="display: flex; flex-direction: fow;">
                         <span style="display: flex; word-break: break-all; flex-wrap: wrap; text-align: center;">
                             <span style="font-size: 14px; color: #99a2ad; font-weight: bold;"> 
@@ -1339,13 +1402,12 @@ async function showProfile({ id }) {
                             ${userLastChekUsersChats}
                         </span>
                     </div>
-                ` 
-                : ''
+                `
+            : ''
         }
 
-        ${
-            userLastChekByTitleChats
-                ? `
+        ${userLastChekByTitleChats
+            ? `
                     <div class="${classGroup}" style="display: flex; flex-direction: fow;">
                         <span style="display: flex; word-break: break-all; flex-wrap: wrap; text-align: center;">
                             <span style="font-size: 14px; color: #99a2ad; font-weight: bold;"> 
@@ -1354,8 +1416,8 @@ async function showProfile({ id }) {
                             ${userLastChekByTitleChats}
                         </span>
                     </div>
-                ` 
-                : ''
+                `
+            : ''
         }
     `);
 
@@ -1376,10 +1438,10 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends, search = 
 
     const chatPhoto = chat.photo
         ? chat.photo['200'] || chat.photo['150'] || chat.photo['50']
-        : 'https://vk.com/images/community_200.png'; 
+        : 'https://vk.com/images/community_200.png';
 
 
-    const title = (countTitles, countPhotos, countExitedUsers, countNewUsers) => 
+    const title = (countTitles, countPhotos, countExitedUsers, countNewUsers) =>
         titleModalPage({
             icon: `
                 <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px;">
@@ -1439,7 +1501,7 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends, search = 
         onClicks('showHistoryChat', { backFunction });
         return;
     }
-    
+
 
     const history = [
         chat.history.titles?.reverse(),
@@ -1447,8 +1509,8 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends, search = 
         chat.history.exitedUsers?.reverse(),
         chat.history.newUsers?.reverse(),
     ].flat()
-    .filter(obj => obj !== undefined)
-    .sort((a, b) => new Date(b.date) - new Date(a.date));
+        .filter(obj => obj !== undefined)
+        .sort((a, b) => new Date(b.date) - new Date(a.date));
 
 
     if (!history.length) {
@@ -1469,7 +1531,7 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends, search = 
             chat.history.newUsers?.length || 0
         )
     )
-    
+
     let HTML = '';
 
 
@@ -1505,12 +1567,12 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends, search = 
             const nameHTML = typeMention === 'id'
                 ? `<span style="max-width: 180px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${deXSS(member.first_name)} ${deXSS(member.last_name)}</span>`
                 : `Группа «<span style="max-width: 180px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${deXSS(member.name)}</span>»`;
-        
+
             const nameString = deXSS(typeMention === 'id'
                 ? `${member.first_name} ${member.last_name}`
                 : `Группа «${member.name}»`
             );
-            
+
             const isFriend = friends.find(friend => member.id === friend.id) !== undefined;
 
             for (const { date } of exits) {
@@ -1606,24 +1668,24 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends, search = 
 
             const sortPhotos = history.filter(obj => obj.photo);
 
-            const indexNewPhoto = sortPhotos.findIndex(photo => 
+            const indexNewPhoto = sortPhotos.findIndex(photo =>
                 (
                     (
-                        photo.photo['200'] 
+                        photo.photo['200']
                         || photo.photo['100']
                         || photo.photo['50']
                     ) || 'https://vk.com/images/community_200.png'
                 ) === oldPhoto
             );
 
-            const newPhoto = 
+            const newPhoto =
                 (indexNewPhoto && (
-                    sortPhotos[indexNewPhoto - 1].photo['200'] 
-                    || sortPhotos[indexNewPhoto - 1].photo['100'] 
+                    sortPhotos[indexNewPhoto - 1].photo['200']
+                    || sortPhotos[indexNewPhoto - 1].photo['100']
                     || sortPhotos[indexNewPhoto - 1].photo['50']
                 )) || (
                     chat.photo['200']
-                    || chat.photo['100'] 
+                    || chat.photo['100']
                     || chat.photo['50']
                 ) || 'https://vk.com/images/community_200.png';
 
