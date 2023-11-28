@@ -679,7 +679,7 @@ async function showStatistics() {
             ${blankQuote(`
                 <span style="display: flex; flex-direction: row; align-items: center; gap: 5px;">
                     ${icons({ name: 'smile_outline', size: 16, realSize: 24, fill: 'accent' })}
-                    В среднем на 1 чат приходиться ${mediumCountMembersPerOneChat} ${decOfNum(membersPerOneChat, ['участник', 'участников', 'участников'])}
+                    В среднем на 1 чат приходится ${mediumCountMembersPerOneChat} ${decOfNum(membersPerOneChat, ['участник', 'участника', 'участников'])}
                 </span>
                 <span style="display: flex; flex-direction: row; align-items: center; gap: 5px;">
                     ${icons({ name: 'globe_outline', size: 16, realSize: 24, fill: 'accent' })}
@@ -972,7 +972,7 @@ async function showShop() {
                     ${blankQuote(`
                         <span style="display: flex; flex-direction: row; align-items: center; gap: 5px; line-height: 30px;">
                             ${icons({ name: 'donut_circle_fill_yellow', size: 12, realSize: 20, fill: 'original' })}
-                            Ваша подписка активна до ${moment(services.profileFromSC.subscription.expired).fromNow().toLowerCase()}
+                            Ваша подписка активна до ${moment(services.profileFromSC.subscription.expired).format('DD.MM.YYYY HH:mm')}
                         </span>
                     `)}
                 `
