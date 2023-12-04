@@ -52,22 +52,27 @@ function buttonsInTopProfileMenu(topProfileMenu) {
             </a>
             <a id="search_chats" class="top_profile_mrow">
                 <span style="display: flex; align-items: center; gap: 5px;">
-                    ${icons({ name: 'list_bullet_outline', fill: 'iconsAccent', realSize: 20 , size: 22 })} Список чатов
+                    ${icons({ name: 'list_bullet_outline', fill: 'iconsAccent', realSize: 20, size: 22 })} Список чатов
                 </span>
             </a>
             <a id="stats" class="top_profile_mrow">
                 <span style="display: flex; align-items: center; gap: 5px;">
-                    ${icons({ name: 'statistics_outline', fill: 'iconsAccent', realSize: 20 ,size: 22 })} Статистика и топы
+                    ${icons({ name: 'statistics_outline', fill: 'iconsAccent', realSize: 20, size: 22 })} Статистика и топы
                 </span>
             </a>
             <a id="add_chat" class="top_profile_mrow">
                 <span style="display: flex; align-items: center; gap: 5px;">
-                    ${icons({ name: 'message_add_outline', fill: 'iconsAccent', realSize: 20 ,size: 22 })} Добавить чат
+                    ${icons({ name: 'message_add_outline', fill: 'iconsAccent', realSize: 20, size: 22 })} Добавить чат
                 </span>
             </a>
             <a id="shop" class="top_profile_mrow">
                 <span style="display: flex; align-items: center; gap: 5px;">
-                    ${icons({ name: 'shopping_cart_outline', fill: 'iconsAccent', realSize: 20 ,size: 22 })} Магазин
+                    ${icons({ name: 'shopping_cart_outline', fill: 'iconsAccent', realSize: 20, size: 22 })} Магазин
+                </span>
+            </a>
+            <a id="remove_token_vk" class="top_profile_mrow">
+                <span style="display: flex; align-items: center; gap: 5px;">
+                    ${icons({ name: 'refresh_outline', fill: 'iconsAccent', realSize: 28, size: 22 })} Обновить токен VK
                 </span>
             </a>
             ${services.profileFromSC.role > 0 ? adminButtonInTopProfileMenu() : ''}

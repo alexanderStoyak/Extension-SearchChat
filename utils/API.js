@@ -64,7 +64,7 @@ const VKAPI = {
         return response;
     },
     isValid: async function () {
-        const [user] = await this.call();
+        const [user] = await this.call('users.get', { fields: 'photo_100' });
 
         return user;
     }

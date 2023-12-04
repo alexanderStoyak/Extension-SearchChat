@@ -221,6 +221,32 @@ function onClicks(fromWhichFunction, args) {
             (document.getElementById('shop') ?? {}).onclick = showShop;
 
             (document.getElementById('profile') ?? {}).onclick = () => showProfile({});
+
+            (document.getElementById('remove_token_vk') ?? {}).onclick = async () => {
+                await vkAuth();
+
+                const user = services.VKMainUser;
+
+                const nameHTML = `<span style="max-width: 140px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+                    ${deXSS(user.first_name)} ${deXSS(user.last_name)}
+                </span>`;
+
+                const nameString = deXSS(`${user.first_name} ${user.last_name}`);
+
+                notifiers(`
+                    <div style="display: flex; gap: 5px; font-weight: 400; color: #99a2ad; align-items: center;">
+                        Теперь Вы используйте аккаунт как 
+                        <a title="${nameString}" target="_blank" href="https://vk.com/id${user.id}" style="display: flex;">
+                            ${nameHTML}
+                        </a>
+
+                        <div style="width: 20px; height: 20px;"
+                            class="vkuiAvatar vkuiImageBase vkuiImageBase--size-20 vkuiImageBase--loaded" role="img">
+                            <img class="vkuiImageBase__img" src="${user.photo_100 || ''}">
+                        </div>
+                    </div>
+                `);
+            };
         },
 
 
