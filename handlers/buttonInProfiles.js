@@ -101,6 +101,6 @@ function buttonInProfiles(elementButtons) {
             </a>
         `;
 
-        elementButtons.after(newButton);
+        elementButtons.after(newButtonGetChats);
     }
 }
