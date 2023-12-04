@@ -207,9 +207,11 @@ GM_addStyle(`
         justify-content: center; 
         cursor: default;
         background-color: ${appearance.get() === 'dark' ? '#2b2b2b' : '#ebf2fa'};
+        color: var(--vkui--color_text_accent_themed);
         transition: all 0.2s ease;
         height: 100%;
         width: 100%;
+        border-radius: 5px;
     }
 
     .btn-chat:hover {
@@ -242,6 +244,14 @@ GM_addStyle(`
         transition: all 0.2s ease;
         height: 100%;
         width: 100%;
+        padding-left: 4px;
+        padding-right: 4px;
+        border: none;
+        border-radius: 5px;
+        width: fit-content;
+        color: var(--vkui--color_text_accent_themed);
+        font-height: 500;
+        outline: 0px;
    }
 
    .btn:hover {
@@ -261,6 +271,8 @@ GM_addStyle(`
         justify-content: center;
         align-items: center;
         margin-bottom: 3px;
+        font-size: 14px;
+        font-weight: 500;
    }
 
     .sort-select:focus {
@@ -328,6 +340,11 @@ GM_addStyle(`
         display: flex; 
         align-items: center; 
         flex-direction: column;
+    }
+
+    .test1 > .test {
+        overflow: visible; 
+        text-wrap: balance;
     }
 `)
 }

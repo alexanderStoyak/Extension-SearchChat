@@ -20,6 +20,7 @@ class Filters {
         this.sortOrder = 'desc';
         this.minUsers = 0;
         this.maxUsers = 200000;
+        this.isHistory = false;
         this.isActive = false;
     }
 }

@@ -52,15 +52,18 @@ function onClicks(fromWhichFunction, args) {
 
         'searchChats': ({ offset, friends }) => {
             (document.getElementById('reset_filters') ?? {}).onclick = () => {
+                if (load.chats) return;
                 filters.remove();
                 searchChats({});
             }
 
             (document.getElementById('next_page_button') ?? {}).onclick = () => {
+                if (load.chats) return;
                 searchChats({ offset: offset += 15 });
             };
 
             (document.getElementById('previous_page_button') ?? {}).onclick = () => {
+                if (load.chats) return;
                 searchChats({ offset: offset -= 15 });
             };
 
@@ -71,21 +74,25 @@ function onClicks(fromWhichFunction, args) {
             );
 
             (document.getElementById('filter_only_with_friends') ?? {}).onclick = () => {
+                if (load.chats) return;
                 filters.onlyWithFriends = !filters.onlyWithFriends;
                 searchChats({});
             }
 
             (document.getElementById('filter_is_history') ?? {}).onclick = () => {
+                if (load.chats) return;
                 filters.isHistory = !filters.isHistory;
                 searchChats({});
             }
 
             (document.getElementById('filter_is_active') ?? {}).onclick = () => {
+                if (load.chats) return;
                 filters.isActive = !filters.isActive;
                 searchChats({});
             }
 
             (document.getElementById('filter_set_sort_order') ?? {}).onclick = () => {
+                if (load.chats) return;
                 filters.sortOrder = filters.sortOrder === 'desc' ? 'asc' : 'desc';
                 searchChats({});
             }
@@ -93,6 +100,7 @@ function onClicks(fromWhichFunction, args) {
             const sortField = document.getElementById('sort_field');
             if (sortField) {
                 sortField.onclick = () => {
+                    if (load.chats) return;
                     if (filters.sortField !== sortField.value) {
                         filters.sortField = sortField.value;
                         searchChats({});
@@ -101,6 +109,7 @@ function onClicks(fromWhichFunction, args) {
             }
 
             (document.getElementById('filter_button_delete_user') ?? {}).onclick = () => {
+                if (load.chats) return;
                 filters.link = '';
                 searchChats({});
             }
@@ -144,6 +153,7 @@ function onClicks(fromWhichFunction, args) {
 
             if (rangeUsersMin) {
                 rangeUsersMin.oninput = () => {
+                    if (load.chats) return;
                     let value = +rangeUsersMin.value || +(rangeUsersMin.value = 0);
 
                     if (value > 199998) {
@@ -165,6 +175,7 @@ function onClicks(fromWhichFunction, args) {
 
             if (rangeUsersMax) {
                 rangeUsersMax.oninput = () => {
+                    if (load.chats) return;
                     let value = +rangeUsersMax.value || +(rangeUsersMax.value = 0);
                     if (value > 200_000) {
                         value = 200_000;
@@ -186,6 +197,7 @@ function onClicks(fromWhichFunction, args) {
 
 
             (document.getElementById('clear_range_users') ?? {}).onclick = () => {
+                if (load.chats) return;
                 filters.minUsers = rangeUsersMin.value = 0;
                 filters.maxUsers = rangeUsersMax.value = 200_000;
                 searchChats({});
