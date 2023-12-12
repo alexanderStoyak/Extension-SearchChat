@@ -1275,7 +1275,6 @@ async function showProfile({ id }) {
 
     const nameString = deXSS(`${userFromVK.first_name} ${userFromVK.last_name}`);
 
-
     const userLastChekUsersChats = queriesByUsers.map(member => {
         const typeMention = member?.first_name ? 'id' : 'club';
 
@@ -1311,6 +1310,25 @@ async function showProfile({ id }) {
             </div>
         `
     ).join(',⠀');
+
+    const role = [
+        {
+            title: '',
+            icon: ''
+        },
+        {
+            title: 'Должность: «Редактор»',
+            icon: icons({ name: 'write', realSize: 24, size: 16, fill: 'secondary' })
+        },
+        {
+            title: 'Должность: «Администратор»',
+            icon: icons({ name: 'gavel_outline', realSize: 20, size: 16, fill: 'secondary' })
+        },
+        {
+            title: 'Должность: «Главный Администратор»',
+            icon: icons({ name: 'crown', realSize: 16, size: 16, fill: 'secondary' })
+        }
+    ][userFromSC.role];
 
     modalPage.setContent(`
         <div class="${classGroup}">
@@ -1356,7 +1374,12 @@ async function showProfile({ id }) {
                             </span>
                         `
                         : ''
-                    }    
+                    }
+
+                    <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; font-weight: bold;"> 
+                        ${role.icon}
+                        ${role.title}
+                    </span>
 
                     <span style="display: flex; flex-direction: row; gap: 5px; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
                         ${icons({ name: 'calendar_check_outline', size: 16, realSize: 20, fill: 'secondary' })}
