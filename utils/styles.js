@@ -211,7 +211,7 @@ GM_addStyle(`
         transition: all 0.2s ease;
         height: 100%;
         width: 100%;
-        border-radius: 5px;
+        border-radius: 8px;
     }
 
     .btn-chat:hover {
@@ -347,4 +347,5 @@ GM_addStyle(`
         text-wrap: balance;
     }
 `)
-}
+};
+setStyles();

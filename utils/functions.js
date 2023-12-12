@@ -667,12 +667,45 @@ async function showStatistics() {
 
             <div style="display: flex; flex-direction: row; align-items: center;">
                 <span class="group-stats"> 
-                    ${icons({ name: 'view', size: 56, realSize: 16 })}
+                    ${icons({ name: 'user_add_outline', size: 56, realSize: 28 })}
+                    <span class="color-text-subhead" style="font-size: 14px;">
+                        ${stats.totalNewUsers.toLocaleString('ru-RU')}
+                    </span>
+                    <span style="font-size: 16px;">
+                        ${decOfNum(stats.totalNewUsers, ['Присоединившийся', 'Присоединившийся', 'Присоединившихся'])}
+                    </span>
+                    <span class="color-text-subhead" style="font-size: 12px">
+                        ${decOfNum(stats.totalNewUsers, ['участник', 'участника', 'участников'])}
+                    </span>
+                </span>
+
+                <p style="margin: 30px;"></p>
+                
+                <span class="group-stats"> 
+                    ${icons({ name: 'view_outline', size: 56, realSize: 16 })}
                     <span class="color-text-subhead" style="font-size: 14px;">
                         ${stats.totalViews.toLocaleString('ru-RU')}
                     </span>
-                    <span style="font-size: 16px;">${decOfNum(stats.totalViews, ['Просмотр', 'Просмотра', 'Просмотров'])}</span>
-                    <span class="color-text-subhead" style="font-size: 12px">у всех чатов</span>
+                    <span style="font-size: 16px;">
+                        ${decOfNum(stats.totalViews, ['Просмотр', 'Просмотра', 'Просмотров'])}</span>
+                    <span class="color-text-subhead" style="font-size: 12px">
+                        у всех чатов
+                    </span>
+                </span>
+
+                <p style="margin: 30px;"></p>
+
+                <span class="group-stats"> 
+                    ${icons({ name: 'user_minus_outline', size: 56, realSize: 28 })}
+                    <span class="color-text-subhead" style="font-size: 14px;">
+                        ${stats.totalExitedUsers.toLocaleString('ru-RU')}
+                    </span>
+                    <span style="font-size: 16px;">
+                        ${decOfNum(stats.totalExitedUsers, ['Вышедший', 'Вышедших', 'Вышедших'])}
+                    </span>
+                    <span class="color-text-subhead" style="font-size: 12px">
+                        ${decOfNum(stats.totalExitedUsers, ['участник', 'участника', 'участников'])}
+                    </span>
                 </span>
             </div>
             
@@ -1039,6 +1072,13 @@ const descriptionProduct = {
                     ${icons({ name: 'archive_outline', realSize: 20, size: 20 })} Поиск из истории чатов.
                 </span>
                 # Поиск в истории чатов будет осуществляться по старым названиям, а также по чатам, где участвовал участник или Ваши друзья.
+            `)}
+            <br/>
+            ${blankQuote(`
+                <span style="display: flex; flex-direction: row; align-items: center; gap: 5px; font-size: 16px; color: #828282;"> 
+                    ${icons({ name: 'user_circle_outline', realSize: 28, size: 20 })} Просмотр чужих профилей.
+                </span>
+                # Вся та же статистика и информация что и в Вашем профиле, только чужая.
             `)}
             <br/>
             <br/>
@@ -1480,7 +1520,7 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends, search = 
                 <span style="display: flex; gap: 5px; font-size: 14px; font-weight: 400;">
                 ${icons({ name: 'user_add_outline', size: 18, realSize: 28, fill: 'secondary' })}
                     <span style="padding-right: 10px; color: #99a2ad;">
-                        ${countNewUsers.toLocaleString('ru-RU')} ${decOfNum(countNewUsers, ['присоединившийся участник', 'присоединившихся участника', 'присоединившихся участников'])}
+                        ${countNewUsers.toLocaleString('ru-RU')} ${decOfNum(countNewUsers, ['присоединившийся участник', 'присоединившийся участника', 'присоединившихся участников'])}
                     </span>
                 </span>
             `

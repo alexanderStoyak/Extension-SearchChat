@@ -287,6 +287,10 @@ function onClicks(fromWhichFunction, args) {
             (document.getElementById('shop') ?? {}).onclick = () => {
                 showShop();
             }
+
+            (document.getElementById('help_chat') ?? {}).onclick = () => {
+                window.location.href = services.telegramChatURL;
+            }
         },
 
 
