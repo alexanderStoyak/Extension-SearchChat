@@ -925,7 +925,10 @@ async function showTopViewsChats() {
 
     let htmlUsers = usersFromVK.map((member, index) => {
         const user = users[index];
-        const subTitle = user.viewChats.self ? ` Просмотрел ${user.viewChats.self.toLocaleString('ru-RU')} ${decOfNum(user.viewChats.self, ['чат', 'чата', 'чатов'])}` : 'Просмотрел 0 чатов';
+        const subTitle = 
+            (user.viewChats.self ? ` Просмотрел ${user.viewChats.self.toLocaleString('ru-RU')} ${decOfNum(user.viewChats.self, ['чат', 'чата', 'чатов'])}` : 'Просмотрел 0 чатов')
+            + `, использовал расширение ${user.useExtension.toLocaleString('ru-RU')} ${decOfNum(user.useExtension, ['раз', 'раза', 'раза'])}`
+        ;
 
         return blankMembersList({ member, creator: 0, friends: [{}], subTitle });
     }).join('');
@@ -1345,6 +1348,21 @@ async function showProfile({ id }) {
                 </div>
 
                 <div style="display: flex; justify-content: center; align-items: center; flex-direction: column; width: 100%; height: 100%;">
+                    ${userFromSC.isBanned ?
+                        `
+                            <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #fce100; font-weight: bold;"> 
+                                ${icons({ name: 'user_slash_outline', size: 16, realSize: 20, fill: 'secondary' })}
+                                Аккаунт заблокирован.
+                            </span>
+                        `
+                        : ''
+                    }    
+
+                    <span style="display: flex; flex-direction: row; gap: 5px; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
+                        ${icons({ name: 'calendar_check_outline', size: 16, realSize: 20, fill: 'secondary' })}
+                        Зарегистрирован ${moment(userFromSC.regDate).format('DD.MM.YYYY, HH:mm')}
+                    </span>
+                
                     <span style="display: flex; flex-direction: row; gap: 5px; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
                         ${icons({ name: 'face_id_outline', size: 16, realSize: 28, fill: 'secondary' })}
                         Интересовались профилем ${userFromSC.views.toLocaleString('ru-RU')} ${decOfNum(userFromSC.views, ['раз', 'раза', 'раз'])}.
@@ -1354,16 +1372,6 @@ async function showProfile({ id }) {
                         ${icons({ name: 'api_outline', size: 16, realSize: 20, fill: 'secondary' })}
                         ${userFromVK.sex === 1 ? 'Использовала' : 'Использовал'} расширение ${userFromSC.useExtension.toLocaleString('ru-RU')} ${decOfNum(userFromSC.useExtension, ['раз', 'раза', 'раз'])}.
                     </span>
-
-                    ${userFromSC.isBanned ?
-                        `
-                            <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #fce100; font-weight: bold;"> 
-                                ${icons({ name: 'user_slash_outline', size: 16, realSize: 20, fill: 'secondary' })}
-                                Аккаунт заблокирован.
-                            </span>
-                        `
-                        : ''
-                     }
 
                     ${userFromSC.isHide ?
                         `
