@@ -122,7 +122,11 @@ const observeChange = async () => {
         }
     });
 
-    observer.observe(body, { childList: true, subtree: true });
+    observer.observe(body, { 
+        childList: true, 
+        subtree: true,
+        characterData: false 
+    });
 };
 
-window.onload = observeChange;
+document.addEventListener('DOMContentLoaded', observeChange);
