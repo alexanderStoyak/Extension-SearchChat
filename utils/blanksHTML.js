@@ -581,6 +581,15 @@ function blankFiltersSearchChats({
         <span style="font-size: 15;"> 
             ${blankPages({ found: foundChats, inOnePage: countListChats, offset, currentPage, totalPage })}
         </span>
+
+        ${isLinkPageOrId(filters.title) ? `
+            <div style="display: flex; text-decoration: row; align-items: center;">
+                ${blankHint(`В поисковой строке замечен VK ID или ссылка на страницу или группу: ${deXSS(filters.title)}`)}
+                <div style="margin-top: 4px" id="search_link" link="${deXSS(filters.title)}" class="btn" style="text-decoration: row;">
+                    Вы хотите произвести поиск по странице или группе VK?         
+                </div>
+            </div>
+        ` : ''}
     </div>
     `
 }

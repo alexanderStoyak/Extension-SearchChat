@@ -234,22 +234,14 @@ let currentChats = {
     }
 };
 
-function isLinkPage(title) {
-    return /vk.(com|ru)\/*/.test(title);
+function isLinkPageOrId(searchText) {
+    return /^((https?:\/\/)?(vk.(com|ru)\/.+)|((id|club)([0-9]+))|([0-9]+))$/.test(searchText);
 }
+
 async function searchChats({ isCurrent = false, offset = 0 }) {
 
     if (load.chats) return;
     else load.chats = true;
-
-    const isLink = isLinkPage(filters.title);
-    let oldLink = '';
-
-    if (isLink) {
-        oldLink = filters.link;
-        filters.link = filters.title;
-        filters.title = '';
-    }
 
     let parameters = {
         title: filters.title,
@@ -265,18 +257,9 @@ async function searchChats({ isCurrent = false, offset = 0 }) {
 
     let user;
     if (filters.link) {
-        let olduser;
-        [user, olduser] = await getUsersOrGroupsFromVK([filters.link, oldLink]);
+        [user] = await getUsersOrGroupsFromVK([filters.link]);
         if (user) {
             parameters.userId = user.first_name ? user.id : -user.id;
-        } else if (isLink) {
-            filters.title = filters.link;
-            parameters.title = filters.link;
-            filters.link = '';
-
-            if (olduser) {
-                parameters.userId = olduser.first_name ? olduser.id : -olduser.id;
-            }
         }
     }
 

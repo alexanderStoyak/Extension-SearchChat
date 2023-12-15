@@ -206,6 +206,16 @@ function onClicks(fromWhichFunction, args) {
             (document.getElementById('get_profile') ?? {}).onclick = () => {
                 showProfile({ id: filters.link });
             }
+
+            const link = document.getElementById('search_link');
+            if(link) {
+                link.onclick = () => {
+                    filters.link = link.getAttribute('link');
+                    filters.title = '';
+
+                    searchChats({});
+                }
+            }
         },
 
 
