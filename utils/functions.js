@@ -1416,7 +1416,7 @@ async function showProfile({ id }) {
             <div class="ver-separator"></div>
             
             <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold; padding-right: 5%;"> 
-                ${icons({ name: 'door_arrow_right_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
+                ${icons({ name: 'door_arrow_right_outline_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
                 ${userFromVK.sex === 1 ? 'Вышла' : 'Вышел'} из ${userFromSC.stats.exited.toLocaleString('ru-RU')} ${decOfNum(userFromSC.stats.exited, ['чата', 'чатов', 'чатов'])}
             </span>
         </div>
@@ -1473,7 +1473,7 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends, search = 
     const title = (countTitles, countPhotos, countExitedUsers, countNewUsers) =>
         titleModalPage({
             icon: `
-                <span class="btn-back" id="back_button_modal_page" style="padding: 0px; border-radius: 4px;">
+                <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px;">
                     ${icons({ name: 'browser_back', size: 24, fill: 'var(--vkui--color_icon_secondary)' })}
                 </span>
             `,
@@ -1680,7 +1680,7 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends, search = 
                                 ${oldTitle}
                             </span>
                             
-                            ${icons({ name: 'arrow_right', size: 20, fill: 'var(--vkui--color_icon_secondary)' })}
+                            ${icons({ name: 'arrow_right_outline', size: 20, fill: 'var(--vkui--color_icon_secondary)' })}
                             
                             <span title="${newTitle}" style="max-width: 250px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
                                 ${newTitle}
@@ -1740,7 +1740,7 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends, search = 
                                 </div>
                             </a>
                             
-                            ${icons({ name: 'arrow_right', size: 28, fill: 'var(--vkui--color_icon_secondary)' })}
+                            ${icons({ name: 'arrow_right_outline', size: 28, fill: 'var(--vkui--color_icon_secondary)' })}
                             
                             <a href="${newPhoto}" target="_blank" style="text-decoration: none;" >
                                 <div style="width: 58px; height: 58px;">

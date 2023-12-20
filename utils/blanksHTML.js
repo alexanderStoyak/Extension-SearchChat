@@ -1,8 +1,4 @@
-const logo = `
-    <svg width="28" height="28" class="vkuiIcon vkuiIcon--28 vkuiIcon--w-28 vkuiIcon--h-28" display="block" style="border-radius: 50%">
-        <image width="28" height="28" xlink:href="https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/icons/logo.png"/>
-    </svg>
-`;
+const logo = icons({ name: 'logo', size: 28, fill: 'original' });
 
 const fontFamilyVK = `var(--palette-vk-font,-apple-system,BlinkMacSystemFont,'Roboto','Helvetica Neue',Geneva,"Noto Sans Armenian","Noto Sans Bengali","Noto Sans Cherokee","Noto Sans Devanagari","Noto Sans Ethiopic","Noto Sans Georgian","Noto Sans Hebrew","Noto Sans Kannada","Noto Sans Khmer","Noto Sans Lao","Noto Sans Osmanya","Noto Sans Tamil","Noto Sans Telugu","Noto Sans Thai",arial,Tahoma,verdana,sans-serif)`;
 

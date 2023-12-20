@@ -28,19 +28,7 @@ function buttonsInTopProfileMenu(topProfileMenu) {
                 "
             >
                 <span style="display: flex; align-items: center; gap: 10px;">
-                    <svg
-                        width="28" 
-                        height="28"
-                        class="vkuiIcon vkuiIcon--28 vkuiIcon--w-28 vkuiIcon--h-28"
-                        display="block"
-                        style="border-radius: 50%"
-                    >
-                        <image
-                            width="28"
-                            height="28"
-                            xlink:href="https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/icons/logo.png" 
-                        />
-                    </svg>
+                    ${logo}
                     Меню «ПоискЧата»
                 </span>
             </a>
