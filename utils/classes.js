@@ -123,7 +123,7 @@ const newModalPage = title => new MessageBox({
     bodyStyle: 'padding: 5px;'
 });
 
-class ModalPage {
+class managingModelPages {
     constructor(title = {}) { }
 
     new(title = titleModalPage({})) {
@@ -230,5 +230,5 @@ class ModalPage {
 
         return this;
     }
-}
+};
 let modalPage;

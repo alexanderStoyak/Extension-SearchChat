@@ -4,6 +4,8 @@ const logo = `
     </svg>
 `;
 
+const fontFamilyVK = `var(--palette-vk-font,-apple-system,BlinkMacSystemFont,'Roboto','Helvetica Neue',Geneva,"Noto Sans Armenian","Noto Sans Bengali","Noto Sans Cherokee","Noto Sans Devanagari","Noto Sans Ethiopic","Noto Sans Georgian","Noto Sans Hebrew","Noto Sans Kannada","Noto Sans Khmer","Noto Sans Lao","Noto Sans Osmanya","Noto Sans Tamil","Noto Sans Telugu","Noto Sans Thai",arial,Tahoma,verdana,sans-serif)`;
+
 function titleModalPage({
     title = 'ПоискЧата',
     before = '',
@@ -114,7 +116,7 @@ function blankChat({ chat, creator, friends }) {
                                 <h4 title="${chatTitleForHTMLTitle}" class="vkuiHeadline vkuiHeadline--sizeY-compact vkuiHeadline--level-1 vkuiTypography--normalize vkuiTypography--weight-1" style="font-size: 15px; max-width: 230px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
                                     ${chat.membersCount > 7_000
                                         ? `<span style="display: flex; flex-direction: row; gap: 5px; align-items: center; font-size: 12px; color: #99a2ad;"> 
-                                                ${icons({ name: 'archive_outline', size: 16, fill: 'secondary' })} Канал
+                                                ${icons({ name: 'archive_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })} Канал
                                             </span>`
                                         : ''
                                     }                                    
@@ -142,7 +144,7 @@ function blankChat({ chat, creator, friends }) {
                             <span class="btn-chat-users-show members_chat">
                                 ${chat.membersCount.toLocaleString('ru-RU')} ${decOfNum(chat.membersCount, ['участник', 'участника', 'участников'])}
                             </span>
-                            ${icons({ name: 'users_2_outline', realSize: 16, size: 16, fill: 'secondary' })}
+                            ${icons({ name: 'users_2_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
                         </div>
                     </div>
                     
@@ -153,7 +155,7 @@ function blankChat({ chat, creator, friends }) {
     
                             <div style="display: flex; gap: 5px; font-weight: 400; color: #99a2ad; align-items: center;">
                                 <span>
-                                    ${icons({ name: 'crown_outline', size: 16, fill: 'secondary' })}
+                                    ${icons({ name: 'crown_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
                                 </span>
     
                                 <a title="${nameString}" target="_blank" href="${creatorUrl}" style="display: flex;">
@@ -168,7 +170,7 @@ function blankChat({ chat, creator, friends }) {
     
                                 
                             <span style="color: #99a2ad; display: flex; align-items: center; flex-direction: row; gap: 5px">
-                                ${icons({ name: 'add', size: 16, fill: 'secondary' })}
+                                ${icons({ name: 'add', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
                                 <p style="max-width: 173px; margin: 0px;">Добавлен ${moment(chat.added).fromNow().toLowerCase()}</p>
                             </span>
     
@@ -180,7 +182,7 @@ function blankChat({ chat, creator, friends }) {
                                 <p style="max-width: 173px; margin: 0px;">
                                     Обновлен ${moment(chat.lastUpdate).fromNow().toLowerCase()}
                                  </p>
-                                ${icons({ name: 'switch', size: 12, realSize: 12, fill: 'secondary' })}
+                                ${icons({ name: 'switch', size: 12, fill: 'var(--vkui--color_icon_secondary)' })}
                             </span>
                             ${chat.views ? 
                                 `
@@ -188,7 +190,7 @@ function blankChat({ chat, creator, friends }) {
                                         <p style="max-width: 173px; margin: 0px;">
                                             ${chat.views.toLocaleString('ru-RU')} ${decOfNum(chat.views, ['просмотр', 'просмотра', 'просмотров'])}
                                         </p>
-                                        ${icons({ name: 'view', size: 14, realSize: 16, fill: 'secondary' })}
+                                        ${icons({ name: 'view', size: 14, fill: 'var(--vkui--color_icon_secondary)' })}
                                     </span>
                                 ` 
                                 : ''
@@ -202,7 +204,7 @@ function blankChat({ chat, creator, friends }) {
                         <a style="padding: 2px; padding-left: 4px; text-decoration: none;" 
                             link="vk.me/join/${chat.key}"
                                 class="btn-chat ${classGroup} copy_link_for_chat">
-                            ${icons({ name: 'linked', realSize: 16, size: 16, fill: 'secondary' })}
+                            ${icons({ name: 'linked', size: 16 })}
                             <span style="font-size: 13px; font-weight: 500; padding: 0px 4px 0px 4px;">
                                 Скопировать ссылку
                             </span>
@@ -213,7 +215,7 @@ function blankChat({ chat, creator, friends }) {
                                 href="https://vk.me/join/${chat.key}"
                                     class="btn-chat ${classGroup}" 
                         >
-                            ${icons({ name: 'door_enter_arrow_right_outline', realSize: 16, size: 16, fill: 'secondary' })}
+                            ${icons({ name: 'door_enter_arrow_right_outline', size: 16 })}
                             <span style="font-size: 13px; font-weight: 500; padding: 0px 4px 0px 4px;">
                                 ${chat.members.includes(services.VKMainUser.id) ? 'Открыть чат' : 'Присоединиться'}
                             </span>
@@ -223,7 +225,7 @@ function blankChat({ chat, creator, friends }) {
                             style="padding: 2px; text-decoration: none;"
                                     class="btn-chat ${classGroup} history_chat" 
                         >
-                            ${icons({ name: 'history_backward_outline', realSize: 28, size: 16, fill: 'secondary' })}
+                            ${icons({ name: 'history_backward_outline', size: 16 })}
                             <span style="font-size: 13px; font-weight: 500; padding: 0px 4px 0px 4px;">
                                 История чата
                             </span>
@@ -263,7 +265,7 @@ function blankMembersList({ member, creator, friends, subTitle }) {
                             ${Math.abs(creator) === member.id
                                 ? `    
                                     <span style="color: #828282; padding-left: 5px;">
-                                        ${icons({ name: 'crown_outline', size: 20, fill: 'secondary' })}
+                                        ${icons({ name: 'crown_outline', size: 20, fill: 'var(--vkui--color_icon_secondary)' })}
                                     </span>
                                 `
                                 : ''
@@ -377,7 +379,7 @@ function blankInputSearch({ id = 'search', value = '', placeholder = 'Поиск
                 maxLength="100"
             >
                 <button title="Поиск" id="searchChats_button" class="input-button">
-                    ${icons({ name: 'search_stars_outline', size: 20, realSize: 24 })}
+                    ${icons({ name: 'search_stars_outline', size: 20})}
                 </button>
                 ${
                     actionFilter ? `
@@ -396,7 +398,7 @@ function blankPages({ found = undefined, totalPage = 0, currentPage = 0, offset 
     return `
         <div style="display: flex; color: #99a2ad; align-items: center; height: 20px;"> 
             <span style="display: flex; gap: 5px;">
-                ${icons({ name: 'document_text_outline', size: 18, realSize: 20, fill: 'secondary' })}
+                ${icons({ name: 'document_text_outline', size: 18, fill: 'var(--vkui--color_icon_secondary)' })}
                 <span style="padding-right: 10px; color: #99a2ad;">
                     Страница ${found !== undefined && found !== 0 ? `${currentPage}/${totalPage}` : found === 0 ? 'пуста' : 'загружается'}
                     ${inOnePage ? ` (${inOnePage.toLocaleString('ru-RU')})` : ''}
@@ -459,7 +461,6 @@ function blankFiltersSearchChats({
     const currentPage = offset / 15 !== 0 ? offset / 15 + 1 : 1;
     const totalPage = Math.ceil(foundChats / 15 || 1);
 
-
     return `
 
     <div style="font-size: 14px; padding: 5px; font-weight: 400;">
@@ -467,34 +468,36 @@ function blankFiltersSearchChats({
         ${blankInputSearch({
             id: 'searchChats_input',
             value: filters.title, 
-            placeholder: filters.isHistory ? 'Поиск из старых названий' : 'Найдётся все, ну.. почти',
+            placeholder: filters.isHistory ? 'Поиск из старых названий' : 'Найдётся все, ну... почти',
             actionFilter: blankActionsMenu(
-                icons({ name: 'sort', size: 20, realSize: 24, fill: 'accent' }), `
+                icons({ name: 'filter_outline', size: 24}),`
                 <div style="display: flex; gap: 8px; flex-direction: column"> 
                     <div style="display: flex; align-items: center;">
                         <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
                             <span>
-                                ${icons({ name: 'sort', size: 20, realSize: 24, fill: 'secondary' })}
+                                ${icons({ name: 'sort_outline', size: 22, fill: 'var(--vkui--color_icon_secondary)' })}
                             </span>
-                            <label for="sortField"> Сортировать по </label>
-                            <select class="btn" style="display: flex; margin: auto; text-align-last: left; font-size: 14px; font-weight: 600; font-family: Calibri; box-sizing: border-box;" name="sort_field" id="sort_field" class="sort-select">
-                                <option value="membersCount" ${filters.sortField === 'membersCount' ? 'selected' : ''}>количеству участников</option>
-                                <option value="added" ${filters.sortField === 'added' ? 'selected' : ''}>дате добавления</option>
-                                <option value="lastUpdate" ${filters.sortField === 'lastUpdate' ? 'selected' : ''}>дате обновления</option>
-                                <option value="views" ${filters.sortField === 'views' ? 'selected' : ''}>количеству просмотров</option>
+                            <label> Сортировать по</label>
+                            <select class="btn" style="display: flex; margin: auto; text-align-last: left; font-weight: 500; font-family: ${fontFamilyVK}; box-sizing: border-box;" name="sort_field" id="sort_field" class="sort-select">
+                                <option value="added" ${filters.sortField === 'added' ? 'style="display:none;" selected' : ''}>дате добавления</option>
+                                <option value="membersCount" ${filters.sortField === 'membersCount' ? 'style="display:none;" selected' : ''}>количеству участников</option>
+                                <option value="lastUpdate" ${filters.sortField === 'lastUpdate' ? 'style="display:none;" selected' : ''}>дате обновления</option>
+                                <option value="views" ${filters.sortField === 'views' ? 'style="display:none;" selected' : ''}>количеству просмотров</option>
                             </select>
-                            <span class="btn" style="border-radius: 3px;" id="filter_set_sort_order" title="${filters.sortOrder === 'desc' ? 'по убыванию' : 'по возрастанию'}">
-                                ${icons({ name: filters.sortOrder === 'desc' ? 'arrow_down_outline' : 'arrow_up_outline', size: 16, fill: 'secondary' })}
+                            <span class="btn" id="filter_set_sort_order" onmouseover="showTitle(this, 'Порядок сортировки сейчас ${filters.sortOrder === 'desc' ? 'по убыванию' : 'по возрастанию'}')">
+                                ${icons({ name: filters.sortOrder === 'desc' ? 'arrow_down_outline' : 'arrow_up_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
                             </span>
                         </div>
                     </div>
+
+                    ${blankSeparator()}
         
                     ${user ?
                         `
                             <div style="display: flex; align-items: center; font-height: 500;">
                                 <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
                                     <span>
-                                        ${icons({ name: 'user_outline', size: 20, fill: 'secondary' })}
+                                        ${icons({ name: 'user_outline', size: 20, fill: 'var(--vkui--color_icon_secondary)' })}
                                     </span>
                                     Чаты, в которых ${filters.isHistory ? user.sex !== 2 ? 'была' : 'был' : 'есть'}
 
@@ -507,26 +510,30 @@ function blankFiltersSearchChats({
                                         ${nameHTML}
                                     </a>
         
-                                    <span class="btn" style="border-radius: 3px;" title="Удалить" id="filter_button_delete_user">
-                                        ${icons({ name: 'cross_large_outline', size: 18, realSize: 28, fill: 'secondary' })}
+                                    <span class="btn" onmouseover="showTitle(this, 'Удалить ${typeMention === 'id' ? 'пользователя' : 'группу'} из фильтра')" id="filter_button_delete_user">
+                                        ${icons({ name: 'cross_large_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
                                     </span>
                                 </div>
                             </div>
+
+                            ${blankSeparator()}
                         ` : ''
                     }
         
-        
+
                     <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
                         <span>
-                            ${icons({ name: 'users_3_outline', size: 20, realSize: 20, fill: 'secondary' })}
+                            ${icons({ name: 'users_3_outline', size: 20, fill: 'var(--vkui--color_icon_secondary)' })}
                         </span>
                         Чаты, в которых ${filters.isHistory ? 'были' : 'есть'} <a class="btn" style="text-decoration: none; font-weight: 500;" target="_blank" href="https://vk.com/friends">Ваши друзья</a>
                         ${blankSwitch({ id: 'filter_only_with_friends', checked: filters.onlyWithFriends })}
                     </div>
+
+                    ${blankSeparator()}
                             
                     <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
                         <span>
-                            ${icons({ name: 'poll_outline', size: 20, realSize: 32, fill: 'secondary' })}
+                            ${icons({ name: 'poll_outline', size: 20, fill: 'var(--vkui--color_icon_secondary)' })}
                         </span>
                         <label style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;" id="range_users_label" for="range_users_label">
                             Диапазон участников от 
@@ -550,10 +557,12 @@ function blankFiltersSearchChats({
                         </label>
                         <a class="btn" style="text-decoration: none; font-weight: 500;" id="clear_range_users">Сбросить</a>
                     </div>
+
+                    ${blankSeparator()}
         
                     <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
                         <span>
-                            ${icons({ name: 'article_box_outline', size: 20, realSize: 16, fill: 'secondary' })}
+                            ${icons({ name: 'article_box_outline', size: 20, fill: 'var(--vkui--color_icon_secondary)' })}
                         </span>
         
                         Поиск в истории чатов
@@ -562,10 +571,12 @@ function blankFiltersSearchChats({
                         
                         ${blankHint('Поиск в истории чатов будет осуществляться по старым названиям, а также по чатам, где участвовал участник или Ваши друзья.')} 
                     </div>
+
+                    ${blankSeparator()}
         
                     <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
                         <span>
-                            ${icons({ name: 'fire_alt_outline', size: 20, realSize: 20, fill: 'secondary' })}
+                            ${icons({ name: 'fire_alt_outline', size: 20, fill: 'var(--vkui--color_icon_secondary)' })}
                         </span>
         
                         Только активные чаты
@@ -673,5 +684,4 @@ function blankActionsMenu (label, content) {
             </div>
         </div>
     </div>`;
-
 }

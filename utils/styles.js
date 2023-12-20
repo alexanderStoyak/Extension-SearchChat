@@ -109,6 +109,10 @@ GM_addStyle(`
     .group-stats:hover:has(.button) {
         background-color: var(--vkui--color_background_secondary--active);
     }
+
+    .group-stats:has(.button) {
+        background-color: var(--vkui--color_background_secondary);
+    }
     
     .group-stats:active:has(.button) {
         transition: all 0s ease;
@@ -206,7 +210,7 @@ GM_addStyle(`
         gap: 5px;
         justify-content: center; 
         cursor: default;
-        background-color: ${appearance.get() === 'dark' ? '#2b2b2b' : '#ebf2fa'};
+        background-color: var(--vkui--color_background_secondary);
         color: var(--vkui--color_text_accent_themed);
         transition: all 0.2s ease;
         height: 100%;
@@ -220,7 +224,7 @@ GM_addStyle(`
 
     .btn-chat:active {
         transition: all 0s ease;
-        background-color: ${appearance.get() === 'dark' ? '#2b2b2b' : '#ebf2fa'};
+        background-color: var(--vkui--color_background_secondary);
     }
 
    .btn-chat-users-show {
@@ -249,6 +253,7 @@ GM_addStyle(`
         border: none;
         border-radius: 5px;
         width: fit-content;
+        background-color: var(--vkui--color_background_secondary);
         color: var(--vkui--color_text_accent_themed);
         font-height: 500;
         outline: 0px;
@@ -260,8 +265,9 @@ GM_addStyle(`
    
    .btn:active {
         transition: all 0s ease;
-        background-color: ${appearance.get() === 'dark' ? '#2b2b2b' : '#ebf2fa'};
+        background-color: var(--vkui--color_background_secondary);
    }
+
 
    .sort-select {
         display: flex;

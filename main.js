@@ -6,15 +6,30 @@ const classesHandlers = [
     'page_block',
     'Profile',
     'nim-conversation-search-row',
-    'idd_selected_value'
+    'idd_selected_value',
+    'im-mess--check'
 ];
 
 
+Array.prototype.findAll = function (predicate) {
+    const found = [];
+
+    for (const current of this) {
+        if (predicate(current)) {
+            found.push(current);
+        }
+    }
+
+    return found;
+};
+
+
 const observeChange = async () => {
-    moment.locale('ru');
     const body = document.querySelector('body');
+
+    moment.locale('ru');
     appearance.update(body);
-    modalPage = new ModalPage();
+    modalPage = new managingModelPages();
 
     if (!await checkValidToken()) {
         return;
@@ -38,10 +53,13 @@ const observeChange = async () => {
 
 
     const observer = new MutationObserver(mutations => {
-        const mutationsForTargets = mutations.filter(mutation =>
+
+        const mutationsForTargets = mutations.findAll(mutation =>
             mutation.target instanceof HTMLElement
             && classesHandlers.find(className => mutation.target.classList.contains(className))
-        )
+        );
+
+
 
         if (mutationsForTargets.find(mutation => mutation.target.classList.contains('im-mess'))) {
             const [peerHistory] = document.getElementsByClassName('_im_peer_history');
@@ -57,15 +75,14 @@ const observeChange = async () => {
 
 
 
-        const mutationsForAddedNodes = mutations.filter(mutation =>
+        const mutationsForAddedNodes = mutations.findAll(mutation =>
             [...mutation.addedNodes].find(node =>
                 node instanceof HTMLElement
                 && classesHandlers.find(className => node.classList.contains(className))
             )
-        )
+        );
 
         for (const mutation of mutationsForAddedNodes) {
-
             for (const { classList } of mutation.addedNodes) {
                 if (!classList) {
                     continue;
@@ -100,7 +117,7 @@ const observeChange = async () => {
 
                 if (classList.contains('im-mess')) {
                     const [peerHistory] = document.getElementsByClassName('_im_peer_history');
-        
+
                     if (peerHistory) {
                         buttonInMessages(peerHistory);
                     }
@@ -110,7 +127,7 @@ const observeChange = async () => {
 
 
 
-        const mutationsForNextSibling = mutations.filter(mutation =>
+        const mutationsForNextSibling = mutations.findAll(mutation =>
             mutation.nextSibling instanceof HTMLElement
             && classesHandlers.find(className => mutation.nextSibling.classList.contains(className))
         )
@@ -122,10 +139,10 @@ const observeChange = async () => {
         }
     });
 
-    observer.observe(body, { 
-        childList: true, 
+    observer.observe(body, {
+        childList: true,
         subtree: true,
-        characterData: false 
+        characterData: false
     });
 };
 

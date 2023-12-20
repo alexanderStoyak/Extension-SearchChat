@@ -35,7 +35,7 @@ function buttonInProfiles(elementButtons) {
                     <div class="page_actions_expanded _page_actions_container">
                         <a tabindex="0" role="button" class="PageActionCell">
                             <div class="PageActionCell__icon" aria-hidden="true">
-                                ${icons({ name: 'search_stars_outline', realSize: 24, fill: 'accent' })}
+                                ${icons({ name: 'search_stars_outline', fill: 'accent' })}
                             </div>
                             <span class="PageActionCell__in">
                                 <span class="PageActionCell__label">
@@ -61,7 +61,7 @@ function buttonInProfiles(elementButtons) {
                     <div class="page_actions_expanded _page_actions_container">
                         <a tabindex="0" role="button" class="PageActionCell">
                             <div class="PageActionCell__icon" aria-hidden="true">
-                                ${icons({ name: 'profile', realSize: 28, size: 24, fill: 'accent' })}
+                                ${icons({ name: 'profile', size: 24, fill: 'accent' })}
                             </div>
                             <span class="PageActionCell__in">
                                 <span class="PageActionCell__label">
@@ -94,7 +94,7 @@ function buttonInProfiles(elementButtons) {
             <a title="Чаты пользователя" class="vkuiButton vkuiButton--size-m vkuiButton--mode-secondary vkuiButton--appearance-accent vkuiButton--align-center vkuiButton--with-icon vkuiButton--singleIcon vkuiTappable vkuiInternalTappable vkuiTappable--hasHover vkuiTappable--hasActive">
                     <span class="vkuiButton__in">
                         <span class="vkuiButton__before" role="presentation">
-                            ${icons({ name: 'search_stars_outline', realSize: 24, fill: appearance.get() === 'dark' ? 'white' : 'textAccentThemed', size: 20 })}
+                            ${icons({ name: 'search_stars_outline', fill: appearance.get() === 'dark' ? 'white' : 'textAccentThemed', size: 20 })}
                         </span>
                     </span>
                 <div class="vkuiFocusVisible vkuiFocusVisible--mode-outside" aria-hidden="true"></div>

@@ -2,7 +2,7 @@ function createActions ({id, title, innerHTML}) {
     const action = document.createElement('span');
 
     action.id = id;
-    action.className = 'im-mess--fav'
+    action.className = 'im-mess--reaction'
     action.role = 'link';
     action.title = title;
     action.innerHTML = innerHTML;

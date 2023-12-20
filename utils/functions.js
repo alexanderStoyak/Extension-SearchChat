@@ -28,7 +28,7 @@ function notifiers(text, title = 'ПоискЧата') {
             gap: 5px;
             justify-content: flex-start;
         "> 
-            ${icons({ name: 'notification_outline', size: 20, fill: 'secondary' })} 
+            ${icons({ name: 'notification_outline', size: 20, fill: 'var(--vkui--color_icon_secondary)' })} 
             ${title}
         </span>
     `
@@ -266,13 +266,13 @@ async function searchChats({ isCurrent = false, offset = 0 }) {
     const title = (foundChats, subTitle) =>
         titleModalPage({
             before: 'Чаты',
-            after: foundChats ? `${foundChats.toLocaleString('ru-RU')}шт. ` : '',
+            after: typeof foundChats === 'number' ? `${foundChats.toLocaleString('ru-RU')}шт. ` : foundChats,
             subTitle: subTitle,
         })
 
 
     modalPage.new(
-        title(0, blankFiltersSearchChats({ user }))
+        title('ищем...', blankFiltersSearchChats({ user }))
     ).setLoad(services.pick.searchChats).visible();
     onClicks('searchChats', { offset });
 
@@ -299,7 +299,7 @@ async function searchChats({ isCurrent = false, offset = 0 }) {
         load.chats = false;
         modalPage.setContent(
             blankNotFound(
-                icons({ name: 'ghost_simple_outline', realSize: 36, size: 86, }),
+                icons({ name: 'ghost_simple_outline', size: 86, }),
                 'По фильтрам ничего не найдено',
                 { id: 'reset_filters', text: 'Сбросить фильтры' }
             )
@@ -420,7 +420,7 @@ async function showUsersChat(indexChatOrChat, friends, backFunction, offset = 0,
     const title = subTitle => titleModalPage({
         icon: `
             <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px;">
-                ${icons({ name: 'browser_back', size: 20, fill: 'secondary' })}
+                ${icons({ name: 'browser_back', size: 24, fill: 'var(--vkui--color_icon_secondary)' })}
             </span>
         `,
         title: 'Участники',
@@ -486,7 +486,7 @@ async function showUsersChat(indexChatOrChat, friends, backFunction, offset = 0,
     if (!sortedMembersList.length && !creator) {
         modalPage.setContent(
             blankNotFound(
-                icons({ name: 'ghost_simple_outline', realSize: 36, size: 86, }),
+                icons({ name: 'ghost_simple_outline', size: 86, }),
                 search ? 'Пользователи не найдены' : 'Этот чат без участников'
             )
         ).setTitle(title(blankPages({ found: 0 })));
@@ -514,7 +514,7 @@ async function showUsersChat(indexChatOrChat, friends, backFunction, offset = 0,
                 `
                     ${blankPages({ found: membersCount, inOnePage: sortedMembersList.length, offset, currentPage, totalPage })}
                     <span style="display: flex; gap: 5px;">
-                        ${icons({ name: 'users_outline', size: 18, realSize: 20, fill: 'secondary' })}
+                        ${icons({ name: 'users_outline', size: 18, fill: 'var(--vkui--color_icon_secondary)' })}
                         <span style="padding-right: 10px; color: #99a2ad;">
                             ${onlineMembers.toLocaleString('ru-RU')} ${decOfNum(onlineMembers, ['участник', 'участника', 'участников'])} в сети
                         </span>
@@ -563,38 +563,6 @@ async function getFriends() {
 }
 
 
-// https://angel-rs.github.io/css-color-filter-generator/
-const iconColors = {
-    accent: 'brightness(0) saturate(100%) invert(66%) sepia(13%) saturate(1970%) hue-rotate(180deg) brightness(98%) contrast(88%);',
-    textAccentThemed: 'brightness(0) saturate(100%) invert(43%) sepia(35%) saturate(1094%) hue-rotate(172deg) brightness(83%) contrast(81%);',
-    secondary: 'brightness(0) saturate(100%) invert(55%) sepia(0%) saturate(1%) hue-rotate(295deg) brightness(94%) contrast(96%);',
-    white: 'brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(7500%) hue-rotate(203deg) brightness(112%) contrast(109%);',
-    iconsAccent: appearance.get() === 'dark'
-        ? 'brightness(0) saturate(100%) invert(59%) sepia(9%) saturate(3344%) hue-rotate(175deg) brightness(75%) contrast(92%);'
-        : 'brightness(0) saturate(100%) invert(78%) sepia(22%) saturate(6954%) hue-rotate(184deg) brightness(100%) contrast(84%);',
-    original: ''
-}
-function icons({ name, realSize = 24, size = realSize, fill = 'accent', leftGap = 0, rightGap = 0 }) {
-    return `
-        <svg 
-            fill="currentColor" 
-            stroke="currentColor"
-            width="${size + rightGap}" 
-            height="${size}"
-            style="${iconColors[fill] ? `filter: ${iconColors[fill]};` : ''} padding-left: ${leftGap}px; padding-right: ${rightGap}px;"
-            class="vkuiIcon vkuiIcon--${size} vkuiIcon--w-${size} vkuiIcon--h-${size}"
-            display="block"
-        >
-            <image
-                width="${size}"
-                height="${size}"
-                xlink:href="https://raw.githubusercontent.com/VKCOM/icons/master/packages/icons/src/svg/${realSize}/${name}_${realSize}.svg" 
-            />
-        </svg>
-    `;
-}
-
-
 async function showStatistics() {
     modalPage.new(titleModalPage({ before: 'Статистика и топы' }))
         .setLoad().visible();
@@ -614,8 +582,8 @@ async function showStatistics() {
         <div style="display: flex; align-items: center; flex-direction: column; margin: 10px;">
             <div style="display: flex; flex-direction: row; align-items: center;">
             
-                 <span id="top_users" class="group-stats vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard" title="Топ пользователей по чатам"> 
-                    ${icons({ name: 'users_outline', realSize: 20, size: 48 })} 
+                 <span id="top_users" class="group-stats vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard" onmouseover="showTitle(this, 'Топ пользователей по чатам')">
+                    ${icons({ name: 'users_outline', size: 48 })} 
                     <span class="color-text-subhead" style="font-size: 12px">топ</span>
                     <span>Участники</span>
                     <span class="button color-text-subhead" style="font-size: 12px;">
@@ -626,7 +594,7 @@ async function showStatistics() {
                 <p style="margin: 25px;"></p>
 
                 <span id="new_100_chats" class="group-stats"> 
-                    ${icons({ name: 'data_stack_lock_outline', realSize: 56, size: 56 })}
+                    ${icons({ name: 'data_stack_lock_outline', size: 56 })}
                     <span style="font-size: 16px;">Чаты</span>
                     <span class="color-text-subhead" style="font-size: 14px;">
                         ${stats.totalConversations.toLocaleString('ru-RU')}
@@ -635,8 +603,8 @@ async function showStatistics() {
 
                 <p style="margin: 25px;"></p>
                 
-                <span id="top_groups" class="group-stats vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard" title="Топ групп по чатам">
-                    ${icons({ name: 'users_3_outline', realSize: 24, size: 48 })} 
+                <span id="top_groups" class="group-stats vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard" onmouseover="showTitle(this, 'Топ групп по чатам')">
+                    ${icons({ name: 'users_3_outline', size: 48 })} 
                     <span class="color-text-subhead" style="font-size: 12px">топ</span>
                     <span>Группы</span>
                     <span class="button color-text-subhead" style="font-size: 12px;">
@@ -650,7 +618,7 @@ async function showStatistics() {
 
             <div style="display: flex; flex-direction: row; align-items: center;">
                 <span class="group-stats"> 
-                    ${icons({ name: 'user_add_outline', size: 56, realSize: 28 })}
+                    ${icons({ name: 'user_add_outline', size: 56 })}
                     <span class="color-text-subhead" style="font-size: 14px;">
                         ${stats.totalNewUsers.toLocaleString('ru-RU')}
                     </span>
@@ -665,7 +633,7 @@ async function showStatistics() {
                 <p style="margin: 30px;"></p>
                 
                 <span class="group-stats"> 
-                    ${icons({ name: 'view_outline', size: 56, realSize: 16 })}
+                    ${icons({ name: 'view_outline', size: 56 })}
                     <span class="color-text-subhead" style="font-size: 14px;">
                         ${stats.totalViews.toLocaleString('ru-RU')}
                     </span>
@@ -679,7 +647,7 @@ async function showStatistics() {
                 <p style="margin: 30px;"></p>
 
                 <span class="group-stats"> 
-                    ${icons({ name: 'user_minus_outline', size: 56, realSize: 28 })}
+                    ${icons({ name: 'user_minus_outline', size: 56 })}
                     <span class="color-text-subhead" style="font-size: 14px;">
                         ${stats.totalExitedUsers.toLocaleString('ru-RU')}
                     </span>
@@ -696,11 +664,11 @@ async function showStatistics() {
             
             ${blankQuote(`
                 <span style="display: flex; flex-direction: row; align-items: center; gap: 5px;">
-                    ${icons({ name: 'smile_outline', size: 16, realSize: 24, fill: 'accent' })}
+                    ${icons({ name: 'smile_outline', size: 16, fill: 'accent' })}
                     В среднем на 1 чат приходится ${mediumCountMembersPerOneChat} ${decOfNum(membersPerOneChat, ['участник', 'участника', 'участников'])}
                 </span>
                 <span style="display: flex; flex-direction: row; align-items: center; gap: 5px;">
-                    ${icons({ name: 'globe_outline', size: 16, realSize: 24, fill: 'accent' })}
+                    ${icons({ name: 'globe_outline', size: 16, fill: 'accent' })}
                     Почти каждый участник есть хотя бы в ${membersPerOneChat} ${decOfNum(membersPerOneChat, ['чате', 'чатах', 'чатах'])}
                 </span>
             `)}
@@ -718,13 +686,13 @@ async function showTopUsers() {
     modalPage.new(titleModalPage({
         icon: `
             <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px;">
-                ${icons({ name: 'browser_back', size: 20, fill: 'secondary' })}
+                ${icons({ name: 'browser_back', size: 24, fill: 'var(--vkui--color_icon_secondary)' })}
             </span>
         `,
         title: 'Топ',
         before: {
             title: 'Пользователи',
-            icon: icons({ name: 'users_outline', realSize: 20, size: 28 })
+            icon: icons({ name: 'users_outline', size: 28 })
         }
     })).setLoad().visible();
 
@@ -756,13 +724,13 @@ async function showTopGroups() {
     modalPage.new(titleModalPage({
         icon: `
             <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px;">
-                ${icons({ name: 'browser_back', size: 20, fill: 'secondary' })}
+                ${icons({ name: 'browser_back', size: 24, fill: 'var(--vkui--color_icon_secondary)' })}
             </span>
         `,
         title: 'Топ',
         before: {
             title: 'Группы',
-            icon: icons({ name: 'users_3_outline', realSize: 24, size: 28 })
+            icon: icons({ name: 'users_3_outline', size: 28 })
         }
     })).setLoad().visible();
 
@@ -892,7 +860,7 @@ async function showTopViewsChats() {
         before: 'Просмотры',
         icon: `
             <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px;">
-                ${icons({ name: 'browser_back', size: 20, fill: 'secondary' })}
+                ${icons({ name: 'browser_back', size: 24, fill: 'var(--vkui--color_icon_secondary)' })}
             </span>
         `
     })).setLoad().visible();
@@ -931,7 +899,7 @@ async function showTopViewsChats() {
 async function showAdminPanel() {
     modalPage.new(titleModalPage({
         title: 'Админ панель',
-        icon: icons({ name: 'wrench_outline', fill: 'iconsAccent', realSize: 28, size: 28 })
+        icon: icons({ name: 'wrench_outline', fill: 'iconsAccent', size: 28 })
     })).setLoad().visible();
 
     const html = `
@@ -939,7 +907,7 @@ async function showAdminPanel() {
             <div style="display: flex; flex-direction: row; align-items: center;">
             
                  <span id="top_views_chats" class="group-stats vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard" title="Топ пользователей по чатам"> 
-                    ${icons({ name: 'api_outline', realSize: 20, size: 48 })} 
+                    ${icons({ name: 'api_outline', size: 48 })} 
                     <span class="button" style="font-size: 12px;">Просмотры</span>
                 </span>
 
@@ -966,8 +934,8 @@ async function showShop() {
         
             <div style="display: flex; flex-direction: row; align-items: center;">
 
-                <span id="subscription" class="group-stats vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard" title="Описание товара"> 
-                    ${icons({ name: 'donut_circle_fill_yellow', realSize: 20, size: 45, fill: 'original' })}
+                <span onmouseover="showTitle(this, 'Описание товара')" id="subscription" class="group-stats vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard" title="Описание товара"> 
+                    ${icons({ name: 'star_circle_fill_yellow', size: 45, fill: 'original' })}
                     <span class="color-text-subhead" style="font-size: 12px">месяц</span>
                     <span class="button" style="font-size: 12px;">Подписка</span>
                     <span class="button color-text-subhead" style="font-size: 12px;">
@@ -977,8 +945,8 @@ async function showShop() {
 
                 <p style="margin: 25px;"></p>
 
-                <span id="my_hide" class="group-stats vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard" title="Описание товара"> 
-                    ${icons({ name: 'ghost_simple_outline', realSize: 28, size: 48 })}
+                <span onmouseover="showTitle(this, 'Описание товара')" id="my_hide" class="group-stats vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard" title="Описание товара"> 
+                    ${icons({ name: 'ghost_simple_outline', size: 48 })}
                     <span class="color-text-subhead" style="font-size: 12px">навсегда</span>
                     <span class="button" style="font-size: 12px;">Скрыть себя</span>
                     <span class="button color-text-subhead" style="font-size: 12px;">
@@ -993,7 +961,7 @@ async function showShop() {
                     <p style="margin-bottom: 10px;"></p>
                     ${blankQuote(`
                         <span style="display: flex; flex-direction: row; align-items: center; gap: 5px; line-height: 30px;">
-                            ${icons({ name: 'donut_circle_fill_yellow', size: 12, realSize: 20, fill: 'original' })}
+                            ${icons({ name: 'star_circle_fill_yellow', size: 12, fill: 'original' })}
                             Ваша подписка активна до ${moment(services.profileFromSC.subscription.expired).format('DD.MM.YYYY HH:mm')}
                         </span>
                     `)}
@@ -1018,7 +986,7 @@ const descriptionProduct = {
         title: 'Подписка',
         tableСontents: `
             <b style="display: flex; flex-direction: row; align-items: center; gap: 5px; font-size: 16px; justify-content: center;">
-                ${icons({ name: 'star_circle_fill_yellow', realSize: 16, size: 20, fill: 'original' })} Больше возможностей с подпиской!
+                ${icons({ name: 'star_circle_fill_yellow', size: 20, fill: 'original' })} Больше возможностей с подпиской!
             </b>
         `,
         price: [75, 100, 150],
@@ -1026,7 +994,7 @@ const descriptionProduct = {
             ${blankQuote(
             `
                     <span style="display: flex; flex-direction: row; align-items: center; gap: 5px; font-size: 16px; color: #828282;"> 
-                        ${icons({ name: 'unlock', realSize: 12, size: 20 })} Доступ к чатам любого пользователя или группы ВКонтакте.
+                        ${icons({ name: 'unlock', size: 20 })} Доступ к чатам любого пользователя или группы ВКонтакте.
                     </span>
                     <ui style="${styleUi}">
                         <li style="${styleLi}"> # Вызывает удивление у Вашей жертвы, так как не каждый способен заходить в чаты пользователя при помощи всего двух кнопок. </li>
@@ -1041,28 +1009,28 @@ const descriptionProduct = {
             <br/>
             ${blankQuote(`
                 <span style="display: flex; flex-direction: row; align-items: center; gap: 5px; font-size: 16px; color: #828282;"> 
-                    ${icons({ name: 'cards_2', realSize: 12, size: 20 })} Увеличения лимитов на страницы при просмотре чатов.
+                    ${icons({ name: 'cards_2', size: 20 })} Увеличения лимитов на страницы при просмотре чатов.
                 </span>
                 # У обычных пользователей максимальное количество страниц, которые они могут просмотреть, составляет 15. У пользователей с подпиской максимальное количество страниц увеличено до 500, что дает возможность пролистать 7,500 чатов.
             `)}
             <br/>
             ${blankQuote(`
                 <span style="display: flex; flex-direction: row; align-items: center; gap: 5px; font-size: 16px; color: #828282;"> 
-                    ${icons({ name: 'list_plus_outline', realSize: 20, size: 20 })} Диапазон участников в чатах.
+                    ${icons({ name: 'list_plus_outline', size: 20 })} Диапазон участников в чатах.
                 </span>
                 # Возможность установки диапазона количества участников в чатах, например, от 10 до 500.
             `)}
             <br/>
             ${blankQuote(`
                 <span style="display: flex; flex-direction: row; align-items: center; gap: 5px; font-size: 16px; color: #828282;"> 
-                    ${icons({ name: 'archive_outline', realSize: 20, size: 20 })} Поиск из истории чатов.
+                    ${icons({ name: 'archive_outline', size: 20 })} Поиск из истории чатов.
                 </span>
                 # Поиск в истории чатов будет осуществляться по старым названиям, а также по чатам, где участвовал участник или Ваши друзья.
             `)}
             <br/>
             ${blankQuote(`
                 <span style="display: flex; flex-direction: row; align-items: center; gap: 5px; font-size: 16px; color: #828282;"> 
-                    ${icons({ name: 'user_circle_outline', realSize: 28, size: 20 })} Просмотр чужих профилей.
+                    ${icons({ name: 'user_circle_outline', size: 20 })} Просмотр чужих профилей.
                 </span>
                 # Вся та же статистика и информация что и в Вашем профиле, только чужая.
             `)}
@@ -1070,7 +1038,7 @@ const descriptionProduct = {
             <br/>
             ${blankQuote(`
                 <span style="display: flex; flex-direction: row; align-items: center; gap: 5px; font-size: 16px; color: #828282;"> 
-                    ${icons({ name: 'help_outline', realSize: 24, size: 20 })} Почему платно?
+                    ${icons({ name: 'help_outline', size: 20 })} Почему платно?
                 </span>
                 Мы сделали подписку платной, поскольку функции с подпиской требуют дополнительных расходов, в том числе на аренду серверов. 
                 Вклад подписчиков позволяет нам покрывать эти расходы и помогает «ПоискЧата» оставаться бесплатным для всех пользователей.
@@ -1082,13 +1050,13 @@ const descriptionProduct = {
         title: 'Скрыть себя',
         tableСontents: `
             <b style="display: flex; flex-direction: row; align-items: center; gap: 5px; font-size: 16px; justify-content: center;">
-                ${icons({ name: 'lock', realSize: 12, size: 20 })} Гарантированная конфиденциальность
+                ${icons({ name: 'lock', size: 20 })} Гарантированная конфиденциальность
             </b>
         `,
         price: [75],
         description: blankQuote(`
             <span style="display: flex; flex-direction: row; align-items: center; gap: 5px; font-size: 16px; color: #828282;"> 
-                ${icons({ name: 'brain_outline', realSize: 28, size: 20 })} Мы понимаем,
+                ${icons({ name: 'brain_outline', size: 20 })} Мы понимаем,
             </span>
             что многим пользователям не нравится, когда кто-то несанкционированно заходит в их любимые чаты. 
             Это может серьезно нарушить комфорт и безопасность пользователей, особенно если чат является школьным или городским. Кроме того, информация, представленная в профиле чата, может раскрыть много о человеке, его интересах, месте жительства, образовании и месте работы.
@@ -1109,7 +1077,7 @@ function showDescriptionProduct(productId) {
     modalPage.new(titleModalPage({
         icon: `
             <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px;">
-                ${icons({ name: 'browser_back', size: 20, fill: 'secondary' })}
+                ${icons({ name: 'browser_back', size: 24, fill: 'var(--vkui--color_icon_secondary)' })}
             </span>
         `,
         title: 'Товары',
@@ -1193,7 +1161,7 @@ async function showProfile({ id }) {
     if (!userFromVK || !userFromVK.first_name) {
         modalPage.setContent(
             blankNotFound(
-                icons({ name: 'user_slash_outline', realSize: 20, size: 48 }),
+                icons({ name: 'user_slash_outline', size: 48 }),
                 'Такого профиля ВКонтакте не существует'
             )
         );
@@ -1227,7 +1195,7 @@ async function showProfile({ id }) {
         HTMLNewChat = `
             <br/>
             <div style="margin-left: 3px; margin-bottom: 3px; font-size: 15px; font-weight: bold; gap: 5px; display: flex; align-items: center; justify-content: center;">
-                ${icons({ name: 'new', fill: 'secondary', size: 24, realSize: 16 })}
+                ${icons({ name: 'new', fill: 'var(--vkui--color_icon_secondary)', size: 24})}
                 Самый новый чат с ${userFromVK.sex === 1 ? 'ней' : 'ним'}
             </div>
             ${blankChat({
@@ -1301,15 +1269,15 @@ async function showProfile({ id }) {
         },
         {
             title: 'Должность: «Редактор»',
-            icon: icons({ name: 'write', realSize: 24, size: 16, fill: 'secondary' })
+            icon: icons({ name: 'write', size: 16, fill: 'var(--vkui--color_icon_secondary)' })
         },
         {
             title: 'Должность: «Администратор»',
-            icon: icons({ name: 'gavel_outline', realSize: 20, size: 16, fill: 'secondary' })
+            icon: icons({ name: 'gavel_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })
         },
         {
             title: 'Должность: «Главный Администратор»',
-            icon: icons({ name: 'crown', realSize: 16, size: 16, fill: 'secondary' })
+            icon: icons({ name: 'crown_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })
         }
     ][userFromSC.role];
 
@@ -1319,7 +1287,7 @@ async function showProfile({ id }) {
             ${userFromSC.subscription ?
             `
                     <span style="display: flex; flex-direction: row; font-size: 14px; color: #99a2ad; font-weight: bold; justify-content: center; gap: 5px;">
-                        ${icons({ name: 'donut_circle_fill_yellow', size: 16, realSize: 20, fill: 'original' })}
+                        ${icons({ name: 'star_circle_fill_yellow', size: 16, fill: 'original' })}
                         <div>
                             ${
                                 userFromSC.isSubscriptionValid ? 
@@ -1352,7 +1320,7 @@ async function showProfile({ id }) {
                     ${userFromSC.isBanned ?
                         `
                             <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #fce100; font-weight: bold;"> 
-                                ${icons({ name: 'user_slash_outline', size: 16, realSize: 20, fill: 'secondary' })}
+                                ${icons({ name: 'user_slash_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
                                 Аккаунт заблокирован.
                             </span>
                         `
@@ -1365,24 +1333,24 @@ async function showProfile({ id }) {
                     </span>
 
                     <span style="display: flex; flex-direction: row; gap: 5px; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
-                        ${icons({ name: 'calendar_check_outline', size: 16, realSize: 20, fill: 'secondary' })}
+                        ${icons({ name: 'calendar_check_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
                         Зарегистрирован ${moment(userFromSC.regDate).format('DD.MM.YYYY, HH:mm')}
                     </span>
                 
                     <span style="display: flex; flex-direction: row; gap: 5px; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
-                        ${icons({ name: 'face_id_outline', size: 16, realSize: 28, fill: 'secondary' })}
+                        ${icons({ name: 'face_id_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
                         Интересовались профилем ${userFromSC.views.toLocaleString('ru-RU')} ${decOfNum(userFromSC.views, ['раз', 'раза', 'раз'])}.
                     </span>
 
                     <span style="display: flex; flex-direction: row; gap: 5px; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
-                        ${icons({ name: 'api_outline', size: 16, realSize: 20, fill: 'secondary' })}
+                        ${icons({ name: 'api_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
                         ${userFromVK.sex === 1 ? 'Использовала' : 'Использовал'} расширение ${userFromSC.useExtension.toLocaleString('ru-RU')} ${decOfNum(userFromSC.useExtension, ['раз', 'раза', 'раз'])}.
                     </span>
 
                     ${userFromSC.isHide ?
                         `
                             <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
-                                ${icons({ name: 'hide_outline', size: 16, fill: 'secondary' })}
+                                ${icons({ name: 'hide_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
                                 Чаты и профиль этого аккаунта скрыты.
                             </span>
                         `
@@ -1397,35 +1365,35 @@ async function showProfile({ id }) {
 
         <div class="${classGroup}" style="display: flex; justify-content: space-between;">
             <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
-                ${icons({ name: 'search_stars_outline', size: 16, fill: 'secondary' })}
+                ${icons({ name: 'search_stars_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
                 ${userFromVK.sex === 1 ? 'Найдена' : 'Найден'} в ${userFromSC.stats.member.toLocaleString('ru-RU')} ${decOfNum(userFromSC.stats.member, ['чате', 'чатах', 'чатах'])}
             </span>
 
             <div class="ver-separator"></div>
 
             <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
-                ${icons({ name: 'crown_outline', size: 16, realSize: 28, fill: 'secondary' })}
+                ${icons({ name: 'crown_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
                 Создатель в ${userFromSC.stats.creator.toLocaleString('ru-RU')} ${decOfNum(userFromSC.stats.creator, ['чате', 'чатах', 'чатах'])}
             </span>
 
             <div class="ver-separator"></div>
 
             <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
-                ${icons({ name: 'add', size: 16, fill: 'secondary' })}
+                ${icons({ name: 'add', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
                 ${userFromVK.sex === 1 ? 'Добавила' : 'Добавил'} ${userFromSC.stats.added.toLocaleString('ru-RU')} ${decOfNum(userFromSC.stats.added, ['чат', 'чата', 'чатов'])}
             </span>
         </div>
 
         <div class="${classGroup}" style="display: flex; justify-content: space-between;">
             <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold; padding-left: 5%;"> 
-                ${icons({ name: 'chats_outline', size: 16, realSize: 28, fill: 'secondary' })}
+                ${icons({ name: 'chats_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
                 Просмотрели ${userFromSC.viewChats.other.toLocaleString('ru-RU')} ${decOfNum(userFromSC.viewChats.other, ['чат', 'чата', 'чатов'])} с ${userFromVK.sex === 1 ? 'ней' : 'ним'}
             </span>
 
             <div class="ver-separator"></div>
             
             <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold; padding-right: 5%;"> 
-                ${icons({ name: 'view', size: 16, fill: 'secondary' })}
+                ${icons({ name: 'view', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
                 ${userFromVK.sex === 1 ? 'Просмотрела' : 'Просмотрел'} ${userFromSC.viewChats.self.toLocaleString('ru-RU')} ${decOfNum(userFromSC.viewChats.self, ['чат', 'чата', 'чатов'])}
             </span>
 
@@ -1435,20 +1403,20 @@ async function showProfile({ id }) {
 
         <br/>
         <div style="display: flex; margin-bottom: 3px; font-size: 15px; font-weight: bold; gap: 5px; flex-direction: row; justify-content: center; align-items: center;">
-            ${icons({ name: 'archive_outline', size: 24, realSize: 28, fill: 'secondary' })}
+            ${icons({ name: 'archive_outline', size: 24, fill: 'var(--vkui--color_icon_secondary)' })}
             История пользователя
         </div>
 
         <div class="${classGroup}" style="display: flex; justify-content: space-between;">
             <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold; padding-left: 5%;"> 
-                ${icons({ name: 'door_arrow_left_outline', size: 16, realSize: 24, fill: 'secondary' })}
+                ${icons({ name: 'door_arrow_left_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
                 ${userFromVK.sex === 1 ? 'Присоединилась' : 'Присоединился'} в ${userFromSC.stats.entered.toLocaleString('ru-RU')} ${decOfNum(userFromSC.stats.entered, ['чата', 'чата', 'чатов'])}
             </span>
 
             <div class="ver-separator"></div>
             
             <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold; padding-right: 5%;"> 
-                ${icons({ name: 'door_arrow_right_outline', size: 16, realSize: 24, fill: 'secondary' })}
+                ${icons({ name: 'door_arrow_right_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
                 ${userFromVK.sex === 1 ? 'Вышла' : 'Вышел'} из ${userFromSC.stats.exited.toLocaleString('ru-RU')} ${decOfNum(userFromSC.stats.exited, ['чата', 'чатов', 'чатов'])}
             </span>
         </div>
@@ -1505,8 +1473,8 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends, search = 
     const title = (countTitles, countPhotos, countExitedUsers, countNewUsers) =>
         titleModalPage({
             icon: `
-                <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px;">
-                    ${icons({ name: 'browser_back', size: 20, fill: 'secondary' })}
+                <span class="btn-back" id="back_button_modal_page" style="padding: 0px; border-radius: 4px;">
+                    ${icons({ name: 'browser_back', size: 24, fill: 'var(--vkui--color_icon_secondary)' })}
                 </span>
             `,
             title: 'История чата',
@@ -1514,25 +1482,25 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends, search = 
             subTitle: `
                 ${blankInputSearch({ id: 'search_users_history', value: search })}
                 <span style="display: flex; gap: 5px; font-size: 14px; font-weight: 400;">
-                    ${icons({ name: 'pencil', size: 18, realSize: 12, fill: 'secondary' })}
+                    ${icons({ name: 'pencil', size: 18, fill: 'var(--vkui--color_icon_secondary)' })}
                     <span style="padding-right: 10px; color: #99a2ad;">
                         ${countTitles.toLocaleString('ru-RU')} ${decOfNum(countTitles, ['раз', 'раза', 'раз'])} обновлялось название
                     </span>
                 </span>
                 <span style="display: flex; gap: 5px; font-size: 14px; font-weight: 400;">
-                    ${icons({ name: 'photos_stack_outline', size: 18, realSize: 24, fill: 'secondary' })}
+                    ${icons({ name: 'photos_stack_outline', size: 18, fill: 'var(--vkui--color_icon_secondary)' })}
                     <span style="padding-right: 10px; color: #99a2ad;">
                         ${countPhotos.toLocaleString('ru-RU')} ${decOfNum(countPhotos, ['раз', 'раза', 'раз'])} обновлялось фото
                     </span>
                 </span>
                 <span style="display: flex; gap: 5px; font-size: 14px; font-weight: 400;">
-                    ${icons({ name: 'user_minus_outline', size: 18, realSize: 28, fill: 'secondary' })}
+                    ${icons({ name: 'user_minus_outline', size: 18, fill: 'var(--vkui--color_icon_secondary)' })}
                     <span style="padding-right: 10px; color: #99a2ad;">
                         ${countExitedUsers.toLocaleString('ru-RU')} ${decOfNum(countExitedUsers, ['вышедший участник', 'вышедших участника', 'вышедших участников'])}
                     </span>
                 </span>
                 <span style="display: flex; gap: 5px; font-size: 14px; font-weight: 400;">
-                ${icons({ name: 'user_add_outline', size: 18, realSize: 28, fill: 'secondary' })}
+                ${icons({ name: 'user_add_outline', size: 18, fill: 'var(--vkui--color_icon_secondary)' })}
                     <span style="padding-right: 10px; color: #99a2ad;">
                         ${countNewUsers.toLocaleString('ru-RU')} ${decOfNum(countNewUsers, ['присоединившийся участник', 'присоединившийся участника', 'присоединившихся участников'])}
                     </span>
@@ -1544,7 +1512,7 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends, search = 
         titleModalPage({
             icon: `
                 <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px;">
-                    ${icons({ name: 'browser_back', size: 20, fill: 'secondary' })}
+                    ${icons({ name: 'browser_back', size: 24, fill: 'var(--vkui--color_icon_secondary)' })}
                 </span>
             `,
             title: 'История чата',
@@ -1555,7 +1523,7 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends, search = 
 
     if (!chat.history) {
         modalPage.setContent(blankNotFound(
-            icons({ name: 'story_outline', size: 56, realSize: 56 }),
+            icons({ name: 'story_outline', size: 56 }),
             'В этом чате еще нет истории',
         ))
 
@@ -1576,7 +1544,7 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends, search = 
 
     if (!history.length) {
         modalPage.setContent(blankNotFound(
-            icons({ name: 'article_box_outline', size: 56, realSize: 16 }),
+            icons({ name: 'article_box_outline', size: 56 }),
             'В этом чате еще нет истории',
         ))
 
@@ -1712,7 +1680,7 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends, search = 
                                 ${oldTitle}
                             </span>
                             
-                            ${icons({ name: 'arrow_right', realSize: 12, size: 20, fill: 'secondary' })}
+                            ${icons({ name: 'arrow_right', size: 20, fill: 'var(--vkui--color_icon_secondary)' })}
                             
                             <span title="${newTitle}" style="max-width: 250px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
                                 ${newTitle}
@@ -1772,7 +1740,7 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends, search = 
                                 </div>
                             </a>
                             
-                            ${icons({ name: 'arrow_right', realSize: 12, size: 28, fill: 'secondary' })}
+                            ${icons({ name: 'arrow_right', size: 28, fill: 'var(--vkui--color_icon_secondary)' })}
                             
                             <a href="${newPhoto}" target="_blank" style="text-decoration: none;" >
                                 <div style="width: 58px; height: 58px;">
