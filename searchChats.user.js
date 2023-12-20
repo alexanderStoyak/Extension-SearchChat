@@ -22,6 +22,8 @@
 
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/main.js
 
+// @require      file://C:/Users/Александр/Desktop/extension/utils/icons.js
+
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/handlers/buttonInProfiles.js
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/handlers/buttonInMessages.js
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/handlers/buttonInProfilesForGroups.js
