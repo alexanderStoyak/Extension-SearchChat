@@ -22,7 +22,7 @@
 
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/main.js
 
-// @require       https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/utils/icons.js
+// @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/utils/icons.js
 
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/handlers/buttonInProfiles.js
 // @require      https://raw.githubusercontent.com/alexanderStoyak/Extension-SearchChat/main/handlers/buttonInMessages.js
