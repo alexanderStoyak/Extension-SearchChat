@@ -1282,8 +1282,7 @@ async function showProfile({ id }) {
     ][userFromSC.role];
 
     const adminMenu = `
-        ${blankSeparator('margin-top: 20px;')}
-        <span style="display: flex; padding-top: 10px; font-weight: 500; font-size: 16px; color: #99a2ad; justify-content: center;">Управление профилем</span>
+        <span style="display: flex; padding-top: 5px; font-weight: 500; font-size: 16px; color: #99a2ad; justify-content: center;">Управление профилем</span>
         <div style="flex-direction: row; display: flex; padding-top: 10px; justify-content: center; gap: 20px;">
 
             ${!userFromSC.isBanned && services.profileFromSC.id !== userFromVK.id ? `
@@ -1311,28 +1310,31 @@ async function showProfile({ id }) {
             }
 
             <div style="display: flex; justify-content: center; flex-direction: column;"> 
-            <label style="display: flex; color: var(--vkui--color_text_secondary); align-items: center; justify-content: center;">
-                Подписка
-            </label>
-            ${blankInputDate({
-                id: 'date_subscription',
-                width: '210px', 
-                value: moment().add(1, 'd').format('YYYY-MM-DD'),
-                button: {
-                    title: 'Выдать подписку',
-                    data: userFromVK.id,
-                    id: 'add_subscription',
-                    icon: icons({ name: 'add', size: 20 })
-                }
-            })}
+                <label style="display: flex; color: var(--vkui--color_text_secondary); align-items: center; justify-content: center;">
+                    Подписка
+                </label>
+                ${blankInputDate({
+                    id: 'date_subscription',
+                    width: '210px', 
+                    value: moment().add(1, 'd').format('YYYY-MM-DD'),
+                    button: {
+                        title: 'Выдать подписку',
+                        data: userFromVK.id,
+                        id: 'add_subscription',
+                        icon: icons({ name: 'add', size: 20 })
+                    }
+                })}
             </div>
 
         </div>
-
-        ${blankSeparator()}
     `
 
     modalPage.setContent(`
+        ${services.profileFromSC.role > 0
+            ? adminMenu 
+            : ''
+        }
+
         <div class="${classGroup}">
 
             ${userFromSC.subscription ?
@@ -1459,11 +1461,6 @@ async function showProfile({ id }) {
             </span>
 
         </div>
-
-        ${services.profileFromSC.role > 0
-            ? adminMenu 
-            : ''
-        }
 
         ${HTMLNewChat}
 
