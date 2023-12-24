@@ -11,17 +11,17 @@ const classesHandlers = [
 ];
 
 
-Array.prototype.findAll = function (predicate) {
+function findAll(array, predicate) {
     const found = [];
 
-    for (const current of this) {
+    for (const current of array) {
         if (predicate(current)) {
             found.push(current);
         }
     }
 
     return found;
-};
+}
 
 
 const observeChange = async () => {
@@ -54,7 +54,7 @@ const observeChange = async () => {
 
     const observer = new MutationObserver(mutations => {
 
-        const mutationsForTargets = mutations.findAll(mutation =>
+        const mutationsForTargets = findAll(mutations, mutation =>
             mutation.target instanceof HTMLElement
             && classesHandlers.find(className => mutation.target.classList.contains(className))
         );
@@ -75,7 +75,7 @@ const observeChange = async () => {
 
 
 
-        const mutationsForAddedNodes = mutations.findAll(mutation =>
+        const mutationsForAddedNodes = findAll(mutations, mutation =>
             [...mutation.addedNodes].find(node =>
                 node instanceof HTMLElement
                 && classesHandlers.find(className => node.classList.contains(className))
@@ -127,7 +127,7 @@ const observeChange = async () => {
 
 
 
-        const mutationsForNextSibling = mutations.findAll(mutation =>
+        const mutationsForNextSibling = findAll(mutations, mutation =>
             mutation.nextSibling instanceof HTMLElement
             && classesHandlers.find(className => mutation.nextSibling.classList.contains(className))
         )

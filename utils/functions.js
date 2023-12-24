@@ -28,7 +28,7 @@ function notifiers(text, title = 'ПоискЧата') {
             gap: 5px;
             justify-content: flex-start;
         "> 
-            ${icons({ name: 'notification_outline', size: 20, fill: 'var(--vkui--color_icon_secondary)' })} 
+            ${icons({ name: 'logo', size: 20, fill: 'original' })} 
             ${title}
         </span>
     `
@@ -899,7 +899,7 @@ async function showTopViewsChats() {
 async function showAdminPanel() {
     modalPage.new(titleModalPage({
         title: 'Админ панель',
-        icon: icons({ name: 'wrench_outline', fill: 'iconsAccent', size: 28 })
+        icon: logo
     })).setLoad().visible();
 
     const html = `
@@ -934,7 +934,7 @@ async function showShop() {
         
             <div style="display: flex; flex-direction: row; align-items: center;">
 
-                <span onmouseover="showTitle(this, 'Описание товара')" id="subscription" class="group-stats vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard" title="Описание товара"> 
+                <span onmouseover="showTitle(this, 'Описание товара')" id="subscription" class="group-stats vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard"> 
                     ${icons({ name: 'star_circle_fill_yellow', size: 45, fill: 'original' })}
                     <span class="color-text-subhead" style="font-size: 12px">месяц</span>
                     <span class="button" style="font-size: 12px;">Подписка</span>
@@ -945,7 +945,7 @@ async function showShop() {
 
                 <p style="margin: 25px;"></p>
 
-                <span onmouseover="showTitle(this, 'Описание товара')" id="my_hide" class="group-stats vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard" title="Описание товара"> 
+                <span onmouseover="showTitle(this, 'Описание товара')" id="my_hide" class="group-stats vkuiInternalGroup vkuiGroup vkuiGroup--mode-card vkuiInternalGroup--mode-card vkuiGroup--padding-m Group-module__group--lRMIn Group-module__groupPaddingM--qj3wo Group-module__groupModeCard--bGIrq vkuiInternalGroupCard"> 
                     ${icons({ name: 'ghost_simple_outline', size: 48 })}
                     <span class="color-text-subhead" style="font-size: 12px">навсегда</span>
                     <span class="button" style="font-size: 12px;">Скрыть себя</span>
@@ -1281,11 +1281,62 @@ async function showProfile({ id }) {
         }
     ][userFromSC.role];
 
+    const adminMenu = `
+        ${blankSeparator('margin-top: 20px;')}
+        <span style="display: flex; padding-top: 10px; font-weight: 500; font-size: 16px; color: #99a2ad; justify-content: center;">Управление профилем</span>
+        <div style="flex-direction: row; display: flex; padding-top: 10px; justify-content: center; gap: 20px;">
+
+            ${!userFromSC.isBanned && services.profileFromSC.id !== userFromVK.id ? `
+                <div style="display: flex; justify-content: center; flex-direction: column;"> 
+                    <label style="display: flex; color: var(--vkui--color_text_secondary); align-items: center; justify-content: center;">
+                        Блокировка
+                    </label>
+                    ${blankInputSearch({
+                            id: 'reason_ban',
+                            placeholder: 'Причина блокировки', 
+                            value: '',
+                            button: {
+                                title: 'Заблокировать',
+                                icon: icons({ name: 'gavel_outline', size: 22 }),
+                                id: 'set_ban_user',
+                                data: userFromVK.id
+                            },
+                            width: '210px',
+                            iconBefore: icons({ name: 'text_style_1', size: 18, fill: 'secondary'})
+                        }) 
+                    }
+                </div>
+                `
+                : '' 
+            }
+
+            <div style="display: flex; justify-content: center; flex-direction: column;"> 
+            <label style="display: flex; color: var(--vkui--color_text_secondary); align-items: center; justify-content: center;">
+                Подписка
+            </label>
+            ${blankInputDate({
+                id: 'date_subscription',
+                width: '210px', 
+                value: moment().add(1, 'd').format('YYYY-MM-DD'),
+                button: {
+                    title: 'Выдать подписку',
+                    data: userFromVK.id,
+                    id: 'add_subscription',
+                    icon: icons({ name: 'add', size: 20 })
+                }
+            })}
+            </div>
+
+        </div>
+
+        ${blankSeparator()}
+    `
+
     modalPage.setContent(`
         <div class="${classGroup}">
 
             ${userFromSC.subscription ?
-            `
+                `
                     <span style="display: flex; flex-direction: row; font-size: 14px; color: #99a2ad; font-weight: bold; justify-content: center; gap: 5px;">
                         ${icons({ name: 'star_circle_fill_yellow', size: 16, fill: 'original' })}
                         <div>
@@ -1298,8 +1349,8 @@ async function showProfile({ id }) {
                     </span>
                     <div class="separator" style="padding-top: 5px;"></div>
                 `
-            : ''
-        }
+                : ''
+            }
         
             <div style="display: flex; align-items: center; justify-content: space-between; padding-left: 10px; padding-right: 10px;">
 
@@ -1319,10 +1370,20 @@ async function showProfile({ id }) {
                 <div style="display: flex; justify-content: center; align-items: center; flex-direction: column; width: 100%; height: 100%;">
                     ${userFromSC.isBanned ?
                         `
-                            <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #fce100; font-weight: bold;"> 
+                        <div style="display: flex; flex-direction: row; gap: 5px;">
+                            <span onmouseover="showTitle(this, '${userFromSC.ban.reason}')" style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #fce100; font-weight: bold;"> 
                                 ${icons({ name: 'user_slash_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
                                 Аккаунт заблокирован.
                             </span>
+                            ${services.profileFromSC.role > 0 ? 
+                                `
+                                    <span class="btn" onmouseover="showTitle(this, 'Разблокировать')" id="set_ban_user" data="${userFromVK.id}">
+                                        ${icons({ name: 'cross_large_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
+                                    </span>
+                                `
+                                : ''
+                            }
+                        </div>
                         `
                         : ''
                     }
@@ -1398,6 +1459,11 @@ async function showProfile({ id }) {
             </span>
 
         </div>
+
+        ${services.profileFromSC.role > 0
+            ? adminMenu 
+            : ''
+        }
 
         ${HTMLNewChat}
 
