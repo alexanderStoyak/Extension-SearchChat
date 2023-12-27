@@ -361,21 +361,84 @@ function blankNotFound(icon, text, button) {
 }
 
 
-function blankInputSearch({ id = 'search', value = '', placeholder = 'Поиск', actionFilter = undefined }) {
+function blankInputSearch({ 
+    id = 'search',
+    value = '', 
+    placeholder = 'Поиск', 
+    actionFilter = undefined,
+    iconBefore = icons({ name: 'search_stars_outline', size: 18, fill: 'secondary'}),
+    button = {
+        icon: icons({ name: 'search_stars_outline', size: 20}),
+        title: '',
+        id: 'searchChats_button',
+        data: ''
+    },
+    width = '100%',
+}) {
     return `
         <div style="display: flex; justify-content: center; align-items: center; gap: 5px; margin-bottom: 3px">
-            <input
-                style="width: 100%; font-size: 14px; font-weight: 400;"
-                class="input-text"
-                type="text"
-                id="${id}"
-                placeholder="${placeholder}"
-                autoComplete="off"
-                value="${deXSS(String(value))}"
-                maxLength="100"
-            >
-                <button title="Поиск" id="searchChats_button" class="input-button">
-                    ${icons({ name: 'search_stars_outline', size: 20})}
+            <div style="width: ${width}" class="vkuiInternalSearch vkuiSearch vkuiSearch--sizeY-compact vkuiSearch--has-after vkuiSearch--has-icon vkuiSearch--withPadding App-module__search--_fJCB">
+                <div class="vkuiSearch__field">
+                    <label class="vkuiSearch__control">
+                        ${iconBefore}
+                        <input
+                            id="${id}"
+                            class="vkuiTypography vkuiTypography--normalize vkuiTypography--weight-3 vkuiSearch__input vkuiHeadline--level-1" 
+                            type="search" 
+                            placeholder="${placeholder}"
+                            autocomplete="off" 
+                            value="${deXSS(String(value))}"
+                            maxLength="150"
+                        >
+                    </label>
+                </div>
+            </div>
+                <button data="${button.data}" ${button.title ? `onmouseover="showTitle(this, '${button.title}')"` : ''} id="${button.id}" class="input-button">
+                    ${button.icon}
+                </button>
+                ${
+                    actionFilter ? `
+                        <span class="btn" style="height: 30px; width: 20px;">
+                            ${actionFilter}
+                        </span>
+                    `
+                    : ''
+                }
+        </div>
+    `
+}
+
+
+function blankInputDate({ 
+    id = 'input-date',
+    value = '', 
+    iconBefore = icons({ name: 'star_circle_fill_yellow', size: 17, fill: 'original'}),
+    actionFilter = undefined,
+    button = {
+        icon: icons({ name: 'add', size: 20, fill: 'secondary'}),
+        title: '',
+        id: 'input-date-button',
+        data: ''
+    },
+    width = '100%',
+}) {
+    return `
+        <div style="display: flex; justify-content: center; align-items: center; gap: 5px; margin-bottom: 3px">
+            <div style="width: ${width}" class="vkuiInternalSearch vkuiSearch vkuiSearch--sizeY-compact vkuiSearch--has-after vkuiSearch--has-icon vkuiSearch--withPadding App-module__search--_fJCB">
+                <div class="vkuiSearch__field">
+                <label class="vkuiSearch__control">
+                    ${iconBefore}
+                    <input
+                        id="${id}"
+                        class="vkuiTypography vkuiTypography--normalize vkuiTypography--weight-3 vkuiSearch__input vkuiHeadline--level-1" 
+                        type="date"
+                        autocomplete="off" 
+                        value="${deXSS(String(value))}"
+                    >
+                </div>
+            </div>
+                <button data="${button.data}" ${button.title ? `onmouseover="showTitle(this, '${button.title}')"` : ''} id="${button.id}" class="input-button">
+                    ${button.icon}
                 </button>
                 ${
                     actionFilter ? `
@@ -459,7 +522,7 @@ function blankFiltersSearchChats({
 
     return `
 
-    <div style="font-size: 14px; padding: 5px; font-weight: 400;">
+    <div style="font-size: 14px; font-weight: 400;">
         
         ${blankInputSearch({
             id: 'searchChats_input',

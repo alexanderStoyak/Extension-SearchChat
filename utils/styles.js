@@ -331,6 +331,12 @@ GM_addStyle(`
             -moz-appearance: number-input;
     }
 
+    input[type="date"]::-webkit-inner-spin-button,
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        display: none;
+        -webkit-appearance: none;
+    }
+
     .quote {
         color: #99a2ad;
         padding: 1px 5px 1px 5px;
