@@ -1405,7 +1405,7 @@ async function showProfile({ id }) {
                         Интересовались профилем ${userFromSC.views.toLocaleString('ru-RU')} ${decOfNum(userFromSC.views, ['раз', 'раза', 'раз'])}.
                     </span>
 
-                    <span style="display: flex; flex-direction: row; gap: 5px; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
+                    <span ${userFromSC.lastUsedExtension ? `onmouseover="showTitle(this, 'Последние использование — ${moment(userFromSC.lastUsedExtension).format('DD.MM.YYYY HH:mm')}')"` : ''} style="display: flex; flex-direction: row; gap: 5px; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
                         ${icons({ name: 'api_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
                         ${userFromVK.sex === 1 ? 'Использовала' : 'Использовал'} расширение ${userFromSC.useExtension.toLocaleString('ru-RU')} ${decOfNum(userFromSC.useExtension, ['раз', 'раза', 'раз'])}.
                     </span>
