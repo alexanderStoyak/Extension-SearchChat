@@ -54,15 +54,9 @@ function blankSeparator(style) {
 function blankChat({ chat, creator, friends }) {
     const typeMention = creator?.first_name ? 'id' : 'club';
 
-    const creatorUrl = `https://vk.com/${typeMention}${creator.id}`;
     const nameHTML = typeMention === 'id'
         ? `<span style="max-width: 140px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${deXSS(creator.first_name)} ${deXSS(creator.last_name)}</span>`
         : `Группа «<span style="max-width: 140px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">${deXSS(creator.name)}</span>»`;
-
-    const nameString = deXSS(typeMention === 'id'
-        ? `${creator.first_name} ${creator.last_name}`
-        : `Группа «${creator.name}»`
-    );
 
     const photo = chat.photo
         ? chat.photo['200'] || chat.photo['150'] || chat.photo['50']
@@ -153,10 +147,12 @@ function blankChat({ chat, creator, friends }) {
                                 <span>
                                     ${icons({ name: 'crown_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
                                 </span>
-    
-                                <a title="${nameString}" target="_blank" href="${creatorUrl}" style="display: flex;">
-                                    ${nameHTML}
-                                </a>
+
+                                ${blankMention({
+                                    id: creator.id,
+                                    type: typeMention,
+                                    text: nameHTML
+                                })}
     
                                 <div style="width: 18px; height: 18px;" 
                                     class="vkuiAvatar vkuiImageBase vkuiImageBase--size-18 vkuiImageBase--loaded" role="img">
@@ -361,21 +357,84 @@ function blankNotFound(icon, text, button) {
 }
 
 
-function blankInputSearch({ id = 'search', value = '', placeholder = 'Поиск', actionFilter = undefined }) {
+function blankInputSearch({ 
+    id = 'search',
+    value = '', 
+    placeholder = 'Поиск', 
+    actionFilter = undefined,
+    iconBefore = icons({ name: 'search_stars_outline', size: 18, fill: 'secondary'}),
+    button = {
+        icon: icons({ name: 'search_stars_outline', size: 20}),
+        title: '',
+        id: 'searchChats_button',
+        data: ''
+    },
+    width = '100%',
+}) {
     return `
         <div style="display: flex; justify-content: center; align-items: center; gap: 5px; margin-bottom: 3px">
-            <input
-                style="width: 100%; font-size: 14px; font-weight: 400;"
-                class="input-text"
-                type="text"
-                id="${id}"
-                placeholder="${placeholder}"
-                autoComplete="off"
-                value="${deXSS(String(value))}"
-                maxLength="100"
-            >
-                <button title="Поиск" id="searchChats_button" class="input-button">
-                    ${icons({ name: 'search_stars_outline', size: 20})}
+            <div style="width: ${width}" class="vkuiInternalSearch vkuiSearch vkuiSearch--sizeY-compact vkuiSearch--has-after vkuiSearch--has-icon vkuiSearch--withPadding App-module__search--_fJCB">
+                <div class="vkuiSearch__field">
+                    <label class="vkuiSearch__control">
+                        ${iconBefore}
+                        <input
+                            id="${id}"
+                            class="vkuiTypography vkuiTypography--normalize vkuiTypography--weight-3 vkuiSearch__input vkuiHeadline--level-1" 
+                            type="search" 
+                            placeholder="${placeholder}"
+                            autocomplete="off" 
+                            value="${deXSS(String(value))}"
+                            maxLength="150"
+                        >
+                    </label>
+                </div>
+            </div>
+                <button data="${button.data}" ${button.title ? `onmouseover="showTitle(this, '${button.title}')"` : ''} id="${button.id}" class="input-button">
+                    ${button.icon}
+                </button>
+                ${
+                    actionFilter ? `
+                        <span class="btn" style="height: 30px; width: 20px;">
+                            ${actionFilter}
+                        </span>
+                    `
+                    : ''
+                }
+        </div>
+    `
+}
+
+
+function blankInputDate({ 
+    id = 'input-date',
+    value = '', 
+    iconBefore = icons({ name: 'star_circle_fill_yellow', size: 17, fill: 'original'}),
+    actionFilter = undefined,
+    button = {
+        icon: icons({ name: 'add', size: 20, fill: 'secondary'}),
+        title: '',
+        id: 'input-date-button',
+        data: ''
+    },
+    width = '100%',
+}) {
+    return `
+        <div style="display: flex; justify-content: center; align-items: center; gap: 5px; margin-bottom: 3px">
+            <div style="width: ${width}" class="vkuiInternalSearch vkuiSearch vkuiSearch--sizeY-compact vkuiSearch--has-after vkuiSearch--has-icon vkuiSearch--withPadding App-module__search--_fJCB">
+                <div class="vkuiSearch__field">
+                <label class="vkuiSearch__control">
+                    ${iconBefore}
+                    <input
+                        id="${id}"
+                        class="vkuiTypography vkuiTypography--normalize vkuiTypography--weight-3 vkuiSearch__input vkuiHeadline--level-1" 
+                        type="date"
+                        autocomplete="off" 
+                        value="${deXSS(String(value))}"
+                    >
+                </div>
+            </div>
+                <button data="${button.data}" ${button.title ? `onmouseover="showTitle(this, '${button.title}')"` : ''} id="${button.id}" class="input-button">
+                    ${button.icon}
                 </button>
                 ${
                     actionFilter ? `
@@ -459,7 +518,7 @@ function blankFiltersSearchChats({
 
     return `
 
-    <div style="font-size: 14px; padding: 5px; font-weight: 400;">
+    <div style="font-size: 14px; font-weight: 400;">
         
         ${blankInputSearch({
             id: 'searchChats_input',
@@ -501,8 +560,8 @@ function blankFiltersSearchChats({
                                         class="vkuiAvatar vkuiImageBase vkuiImageBase--size-18 vkuiImageBase--loaded" role="img">
                                         <img class="vkuiImageBase__img" src="${user.photo_100 || ''}">
                                     </div>
-
-                                    <a id="get_profile" title="${nameString}" style="display: flex;">
+                        
+                                    <a id="get_profile" onmouseover="showTitle(this, 'Профиль в «ПоискЧата» — ${nameString}')" style="display: flex;">
                                         ${nameHTML}
                                     </a>
         
@@ -604,7 +663,7 @@ function blankFiltersSearchChats({
 
 function blankUsersStack(arrayInfoFriends) {
     return arrayInfoFriends.map((friend, index) => {
-        return `<svg xmlns="http://www.w3.org/2000/svg" className="UsersStack-module__photo--iCBco" aria-hidden="true" style="width: 24px; height: 24px">
+        return `<svg onmouseover="showTitle(this, '${friend.name}')" xmlns="http://www.w3.org/2000/svg" className="UsersStack-module__photo--iCBco" aria-hidden="true" style="width: 24px; height: 24px">
         <a href="https://vk.com/id${friend.id}" target="_blank">
         <defs>
             ${index === 0
@@ -620,7 +679,6 @@ function blankUsersStack(arrayInfoFriends) {
             <image href="${friend.photo}" width="24" height="24"/>
             <use href="#:r0:${index}" fill="none" className="SVGStackMask-module__useElement--usICi"/>
         </g>
-        <title>${friend.name}</title>
         </a>
     </svg>`
 
@@ -680,4 +738,18 @@ function blankActionsMenu (label, content) {
             </div>
         </div>
     </div>`;
+}
+
+
+function blankMention ({id, type, text}) {
+    return `<a 
+        href="/${type}${id}" 
+        mention=""
+        mention_id="${type}${id}" 
+        onclick="return mentionClick(this, event)" 
+        onmouseover="mentionOver(this)"
+        style="display: flex;"
+    >
+        ${text}
+    </a>`
 }

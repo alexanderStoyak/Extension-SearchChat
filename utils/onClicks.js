@@ -330,6 +330,54 @@ function onClicks(fromWhichFunction, args) {
                     button.onclick = () =>
                         showHistoryChat(chat, () => showProfile({ id }), friends)
             );
+
+            const buttonForBan = document.getElementById('set_ban_user');
+
+            if (buttonForBan) {
+                buttonForBan.onclick = async () => {
+                    const id = buttonForBan.getAttribute('data');
+                    let reason = document.getElementById('reason_ban')?.value;
+
+                    if (reason === '') {
+                        reason = 'Заблокирован по решению администратора';
+                    }
+
+                    const response = await SCAPI.call({
+                        method: 'extension.userSetBan',
+                        parameters: {
+                            userId: +id,
+                            reason: reason
+                        }
+                    });
+
+                    return notifiers(`Аккаунт ID: ${id} ${response.type === 'banned' ? 'заблокирован' : 'разблокирован'}`);
+                };
+            };
+
+            const buttonForSubscribe = document.getElementById('add_subscription');
+
+            if (buttonForSubscribe) {
+                buttonForSubscribe.onclick = async () => {
+                    const id = buttonForSubscribe.getAttribute('data');
+                    let date = document.getElementById('date_subscription')?.value;
+
+                    if (date === '') {
+                        date = +new Date();
+                    }
+
+                    date = +new Date(date);
+
+                    const response = await SCAPI.call({
+                        method: 'extension.setUserSubscription',
+                        parameters: {
+                            userId: +id,
+                            expired: date
+                        }
+                    });
+
+                    return notifiers(`Выдана подписка ID: ${id} до ${moment(response.expired).format('DD.MM.YYYY HH:mm')}`);
+                };
+            };
         },
     })[fromWhichFunction](args);
 }
