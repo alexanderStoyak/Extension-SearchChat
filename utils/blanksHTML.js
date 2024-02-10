@@ -362,9 +362,9 @@ function blankInputSearch({
     value = '', 
     placeholder = 'Поиск', 
     actionFilter = undefined,
-    iconBefore = icons({ name: 'search_stars_outline', size: 18, fill: 'secondary'}),
+    iconBefore = icons({ name: 'search_stars_outline', size: 18, fill: 'secondary' }),
     button = {
-        icon: icons({ name: 'search_stars_outline', size: 20}),
+        icon: icons({ name: 'search_stars_outline', size: 20 }),
         title: '',
         id: 'searchChats_button',
         data: ''
@@ -375,31 +375,34 @@ function blankInputSearch({
         <div style="display: flex; justify-content: center; align-items: center; gap: 5px; margin-bottom: 3px">
             <div style="width: ${width}" class="vkuiInternalSearch vkuiSearch vkuiSearch--sizeY-compact vkuiSearch--has-after vkuiSearch--has-icon vkuiSearch--withPadding App-module__search--_fJCB">
                 <div class="vkuiSearch__field">
-                    <label class="vkuiSearch__control">
+                    <label for="${id}" class="vkuiSearch__label">
+                        ${placeholder}
+                    </label>
+                    <div class="vkuiSearch__input">
                         ${iconBefore}
-                        <input
+                        <input 
                             id="${id}"
-                            class="vkuiTypography vkuiTypography--normalize vkuiTypography--weight-3 vkuiSearch__input vkuiHeadline--level-1" 
-                            type="search" 
-                            placeholder="${placeholder}"
+                            class="vkuiTypography vkuiTypography--normalize vkuiTypography--weight-3 vkuiSearch__nativeInput vkuiHeadline--sizeY-compact vkuiHeadline--level-1" 
+                            type="search"
+                            placeholder="${placeholder}" 
                             autocomplete="off" 
                             value="${deXSS(String(value))}"
                             maxLength="150"
                         >
-                    </label>
+                    </div>
                 </div>
             </div>
-                <button data="${button.data}" ${button.title ? `onmouseover="showTitle(this, '${button.title}')"` : ''} id="${button.id}" class="input-button">
-                    ${button.icon}
-                </button>
-                ${
-                    actionFilter ? `
-                        <span class="btn" style="height: 30px; width: 20px;">
-                            ${actionFilter}
-                        </span>
-                    `
-                    : ''
-                }
+            <button data="${button.data}" ${button.title ? `onmouseover="showTitle(this, '${button.title}')"` : ''} id="${button.id}" class="input-button">
+                ${button.icon}
+            </button>
+            ${
+                actionFilter ? `
+                    <span class="btn" style="height: 30px; width: 20px;">
+                        ${actionFilter}
+                    </span>
+                `
+                : ''
+            }
         </div>
     `
 }
@@ -422,11 +425,11 @@ function blankInputDate({
         <div style="display: flex; justify-content: center; align-items: center; gap: 5px; margin-bottom: 3px">
             <div style="width: ${width}" class="vkuiInternalSearch vkuiSearch vkuiSearch--sizeY-compact vkuiSearch--has-after vkuiSearch--has-icon vkuiSearch--withPadding App-module__search--_fJCB">
                 <div class="vkuiSearch__field">
-                <label class="vkuiSearch__control">
+                <label class="vkuiSearch__input">
                     ${iconBefore}
                     <input
                         id="${id}"
-                        class="vkuiTypography vkuiTypography--normalize vkuiTypography--weight-3 vkuiSearch__input vkuiHeadline--level-1" 
+                        class="vkuiTypography vkuiTypography--normalize vkuiTypography--weight-3 vkuiSearch__nativeInput vkuiHeadline--sizeY-compact vkuiHeadline--level-1" 
                         type="date"
                         autocomplete="off" 
                         value="${deXSS(String(value))}"

@@ -1,7 +1,7 @@
 const hashCode = s => s.split('').reduce((a, b) => { a = ((a << 5) - a) + b.charCodeAt(0); return a & a }, 0);
 const errors = {
     18: {
-        icon: icons({ name: 'star_circle_fill_yellow', realSize: 16, size: 86, fill: 'original' }),
+        icon: icons({ name: 'star_circle_fill_yellow', size: 86, fill: 'original' }),
         title: 'У Вас включен один или несколько платных фильтров, которые требуют подписку',
         button: {
             id: 'shop',
@@ -9,7 +9,7 @@ const errors = {
         }
     },
     25: {
-        icon: icons({ name: 'block_outline', realSize: 28, size: 86 }),
+        icon: icons({ name: 'block_outline', size: 86 }),
         title: 'Аккаунт заблокирован. Если Вы считаете, что блокировка была ошибочной, напишите об этом в наш чат',
         button: {
             id: 'help_chat',
@@ -17,12 +17,12 @@ const errors = {
         }
     },
     19: {
-        icon: icons({ name: 'privacy_outline', realSize: 28, size: 86 }),
+        icon: icons({ name: 'privacy_outline', size: 86 }),
         title: 'Ошибка доступа',
         button: undefined
     },
     27: {
-        icon: icons({ name: 'wrench_outline', realSize: 28, size: 86 }),
+        icon: icons({ name: 'wrench_outline', size: 86 }),
         title: 'Этот раздел временно недоступен из-за проведения технических работ',
         button: undefined
     }
@@ -159,7 +159,7 @@ function errorAPI(_error) {
     }
 
     const error = errors[_error.code] ?? {
-        icon: icons({ name: 'sad_face_outline', realSize: 28, size: 86 }),
+        icon: icons({ name: 'sad_face_outline', size: 86 }),
         title: 'Что-то пошло не так..',
         button: {
             id: 'restart_page',
@@ -178,6 +178,6 @@ function errorAPI(_error) {
     onClicks('error', {});
 
     return {
-        accessDenied: true 
-    }
+        accessDenied: true
+    };
 }
