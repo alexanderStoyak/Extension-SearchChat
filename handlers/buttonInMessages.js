@@ -1,10 +1,10 @@
-function createActions ({id, title, innerHTML}) {
+function createActions({ id, title, innerHTML }) {
     const action = document.createElement('span');
 
     action.id = id;
     action.className = 'im-mess--reaction'
     action.role = 'link';
-    action.title = title;
+    action.setAttribute('onmouseover', `showTitle(this, '${title}')`);
     action.innerHTML = innerHTML;
 
     return action;
@@ -20,14 +20,21 @@ async function buttonInMessages(peerHistory) {
 
             if (!action.innerHTML.includes('id="action-for-search-chats"')) {
                 const [{ href }] = message.getElementsByClassName('im-mess-stack--lnk');
-                const newAction = createActions({
+                const newActioForChats = createActions({
                     id: 'action-for-search-chats',
                     title: 'Просмотр чатов',
                     innerHTML: icons({ name: 'chats', fill: 'secondary', size: 16 })
                 });
-                newAction.onclick = () => searchChats(filters.link = href);
+                newActioForChats.onclick = () => searchChats(filters.link = href);
+                const newActionForProfile = createActions({
+                    id: 'action-for-search-chats',
+                    title: 'Профиль в «ПоискЧата»',
+                    innerHTML: icons({ name: 'user_square', fill: 'secondary', size: 16 })
+                });
+                newActionForProfile.onclick = () => showProfile({ id: href });
 
-                action.prepend(newAction);
+                action.prepend(newActioForChats);
+                action.prepend(newActionForProfile);
             }
         }
     }

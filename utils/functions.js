@@ -1456,7 +1456,7 @@ async function showProfile({ id }) {
             <div class="ver-separator"></div>
             
             <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold; padding-right: 5%;"> 
-                ${icons({ name: 'view', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
+                ${icons({ name: 'view_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
                 ${userFromVK.sex === 1 ? 'Просмотрела' : 'Просмотрел'} ${userFromSC.viewChats.self.toLocaleString('ru-RU')} ${decOfNum(userFromSC.viewChats.self, ['чат', 'чата', 'чатов'])}
             </span>
 
@@ -1479,7 +1479,7 @@ async function showProfile({ id }) {
             <div class="ver-separator"></div>
             
             <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold; padding-right: 5%;"> 
-                ${icons({ name: 'door_arrow_right_outline_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
+                ${icons({ name: 'door_arrow_right_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
                 ${userFromVK.sex === 1 ? 'Вышла' : 'Вышел'} из ${userFromSC.stats.exited.toLocaleString('ru-RU')} ${decOfNum(userFromSC.stats.exited, ['чата', 'чатов', 'чатов'])}
             </span>
         </div>

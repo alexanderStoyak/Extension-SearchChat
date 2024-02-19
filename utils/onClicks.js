@@ -269,11 +269,11 @@ function onClicks(fromWhichFunction, args) {
         'showDescriptionProduct': () => {
             (document.getElementById('back_button_modal_page') ?? {}).onclick = showShop;
 
-            const donats = document.getElementsByClassName('donate');
+            const donuts = document.getElementsByClassName('donate');
 
-            for (const donat of donats) {
-                donat.onclick = () => {
-                    const data = JSON.parse(donat.getAttribute('data'));
+            for (const donut of donuts) {
+                donut.onclick = () => {
+                    const data = JSON.parse(donut.getAttribute('data'));
                     
                     redirectPost('https://yoomoney.ru/quickpay/confirm', {
                         receiver: 4100117442562201,

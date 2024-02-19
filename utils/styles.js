@@ -353,11 +353,6 @@ GM_addStyle(`
         align-items: center; 
         flex-direction: column;
     }
-
-    .test1 > .test {
-        overflow: visible; 
-        text-wrap: balance;
-    }
 `)
 };
 setStyles();
