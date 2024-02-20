@@ -19,6 +19,7 @@ async function buttonInMessages(peerHistory) {
         for (const action of actions) {
 
             if (!action.innerHTML.includes('id="action-for-search-chats"')) {
+
                 const [{ href }] = message.getElementsByClassName('im-mess-stack--lnk');
                 const newActioForChats = createActions({
                     id: 'action-for-search-chats',
@@ -26,6 +27,8 @@ async function buttonInMessages(peerHistory) {
                     innerHTML: icons({ name: 'chats', fill: 'secondary', size: 16 })
                 });
                 newActioForChats.onclick = () => searchChats(filters.link = href);
+
+
                 const newActionForProfile = createActions({
                     id: 'action-for-search-chats',
                     title: 'Профиль в «ПоискЧата»',
@@ -33,8 +36,10 @@ async function buttonInMessages(peerHistory) {
                 });
                 newActionForProfile.onclick = () => showProfile({ id: href });
 
+
                 action.prepend(newActioForChats);
                 action.prepend(newActionForProfile);
+
             }
         }
     }

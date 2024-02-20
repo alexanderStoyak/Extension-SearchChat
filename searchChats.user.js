@@ -4,7 +4,7 @@
 // @description  Поисковик бесед ВКонтакте в Вашем браузере
 // @author       Alexander Stoyak
 // @license      MIT
-// @icon         file://C:/Users/sasha/OneDrive/Документы/Extension-SearchChat/icons/logo.png
+// @icon         https://github.com/alexanderStoyak/Extension-SearchChat/raw/main/icons/logo.png
 // @match        https://vk.com/*
 
 // @connect      vk.com
@@ -18,25 +18,25 @@
 // @connect      api.search-for-chats-of-vk.ru
 // @connect      momentjs.com
 
-// @require      file://C:/Users/sasha/OneDrive/Документы/Extension-SearchChat/utils/classes.js
+// @require      https://github.com/alexanderStoyak/Extension-SearchChat/raw/main/utils/classes.js
 
-// @require      file://C:/Users/sasha/OneDrive/Документы/Extension-SearchChat/main.js
+// @require      https://github.com/alexanderStoyak/Extension-SearchChat/raw/main/main.js
 
-// @require      file://C:/Users/sasha/OneDrive/Документы/Extension-SearchChat/utils/icons.js
+// @require      https://github.com/alexanderStoyak/Extension-SearchChat/raw/main/utils/icons.js
 
-// @require      file://C:/Users/sasha/OneDrive/Документы/Extension-SearchChat/handlers/buttonInProfiles.js
-// @require      file://C:/Users/sasha/OneDrive/Документы/Extension-SearchChat/handlers/buttonInMessages.js
-// @require      file://C:/Users/sasha/OneDrive/Документы/Extension-SearchChat/handlers/buttonInProfilesForGroups.js
-// @require      file://C:/Users/sasha/OneDrive/Документы/Extension-SearchChat/handlers/buttonInDialogsSearch.js
-// @require      file://C:/Users/sasha/OneDrive/Документы/Extension-SearchChat/handlers/buttonsInTopProfileMenu.js
+// @require      https://github.com/alexanderStoyak/Extension-SearchChat/raw/main/handlers/buttonInProfiles.js
+// @require      https://github.com/alexanderStoyak/Extension-SearchChat/raw/main/handlers/buttonInMessages.js
+// @require      https://github.com/alexanderStoyak/Extension-SearchChat/raw/main/handlers/buttonInProfilesForGroups.js
+// @require      https://github.com/alexanderStoyak/Extension-SearchChat/raw/main/handlers/buttonInDialogsSearch.js
+// @require      https://github.com/alexanderStoyak/Extension-SearchChat/raw/main/handlers/buttonsInTopProfileMenu.js
 
-// @require      file://C:/Users/sasha/OneDrive/Документы/Extension-SearchChat/utils/blanksHTML.js
-// @require      file://C:/Users/sasha/OneDrive/Документы/Extension-SearchChat/utils/request.js
-// @require      file://C:/Users/sasha/OneDrive/Документы/Extension-SearchChat/utils/services.js
-// @require      file://C:/Users/sasha/OneDrive/Документы/Extension-SearchChat/utils/styles.js
-// @require      file://C:/Users/sasha/OneDrive/Документы/Extension-SearchChat/utils/functions.js
-// @require      file://C:/Users/sasha/OneDrive/Документы/Extension-SearchChat/utils/API.js
-// @require      file://C:/Users/sasha/OneDrive/Документы/Extension-SearchChat/utils/onClicks.js
+// @require      https://github.com/alexanderStoyak/Extension-SearchChat/raw/main/utils/blanksHTML.js
+// @require      https://github.com/alexanderStoyak/Extension-SearchChat/raw/main/utils/request.js
+// @require      https://github.com/alexanderStoyak/Extension-SearchChat/raw/main/utils/services.js
+// @require      https://github.com/alexanderStoyak/Extension-SearchChat/raw/main/utils/styles.js
+// @require      https://github.com/alexanderStoyak/Extension-SearchChat/raw/main/utils/functions.js
+// @require      https://github.com/alexanderStoyak/Extension-SearchChat/raw/main/utils/API.js
+// @require      https://github.com/alexanderStoyak/Extension-SearchChat/raw/main/utils/onClicks.js
 
 // @require      https://momentjs.com/downloads/moment-with-locales.js
 
@@ -47,8 +47,8 @@
 // @grant        GM_addStyle
 // @grant        GM_xmlhttpRequest
 
-// @updateURL    file://C:/Users/sasha/OneDrive/Документы/Extension-SearchChat/searchChats.user.js
-// @downloadURL  file://C:/Users/sasha/OneDrive/Документы/Extension-SearchChat/searchChats.user.js
+// @updateURL    https://github.com/alexanderStoyak/Extension-SearchChat/raw/main/searchChats.user.js
+// @downloadURL  https://github.com/alexanderStoyak/Extension-SearchChat/raw/main/searchChats.user.js
 
 // @version      5.5.15
 
