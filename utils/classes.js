@@ -7,9 +7,10 @@ class Filters {
         this.sortField = 'added';
         this.sortOrder = 'desc';
         this.minUsers = 0;
-        this.maxUsers = 200000;
+        this.maxUsers = 200_000;
         this.isHistory = false;
         this.isActive = false;
+        this.isArchive = false;
     }
 
     remove() {
@@ -19,9 +20,11 @@ class Filters {
         this.sortField = 'added';
         this.sortOrder = 'desc';
         this.minUsers = 0;
-        this.maxUsers = 200000;
+        this.maxUsers = 200_000;
         this.isHistory = false;
         this.isActive = false;
+        this.isActive = false;
+        this.isArchive = false;
     }
 }
 const filters = new Filters();

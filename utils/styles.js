@@ -246,8 +246,7 @@ GM_addStyle(`
         justify-content: center; 
         cursor: default;
         transition: all 0.2s ease;
-        height: 100%;
-        width: 100%;
+        height: fit-content;
         padding-left: 4px;
         padding-right: 4px;
         border: none;

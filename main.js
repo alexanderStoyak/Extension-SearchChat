@@ -1,13 +1,12 @@
 const classesHandlers = [
     'im-mess',
     '_sticker_hints',
-    'post_field_warning',
-    'chat_onl_wrap',
     'page_block',
     'Profile',
     'nim-conversation-search-row',
     'idd_selected_value',
-    'im-mess--check'
+    'im-mess--check',
+    'im-page--title'
 ];
 
 
@@ -15,7 +14,10 @@ function findAll(array, predicate) {
     const found = [];
 
     for (const current of array) {
-        if (predicate(current)) {
+        if (
+            predicate(current) &&
+            !found.find(x => JSON.stringify(x) === JSON.stringify(current))
+        ) {
             found.push(current);
         }
     }
@@ -88,7 +90,6 @@ const observeChange = async () => {
                     continue;
                 }
 
-
                 if (classList.contains('page_block')) {
                     const pageActions = document.getElementById('page_actions');
 
@@ -115,7 +116,7 @@ const observeChange = async () => {
                     }
                 }
 
-                if (classList.contains('im-mess')) {
+                if (classList.contains('im-mess--check') || classList.contains('im-page--title')) {
                     const [peerHistory] = document.getElementsByClassName('_im_peer_history');
 
                     if (peerHistory) {

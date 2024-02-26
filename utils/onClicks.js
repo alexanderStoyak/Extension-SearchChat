@@ -91,9 +91,21 @@ function onClicks(fromWhichFunction, args) {
                 searchChats({});
             }
 
+            (document.getElementById('filter_is_achive') ?? {}).onclick = () => {
+                if (load.chats) return;
+                filters.isArchive = !filters.isArchive;
+                searchChats({});
+            }
+
             (document.getElementById('filter_set_sort_order') ?? {}).onclick = () => {
                 if (load.chats) return;
                 filters.sortOrder = filters.sortOrder === 'desc' ? 'asc' : 'desc';
+                searchChats({});
+            }
+
+            (document.getElementById('filters_clear') ?? {}).onclick = () => {
+                if (load.chats) return;
+                filters.remove();
                 searchChats({});
             }
 
@@ -378,6 +390,14 @@ function onClicks(fromWhichFunction, args) {
                     return notifiers(`Выдана подписка ID: ${id} до ${moment(response.expired).format('DD.MM.YYYY HH:mm')}`);
                 };
             };
+
+            for (const searchText of document.getElementsByClassName('profile_copy_text_last_search')) {
+                searchText.onclick = () => {
+                    const copyText = searchText.innerHTML;
+                    navigator.clipboard.writeText(copyText);
+                    notifiers('Скопировано!');
+                }
+            }
         },
     })[fromWhichFunction](args);
 }

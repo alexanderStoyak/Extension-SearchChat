@@ -65,7 +65,17 @@ function buttonsInTopProfileMenu(topProfileMenu) {
             </a>
             <a id="remove_token_vk" class="top_profile_mrow">
                 <span style="display: flex; align-items: center; gap: 5px;">
-                    ${icons({ name: 'refresh_outline', fill: 'var(--vkui--color_icon_accent)', size: 22 })} Обновить токен VK
+                    ${icons({ name: 'switch_outline', fill: 'var(--vkui--color_icon_accent)', size: 22 })} Обновить токен VK
+                </span>
+            </a>
+            <a target="_blank" href="https://github.com/alexanderStoyak/Extension-SearchChat/raw/main/searchChats.user.js" class="top_profile_mrow">
+                <span style="display: flex; align-items: center; gap: 5px;">
+                    ${icons({ name: 'gear_outline', fill: 'var(--vkui--color_icon_accent)', size: 22 })} Обновить расширение
+                </span>
+            </a>
+            <a target="_blank" href="https://t.me/chatsvkbot_chat" class="top_profile_mrow">
+                <span style="display: flex; align-items: center; gap: 5px;">
+                    ${icons({ name: 'location_outline', fill: 'var(--vkui--color_icon_accent)', size: 22 })} Чат в телеграм
                 </span>
             </a>
             ${services.profileFromSC.role > 0 ? adminButtonInTopProfileMenu() : ''}

@@ -252,6 +252,7 @@ async function searchChats({ isCurrent = false, offset = 0 }) {
         minMembers: filters.minUsers,
         isHistory: filters.isHistory,
         isActive: filters.isActive,
+        isArchive: filters.isArchive,
         offset,
     }
 
@@ -347,10 +348,40 @@ async function authModalPage() {
     const html = `
             <div class="ProfileModalInfoHeadline" style="padding: 10px;">
                 <span style="display: block; gap: 5px; text-align: center; font-size: 13px;">
-                    Расширение «ПоискЧата» — это инструмент, разработанный для удобного поиска чатов в социальной сети ВКонтакте. Оно предоставляет возможность пользователям быстро найти нужный чат, используя различные фильтры и параметры.
-                    <br/>В настоящее время расширение находится на стадии активной разработки, поэтому мы регулярно выпускаем обновления, внедряем новые функции и исправляем ошибки. Чтобы быть в курсе всех последних обновлений, рекомендуем подписаться на наш <a style="color: #71aaeb;" target="_blank" href="${services.telegramChannelURL}">телеграм-канал</a>, где мы делимся информацией о новых возможностях расширения.
-                    <br/>С помощью расширения Вы можете осуществлять поиск чатов по их названиям, что позволяет быстро найти нужную беседу. Кроме того, Вы можете использовать различные фильтры для уточнения результатов поиска. Например, Вы можете фильтровать чаты по участникам, чтобы найти только те, в которых участвует определенный пользователь или группа людей. Также есть возможность фильтровать чаты по Вашим друзьям, чтобы быстро найти те беседы, в которых они присутствуют.
-                    <br/>
+                    <b>Расширение «ПоискЧата»</b> — это инструмент, разработанный для удобного поиска чатов в социальной сети ВКонтакте. Оно предоставляет возможность пользователям быстро найти нужный чат, используя различные фильтры и параметры.
+
+                    ${blankSeparator('margin-top: 12px; margin-bottom: 12px;')}
+
+                    <b style="font-width: 20px">
+                        Правила пользования бота, API и расширения.
+                    </b>
+
+                    <br style="margin-top: 6px; margin-bottom: 6px;">
+
+                    <span style="text-transform: uppercase;">
+                        Администрация бота, API и/или расширения предоставляет Вам доступ к использованию бота, API и/или расширения и его функциональности на условиях, являющихся предметом настоящих правил пользования бота, API и/или расширения. В этой связи Вам необходимо внимательно ознакомиться с условиями настоящих Правил, которые рассматриваются Администрацией бота, API и/или расширения как публичная оферта в соответствии со ст. 437 Гражданского кодекса Российской Федерации.
+                    </span>
+
+                    <br style="margin-top: 6px; margin-bottom: 6px;"><br/>
+
+                    <b>1. Статус правил пользования бота, API и/или расширения «ПоискЧата».</b>
+                    <br/>1.1 Пользователь обязан полностью ознакомиться с настоящими правилами до момента регистрации в боте, API и/или расширении. Регистрация или начало использования Пользователя бота, API и/или расширения означает полное и безоговорочное принятие пользователем настоящих правил в соответствии со ст. 438 Гражданского кодекса Российской Федерации.
+                    
+                    <br style="margin-top: 6px; margin-bottom: 6px;"><br/>
+
+                    <b>2. Функционирование бота, API и/или расширения и ответственность при его/их использовании.</b>
+                    
+                    <br/><b>2</b>.1. Администрация бота, API и/или расширения не занимается предварительной модерацией действий пользователей и предпринимает действия по защите прав и интересов лиц и обеспечению соблюдения требований законодательства Российской Федерации только после обращения заинтересованного лица к Администрация бота, API и/или расширения в установленном порядке.
+                    <br/><b>2</b>.2. Администрация бота, API и/или расширения не несёт ответственности за нарушение пользователем настоящих правил и/или законодательства Российской Федерации и оставляет за собой право по своему собственному усмотрению, а также при получении информации от других пользователей либо третьих лиц о нарушении пользователем настоящих правил и/или законодательства Российской Федерации, изменять (модерировать), блокировать или удалять любую информацию, нарушающую запреты, установленные настоящими правилами и/или законодательством Российской Федерации, приостанавливать, ограничивать или прекращать доступ пользователя ко всем или к любому из разделов или функциональности бота, API и/или расширения, исключать из системы поиска и/или заблокировать пользователя в любое время по любой причине или без объяснения причин, с предварительным уведомлением или без такового. Администрация бота, API и/или расширения закрепляет за собой право заблокировать персональный аккаунт пользователя и/или приостановить, ограничить или прекратить доступ пользователя к любой из функциональных возможностей бота, API и/или расширения, если Администрация обнаружит, что по её мнению, пользователь представляет угрозу для бота, API и/или расширения и/или его пользователей. Наряду с указанным в настоящем пункте выше Администрация бота, API и/или расширения вправе блокировать и/или удалять доступ к API, ограничивать доступ к API, сайтам, приложениям, третьим лицам, иным сторонним ресурсам, блокировать и/или удалять, в случае если у Администрации бота, API и/или расширения появятся основания полагать, что такой сайт, приложение, третье лицо, иной ресурс, использующие API представляют или могут представлять угрозу для нормальной работы бота, API и/или расширения и его пользователей. Администрация бота, API и/или расширения реализует описанные выше меры без ответственности за возможные негативные последствия таких мер для пользователя или третьих лиц.
+                    <br/><b>2</b>.3. Ответственность несёт владелец аккаунта и/или токена API, независимо от того, кто совершал действия под этим аккаунтом и/или токеном API.
+
+                    <br style="margin-top: 6px; margin-bottom: 6px;"><br/>
+
+                    <b>3. Заключительные положения.</b>
+
+                    <br/><b>3</b>.1 Настоящие Правила вступают в силу для Пользователя с момента его присоединения к ним и действуют в течение неопределённого срока.
+                    <br/><b>3</b>.2 Если по тем или иным причинам одно или несколько положений настоящих правил будут признаны недействительными или не имеющими юридической силы, это не оказывает влияния на действительность или применимость остальных положений.
+                    <br/><b>3</b>.3 Настоящие Правила могут быть изменены и/или дополнены Администрацией бота, API и/или расширения в одностороннем порядке с уведомления или без такового.
                     
                     ${blankSeparator('margin-top: 12px; margin-bottom: 12px;')}
                     <span style="color: ${appearance.get() === 'dark' ? '#f6c254' : '#df9700'};">
@@ -359,29 +390,24 @@ async function authModalPage() {
           
                     ${blankSeparator('margin-top: 12px; margin-bottom: 12px;')}
                     <span> 
-                        Ваш токен будет сохранен только на Вашем компьютере (локально) и будет действителен только в течение 24 часов. По истечении этого времени будет получен новый токен, чтобы гарантировать его актуальность во время использования расширения. Таким образом, фактическое хранение токена на сервере невозможно. 
+                        Ваш токен будет сохранен только на Вашем компьютере (локально) и будет действителен только в течение 24 часов. По истечении этого времени будет получен новый токен, чтобы гарантировать его актуальность и безопасность во время использования расширения. Таким образом, фактическое хранение токена на сервере или в руках злоумышленника невозможно. 
                     </span>
                     
                     ${blankSeparator('margin-top: 12px; margin-bottom: 12px;')}
-                    Пожалуйста, нажмите на кнопку: 
-                    <span style="
-                        display: inline-block; 
-                        font-weight: 500; 
-                        padding: 0 .5em; 
-                        line-height: 1.5em; 
-                        max-width: max-content; 
-                        border-radius: 50px;"
-                        id="button_auth_for_modal_page"
-                        class="btn"
-                    >
-                        Подтвердить регистрацию
-                    </span>
+                    Пожалуйста, нажмите на кнопку — подтвердить регистрацию
                     <br/>В ином случае функционал расширения не будет работать.
+                    <div style="padding-top: 15px;">
+                        <button id="button_auth_for_modal_page" class="FlatButton FlatButton--primary FlatButton--size-m" type="button">
+                            <span class="FlatButton__in">
+                                <span style="font-weight: 600;" class="FlatButton__content">Подтвердить регистрацию</span>
+                            </span>
+                        </button>
+                    </div>
                 </span>
             </div>
     `;
 
-    modalPage.new(titleModalPage({ before: 'Авторизация' })).setContent(html).visible();
+    modalPage.new(titleModalPage({ before: 'Регистрация' })).setContent(html).visible();
 
 
     const buttonAuthForModalPage = document.getElementById('button_auth_for_modal_page');
@@ -399,7 +425,7 @@ async function authModalPage() {
         setTimeout(() => location.reload(), 2_000);
     };
 
-    GM_setValue('timeStampAuthModalPage', services.timeStampAuthModalPage = Infinity);
+    GM_setValue('timeStampAuthModalPage', services.timeStampAuthModalPage = Date.now() + 60 * 60 * 1_000);
 }
 
 
@@ -419,8 +445,8 @@ async function showUsersChat(indexChatOrChat, friends, backFunction, offset = 0,
 
     const title = subTitle => titleModalPage({
         icon: `
-            <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px;">
-                ${icons({ name: 'browser_back', size: 24, fill: 'var(--vkui--color_icon_secondary)' })}
+            <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px; height: 90%;">
+                ${icons({ name: 'browser_back', size: 24 })}
             </span>
         `,
         title: 'Участники',
@@ -514,7 +540,7 @@ async function showUsersChat(indexChatOrChat, friends, backFunction, offset = 0,
                 `
                     ${blankPages({ found: membersCount, inOnePage: sortedMembersList.length, offset, currentPage, totalPage })}
                     <span style="display: flex; gap: 5px;">
-                        ${icons({ name: 'users_outline', size: 18, fill: 'var(--vkui--color_icon_secondary)' })}
+                        ${icons({ name: 'users_outline', size: 18 })}
                         <span style="padding-right: 10px; color: #99a2ad;">
                             ${onlineMembers.toLocaleString('ru-RU')} ${decOfNum(onlineMembers, ['участник', 'участника', 'участников'])} в сети
                         </span>
@@ -685,8 +711,8 @@ async function showStatistics() {
 async function showTopUsers() {
     modalPage.new(titleModalPage({
         icon: `
-            <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px;">
-                ${icons({ name: 'browser_back', size: 24, fill: 'var(--vkui--color_icon_secondary)' })}
+            <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px; height: 90%;">
+                ${icons({ name: 'browser_back', size: 24 })}
             </span>
         `,
         title: 'Топ',
@@ -723,8 +749,8 @@ async function showTopUsers() {
 async function showTopGroups() {
     modalPage.new(titleModalPage({
         icon: `
-            <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px;">
-                ${icons({ name: 'browser_back', size: 24, fill: 'var(--vkui--color_icon_secondary)' })}
+            <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px; height: 90%;">
+                ${icons({ name: 'browser_back', size: 24 })}
             </span>
         `,
         title: 'Топ',
@@ -859,8 +885,8 @@ async function showTopViewsChats() {
         title: 'Админ панель',
         before: 'Просмотры',
         icon: `
-            <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px;">
-                ${icons({ name: 'browser_back', size: 24, fill: 'var(--vkui--color_icon_secondary)' })}
+            <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px; height: 90%;">
+                ${icons({ name: 'browser_back', size: 24 })}
             </span>
         `
     })).setLoad().visible();
@@ -1076,8 +1102,8 @@ function showDescriptionProduct(productId) {
 
     modalPage.new(titleModalPage({
         icon: `
-            <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px;">
-                ${icons({ name: 'browser_back', size: 24, fill: 'var(--vkui--color_icon_secondary)' })}
+            <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px; height: 90%;">
+                ${icons({ name: 'browser_back', size: 24 })}
             </span>
         `,
         title: 'Товары',
@@ -1154,7 +1180,12 @@ async function showProfile({ id }) {
 
     modalPage.new(titleModalPage({
         before: 'Профиль',
-        subTitle: blankInputSearch({ id: 'search_user_profile', placeholder: 'Ссылка на страницу', value: id }),
+        subTitle: blankInputSearch({ 
+            id: 'search_user_profile', 
+            placeholder: 'Ссылка на страницу', 
+            value: id,
+            iconBefore: icons({ name: 'chain', size: 16, fill: 'secondary' })
+        }),
     })).setLoad(['Загружаем...']).visible();
 
     const [userFromVK] = await getUsersOrGroupsFromVK([id]);
@@ -1193,25 +1224,12 @@ async function showProfile({ id }) {
         ]);
 
         HTMLNewChat = `
-            <br/>
-            <div style="margin-left: 3px; margin-bottom: 3px; font-size: 15px; font-weight: bold; gap: 5px; display: flex; align-items: center; justify-content: center;">
-                ${icons({ name: 'new', fill: 'var(--vkui--color_icon_secondary)', size: 24})}
-                Самый новый чат с ${userFromVK.sex === 1 ? 'ней' : 'ним'}
-            </div>
             ${blankChat({
-            chat: userFromSC.newChat,
-            friends: friends,
-            creator: creator
-        })
-            }
-            ${userFromSC.stats.member > 1 ?
-                `
-                    <span style="display: flex; justify-content: center; text-align: center; margin-top: 3px;">
-                        <a id="full_chats_from_profile">Полный список</a>
-                    </span>
-                `
-                : ''
-            }
+                chat: userFromSC.newChat,
+                friends: friends,
+                creator: creator,
+                isGroupClass: false
+            })}
         `;
     }
 
@@ -1242,25 +1260,21 @@ async function showProfile({ id }) {
         const isFriend = friends.find(friend => member.id === friend.id) !== undefined;
 
         return `
-            <div style="display: flex; gap: 5px; font-weight: 400; color: #99a2ad; align-items: center;">
+            <a target="_blank" href="${linkMember}" class="btn" style="display: flex; text-decoration: none; gap: 6px; font-weight: 400; color: #99a2ad; align-items: center;" onmouseover="showTitle(this, '${nameString}')">
                 <div style="width: 20px; height: 20px;" class="vkuiAvatar vkuiImageBase vkuiImageBase--size-20 vkuiImageBase--loaded" role="img">
                     <img class="vkuiImageBase__img" src="${member.photo_100 || ''}">
                 </div>
 
-                <a title="${nameString}" target="_blank" href="${linkMember}" style="display: flex; ${isFriend ? `color: ${appearance.get() === 'dark' ? '#A8E4A0' : '#258b17'};` : ''}">
+                <span style="display: flex; text-decoration: none; ${isFriend ? `color: ${appearance.get() === 'dark' ? '#A8E4A0' : '#258b17'};` : ''}">
                     ${nameHTML}
-                </a>
-            </div>
+                </span>
+            </a>
         `
-    }).join(',⠀');
+    }).join('');
 
     const userLastChekByTitleChats = userFromSC.history?.queriesByTitle?.map(title =>
-        `
-            <div style="display: flex; gap: 5px; font-weight: 400; color: #99a2ad;">
-                ${deXSS(title)}
-            </div>
-        `
-    ).join(',⠀');
+        `<span class="btn profile_copy_text_last_search" style="display: flex; font-weight: 400; color: #99a2ad; align-items: center;">${deXSS(title)}</span>`
+    ).join('');
 
     const role = [
         {
@@ -1269,21 +1283,21 @@ async function showProfile({ id }) {
         },
         {
             title: 'Должность: «Редактор»',
-            icon: icons({ name: 'write', size: 16, fill: 'var(--vkui--color_icon_secondary)' })
+            icon: icons({ name: 'write', size: 16 })
         },
         {
             title: 'Должность: «Администратор»',
-            icon: icons({ name: 'gavel_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })
+            icon: icons({ name: 'gavel_outline', size: 16 })
         },
         {
             title: 'Должность: «Главный Администратор»',
-            icon: icons({ name: 'crown_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })
+            icon: icons({ name: 'crown_outline', size: 16 })
         }
     ][userFromSC.role];
 
     const adminMenu = `
         <span style="display: flex; padding-top: 5px; font-weight: 500; font-size: 16px; color: #99a2ad; justify-content: center;">Управление профилем</span>
-        <div style="flex-direction: row; display: flex; padding-top: 10px; justify-content: center; gap: 20px;">
+        <div style="flex-direction: row; display: flex; padding-top: 10px; justify-content: center; gap: 5px;">
 
             ${!userFromSC.isBanned && services.profileFromSC.id !== userFromVK.id ? `
                 <div style="display: flex; justify-content: center; flex-direction: column;"> 
@@ -1301,7 +1315,8 @@ async function showProfile({ id }) {
                                 data: userFromVK.id
                             },
                             width: '210px',
-                            iconBefore: icons({ name: 'text_style_1', size: 18, fill: 'secondary'})
+                            style: 'padding-left: 0px;',
+                            iconBefore: icons({ name: 'text_outline', size: 18, fill: 'secondary'})
                         }) 
                     }
                 </div>
@@ -1374,13 +1389,13 @@ async function showProfile({ id }) {
                         `
                         <div style="display: flex; flex-direction: row; gap: 5px;">
                             <span onmouseover="showTitle(this, '${userFromSC.ban.reason}')" style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #fce100; font-weight: bold;"> 
-                                ${icons({ name: 'user_slash_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
+                                ${icons({ name: 'user_slash_outline', size: 16 })}
                                 Аккаунт заблокирован.
                             </span>
                             ${services.profileFromSC.role > 0 ? 
                                 `
                                     <span class="btn" onmouseover="showTitle(this, 'Разблокировать')" id="set_ban_user" data="${userFromVK.id}">
-                                        ${icons({ name: 'cross_large_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
+                                        ${icons({ name: 'cross_large_outline', size: 16 })}
                                     </span>
                                 `
                                 : ''
@@ -1396,24 +1411,24 @@ async function showProfile({ id }) {
                     </span>
 
                     <span style="display: flex; flex-direction: row; gap: 5px; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
-                        ${icons({ name: 'calendar_check_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
+                        ${icons({ name: 'calendar_check_outline', size: 16 })}
                         Зарегистрирован ${moment(userFromSC.regDate).format('DD.MM.YYYY, HH:mm')}
                     </span>
                 
                     <span style="display: flex; flex-direction: row; gap: 5px; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
-                        ${icons({ name: 'face_id_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
+                        ${icons({ name: 'face_id_outline', size: 16 })}
                         Интересовались профилем ${userFromSC.views.toLocaleString('ru-RU')} ${decOfNum(userFromSC.views, ['раз', 'раза', 'раз'])}.
                     </span>
 
                     <span ${userFromSC.lastUsedExtension ? `onmouseover="showTitle(this, 'Последние использование — ${moment(userFromSC.lastUsedExtension).format('DD.MM.YYYY HH:mm')}')"` : ''} style="display: flex; flex-direction: row; gap: 5px; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
-                        ${icons({ name: 'api_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
+                        ${icons({ name: 'api_outline', size: 16 })}
                         ${userFromVK.sex === 1 ? 'Использовала' : 'Использовал'} расширение ${userFromSC.useExtension.toLocaleString('ru-RU')} ${decOfNum(userFromSC.useExtension, ['раз', 'раза', 'раз'])}.
                     </span>
 
                     ${userFromSC.isHide ?
                         `
                             <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
-                                ${icons({ name: 'hide_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
+                                ${icons({ name: 'hide_outline', size: 16 })}
                                 Чаты и профиль этого аккаунта скрыты.
                             </span>
                         `
@@ -1422,75 +1437,77 @@ async function showProfile({ id }) {
                 </div>
             </div>
 
+            ${HTMLNewChat ? `
+                <div class="separator" style="padding-top: 5px;"></div> 
+                <div style="display: flex; justify-content: space-between; padding-bottom: 5px;">
+                    <span style="display: flex; color: #99a2ad; border-radius: 8px; font-weight: 500; flex-direction: row; align-items: center; gap: 5px; padding: 2px;">
+                        ${icons({ name: 'new', size: 16, fill: '#99a2ad'})}
+                        Самый новый чат с ${userFromVK.sex === 1 ? 'ней' : 'ним'}
+                    </span>
+                    <span id="full_chats_from_profile" class="btn" style="display: flex; border-radius: 8px; font-weight: 500; flex-direction: row; align-items: center; gap: 5px; padding: 2px; padding-left: 5px; padding-right: 5px;">
+                        ${icons({ name: 'add', size: 16 })}
+                        Весь список чатов
+                    </span>
+                </div>
+                ${HTMLNewChat}
+                `
+                : ''
+            }
+
         </div>
 
-        <br style="display: block; margin: 10px; content: '';">
+        <span style="display: flex; word-break: break-all; flex-wrap: wrap; text-align: center; gap: 6px; justify-content: center; padding-top: 5px;">
 
-        <div class="${classGroup}" style="display: flex; justify-content: space-between;">
-            <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
-                ${icons({ name: 'search_stars_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
+            <span class="${classGroup}" style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
+                ${icons({ name: 'search_stars_outline', size: 16 })}
                 ${userFromVK.sex === 1 ? 'Найдена' : 'Найден'} в ${userFromSC.stats.member.toLocaleString('ru-RU')} ${decOfNum(userFromSC.stats.member, ['чате', 'чатах', 'чатах'])}
             </span>
 
-            <div class="ver-separator"></div>
-
-            <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
-                ${icons({ name: 'crown_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
+            <span class="${classGroup}" style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
+                ${icons({ name: 'crown_outline', size: 16 })}
                 Создатель в ${userFromSC.stats.creator.toLocaleString('ru-RU')} ${decOfNum(userFromSC.stats.creator, ['чате', 'чатах', 'чатах'])}
             </span>
 
-            <div class="ver-separator"></div>
-
-            <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
-                ${icons({ name: 'add', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
+            <span class="${classGroup}" style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
+                ${icons({ name: 'add', size: 16 })}
                 ${userFromVK.sex === 1 ? 'Добавила' : 'Добавил'} ${userFromSC.stats.added.toLocaleString('ru-RU')} ${decOfNum(userFromSC.stats.added, ['чат', 'чата', 'чатов'])}
             </span>
-        </div>
 
-        <div class="${classGroup}" style="display: flex; justify-content: space-between;">
-            <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold; padding-left: 5%;"> 
-                ${icons({ name: 'chats_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
+            <span class="${classGroup}" style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
+                ${icons({ name: 'chats_outline', size: 16 })}
                 Просмотрели ${userFromSC.viewChats.other.toLocaleString('ru-RU')} ${decOfNum(userFromSC.viewChats.other, ['чат', 'чата', 'чатов'])} с ${userFromVK.sex === 1 ? 'ней' : 'ним'}
             </span>
-
-            <div class="ver-separator"></div>
             
-            <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold; padding-right: 5%;"> 
-                ${icons({ name: 'view_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
+            <span class="${classGroup}" style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
+                ${icons({ name: 'view_outline', size: 16 })}
                 ${userFromVK.sex === 1 ? 'Просмотрела' : 'Просмотрел'} ${userFromSC.viewChats.self.toLocaleString('ru-RU')} ${decOfNum(userFromSC.viewChats.self, ['чат', 'чата', 'чатов'])}
             </span>
 
-        </div>
-
-        ${HTMLNewChat}
-
-        <br/>
-        <div style="display: flex; margin-bottom: 3px; font-size: 15px; font-weight: bold; gap: 5px; flex-direction: row; justify-content: center; align-items: center;">
-            ${icons({ name: 'archive_outline', size: 24, fill: 'var(--vkui--color_icon_secondary)' })}
-            История пользователя
-        </div>
-
-        <div class="${classGroup}" style="display: flex; justify-content: space-between;">
-            <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold; padding-left: 5%;"> 
-                ${icons({ name: 'door_arrow_left_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
-                ${userFromVK.sex === 1 ? 'Присоединилась' : 'Присоединился'} в ${userFromSC.stats.entered.toLocaleString('ru-RU')} ${decOfNum(userFromSC.stats.entered, ['чата', 'чата', 'чатов'])}
+            <span class="${classGroup}" style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
+                ${icons({ name: 'door_arrow_left_outline', size: 16 })}
+                ${userFromVK.sex === 1 ? 'Присоединилась' : 'Присоединился'} в ${userFromSC.stats.entered.toLocaleString('ru-RU')} ${decOfNum(userFromSC.stats.entered, ['чат', 'чата', 'чатов'])}
             </span>
-
-            <div class="ver-separator"></div>
             
-            <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold; padding-right: 5%;"> 
-                ${icons({ name: 'door_arrow_right_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
+            <span class="${classGroup}" style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
+                ${icons({ name: 'door_arrow_right_outline', size: 16 })}
                 ${userFromVK.sex === 1 ? 'Вышла' : 'Вышел'} из ${userFromSC.stats.exited.toLocaleString('ru-RU')} ${decOfNum(userFromSC.stats.exited, ['чата', 'чатов', 'чатов'])}
             </span>
-        </div>
+
+            <span class="${classGroup}" style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
+                ${icons({ name: 'users_3_outline', size: 16 })}
+                ${decOfNum(userFromSC.interested, ['Интересовался', 'Интересовались', 'Интересовались'])} ${userFromVK.sex === 1 ? 'её' : 'его'} чатами ${userFromSC.interested.toLocaleString('ru-RU')} ${decOfNum(userFromSC.interested, ['человек', 'человека', 'человек'])}
+            </span>
+
+        </span>
 
         ${userLastChekUsersChats
             ? `
-                <div class="${classGroup}" style="display: flex; flex-direction: fow;">
-                    <span style="display: flex; word-break: break-all; flex-wrap: wrap; text-align: center;">
-                        <span style="font-size: 14px; color: #99a2ad; font-weight: bold;"> 
-                            Чьи чаты ${userFromVK.sex === 1 ? 'смотрела' : 'смотрел'} последний раз:⠀
-                        </span>
+                <div style="display: flex; color: #99a2ad; padding-top: 20px; padding-bottom: 5px; font-size: 13px; font-weight: bold; gap: 5px; flex-direction: row; justify-content: center; align-items: center;">
+                    ${icons({ name: 'user_background_outline', size: 20 })}
+                    Чьи чаты ${userFromVK.sex === 1 ? 'смотрела' : 'смотрел'} последний раз (${queriesByUsers.length} чел.)
+                </div>
+                <div class="${classGroup}" style="display: flex; flex-direction: fow; justify-content: center;">
+                    <span style="display: flex; word-break: break-all; flex-wrap: wrap; text-align: center; gap: 6px; justify-content: center;">
                         ${userLastChekUsersChats}
                     </span>
                 </div>
@@ -1500,11 +1517,12 @@ async function showProfile({ id }) {
 
         ${userLastChekByTitleChats
             ? `
-                <div class="${classGroup}" style="display: flex; flex-direction: fow;">
-                    <span style="display: flex; word-break: break-all; flex-wrap: wrap; text-align: center;">
-                        <span style="font-size: 14px; color: #99a2ad; font-weight: bold;"> 
-                            Последние запросы по названиям:⠀
-                        </span>
+                <div style="display: flex; color: #99a2ad; padding-top: 20px; padding-bottom: 5px; font-size: 13px; font-weight: bold; gap: 5px; flex-direction: row; justify-content: center; align-items: center;">
+                    ${icons({ name: 'text_outline', size: 20 })}
+                    Последние запросы по названиям (${userFromSC.history?.queriesByTitle?.length} шт.)
+                </div>
+                <div class="${classGroup}" style="display: flex; flex-direction: fow; justify-content: center;">
+                    <span style="display: flex; word-break: break-all; flex-wrap: wrap; text-align: center; gap: 6px; justify-content: center;">
                         ${userLastChekByTitleChats}
                     </span>
                 </div>
@@ -1536,8 +1554,8 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends, search = 
     const title = (countTitles, countPhotos, countExitedUsers, countNewUsers) =>
         titleModalPage({
             icon: `
-                <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px;">
-                    ${icons({ name: 'browser_back', size: 24, fill: 'var(--vkui--color_icon_secondary)' })}
+                <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px; height: 90%;">
+                    ${icons({ name: 'browser_back', size: 24 })}
                 </span>
             `,
             title: 'История чата',
@@ -1545,25 +1563,25 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends, search = 
             subTitle: `
                 ${blankInputSearch({ id: 'search_users_history', value: search })}
                 <span style="display: flex; gap: 5px; font-size: 14px; font-weight: 400;">
-                    ${icons({ name: 'pencil', size: 18, fill: 'var(--vkui--color_icon_secondary)' })}
+                    ${icons({ name: 'pencil', size: 18 })}
                     <span style="padding-right: 10px; color: #99a2ad;">
                         ${countTitles.toLocaleString('ru-RU')} ${decOfNum(countTitles, ['раз', 'раза', 'раз'])} обновлялось название
                     </span>
                 </span>
                 <span style="display: flex; gap: 5px; font-size: 14px; font-weight: 400;">
-                    ${icons({ name: 'photos_stack_outline', size: 18, fill: 'var(--vkui--color_icon_secondary)' })}
+                    ${icons({ name: 'photos_stack_outline', size: 18 })}
                     <span style="padding-right: 10px; color: #99a2ad;">
                         ${countPhotos.toLocaleString('ru-RU')} ${decOfNum(countPhotos, ['раз', 'раза', 'раз'])} обновлялось фото
                     </span>
                 </span>
                 <span style="display: flex; gap: 5px; font-size: 14px; font-weight: 400;">
-                    ${icons({ name: 'user_minus_outline', size: 18, fill: 'var(--vkui--color_icon_secondary)' })}
+                    ${icons({ name: 'user_minus_outline', size: 18 })}
                     <span style="padding-right: 10px; color: #99a2ad;">
                         ${countExitedUsers.toLocaleString('ru-RU')} ${decOfNum(countExitedUsers, ['вышедший участник', 'вышедших участника', 'вышедших участников'])}
                     </span>
                 </span>
                 <span style="display: flex; gap: 5px; font-size: 14px; font-weight: 400;">
-                ${icons({ name: 'user_add_outline', size: 18, fill: 'var(--vkui--color_icon_secondary)' })}
+                    ${icons({ name: 'user_add_outline', size: 18 })}
                     <span style="padding-right: 10px; color: #99a2ad;">
                         ${countNewUsers.toLocaleString('ru-RU')} ${decOfNum(countNewUsers, ['присоединившийся участник', 'присоединившийся участника', 'присоединившихся участников'])}
                     </span>
@@ -1574,8 +1592,8 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends, search = 
     modalPage.new(
         titleModalPage({
             icon: `
-                <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px;">
-                    ${icons({ name: 'browser_back', size: 24, fill: 'var(--vkui--color_icon_secondary)' })}
+                <span class="btn" id="back_button_modal_page" style="padding: 0px; border-radius: 4px; height: 90%;">
+                    ${icons({ name: 'browser_back', size: 24 })}
                 </span>
             `,
             title: 'История чата',
@@ -1743,7 +1761,7 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends, search = 
                                 ${oldTitle}
                             </span>
                             
-                            ${icons({ name: 'arrow_right_outline', size: 20, fill: 'var(--vkui--color_icon_secondary)' })}
+                            ${icons({ name: 'arrow_right_outline', size: 20 })}
                             
                             <span title="${newTitle}" style="max-width: 250px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
                                 ${newTitle}
@@ -1803,7 +1821,7 @@ async function showHistoryChat(indexChatOrChat, backFunction, friends, search = 
                                 </div>
                             </a>
                             
-                            ${icons({ name: 'arrow_right_outline', size: 28, fill: 'var(--vkui--color_icon_secondary)' })}
+                            ${icons({ name: 'arrow_right_outline', size: 28 })}
                             
                             <a href="${newPhoto}" target="_blank" style="text-decoration: none;" >
                                 <div style="width: 58px; height: 58px;">

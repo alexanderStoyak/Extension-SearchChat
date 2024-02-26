@@ -2,7 +2,7 @@ function createActions({ id, title, innerHTML }) {
     const action = document.createElement('span');
 
     action.id = id;
-    action.className = 'im-mess--reaction'
+    action.className = 'im-mess--fav'
     action.role = 'link';
     action.setAttribute('onmouseover', `showTitle(this, '${title}')`);
     action.innerHTML = innerHTML;
@@ -37,8 +37,8 @@ async function buttonInMessages(peerHistory) {
                 newActionForProfile.onclick = () => showProfile({ id: href });
 
 
-                action.prepend(newActioForChats);
-                action.prepend(newActionForProfile);
+                action.append(newActioForChats);
+                action.append(newActionForProfile);
 
             }
         }

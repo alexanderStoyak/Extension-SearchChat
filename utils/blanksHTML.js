@@ -51,7 +51,7 @@ function blankSeparator(style) {
 }
 
 
-function blankChat({ chat, creator, friends }) {
+function blankChat({ chat, creator, friends, isGroupClass = true }) {
     const typeMention = creator?.first_name ? 'id' : 'club';
 
     const nameHTML = typeMention === 'id'
@@ -76,17 +76,74 @@ function blankChat({ chat, creator, friends }) {
     const countFriendsInChat = infoFriends.length;
     infoFriends.splice(3);
 
+    const infoOnline = {
+        description: 'Недавно добавленный',
+        hint: 'Скоро мы определим статус его активности.',
+        colorIcon: '#b5a23c'
+    };
+
+    const areChangesHistoey = chat.history?.photos?.length || 
+        chat.history?.titles?.length || 
+        chat.history?.newUsers?.length || 
+        chat.history?.exitedUsers?.length;
+    
+    if (Date.now() - +new Date(chat.added) >= 24 * 3 * 60 * 60 * 1_000) {
+        infoOnline.description = 'Неактивный';
+        infoOnline.hint = 'В течени последних 7 дней в чате не происходили какие либо изменения.';
+        infoOnline.colorIcon = '#b53c3c';
+    };
+
+    if (new Date(chat.lastUpdateHistory) > new Date(Date.now() - 24 * 7 * 60 * 60 * 1_000)) {
+        infoOnline.description = 'Активный';
+        infoOnline.hint = 'В течение последних 7 дней в чате произошли входы/выходы участников или была обновлена фотография или название чата';
+        infoOnline.colorIcon = '#3aa744';
+    };
+
+    const tags = chat.tags.map(tag =>
+        `<span class="btn" style="display: flex; font-weight: 400; color: var(--vkui--color_text_accent_themed); align-items: center;">${deXSS(tag)}</span>`
+    ).join('');
+
     return `
-        <div class="${classGroup}" style="padding-bottom: 0px;">
+        <div ${isGroupClass ? `class="${classGroup}"` : ''} style="padding-bottom: 0px;">
             <section style="font-weight: 500;">
                 
                 <div class="ProfileModalInfoHeadline" style="padding: 0px 0px 5px 0px;">
+
+                    ${chat.membersCount < 7_010 ? 
+                        `
+                            <div style="display: flex; justify-content: space-between; padding-bottom: 10px;">
+                                <div style="display: flex; flex-direction: column;">
+                                    <span style="display: flex; color: #99a2ad; font-weight: 500; flex-direction: row; align-items: center; gap: 5px; padding: 2px;">
+                                        <span style="display: flex; font-weight: 500; flex-direction: row; align-items: center; gap: 5px;" onmouseover="showTitle(this, '${areChangesHistoey ? `Последние изменения истории этого чата было ${moment(chat.lastUpdateHistory).fromNow().toLowerCase()}` : 'Изменений в истории этого чата еще не было.'}')">
+                                            ${icons({ name: 'new', size: 16, fill: infoOnline.colorIcon })}
+                                            ${infoOnline.description}
+                                        </span>
+                                        ${infoOnline.hint ? blankHint(infoOnline.hint) : ''}
+                                    </span>
+                                </div>
+
+                                ${tags
+                                    ? `
+                                        <div style="display: flex; flex-direction: fow; gap: 5px;">
+                                            <span style="display: flex; word-break: break-all; flex-wrap: wrap; text-align: center; gap: 6px;">
+                                                ${tags}
+                                            </span>
+                                            ${icons({ name: 'hashtag_outline', size: 16 })}
+                                        </div>
+                                    `
+                                    : ''
+                                }
+
+                            </div>
+                        ` 
+                        : ''
+                    }
                        
                     <div class="background-image-chat" style="
                         background-image: linear-gradient( 
                             ${appearance.get() === 'dark'
                                 ? 'rgba(0, 0, 0, .8), rgba(0, 0, 0, .8)'
-                                : 'rgba(255, 255, 255, .8), rgba(255, 255, 255, .8)'
+                                : 'rgba(255, 255, 255, .7), rgba(255, 255, 255, .7)'
                             }), 
                             url(${photo});
                     ">      
@@ -104,9 +161,9 @@ function blankChat({ chat, creator, friends }) {
 
                             <div>
                                 <h4 title="${chatTitleForHTMLTitle}" class="vkuiHeadline vkuiHeadline--sizeY-compact vkuiHeadline--level-1 vkuiTypography--normalize vkuiTypography--weight-1" style="font-size: 15px; max-width: 230px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
-                                    ${chat.membersCount > 7_000
+                                    ${chat.membersCount > 7_010
                                         ? `<span style="display: flex; flex-direction: row; gap: 5px; align-items: center; font-size: 12px; color: #99a2ad;"> 
-                                                ${icons({ name: 'archive_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })} Канал
+                                                ${icons({ name: 'archive_outline', size: 16 })} Канал
                                             </span>`
                                         : ''
                                     }                                    
@@ -130,11 +187,33 @@ function blankChat({ chat, creator, friends }) {
                             </div>
                         </div>
 
-                        <div style="display: flex; flex-direction: row; gap: 5px; align-items: center; margin-bottom: 10px; margin-right: 10px;">
-                            <span class="btn-chat-users-show members_chat">
-                                ${chat.membersCount.toLocaleString('ru-RU')} ${decOfNum(chat.membersCount, ['участник', 'участника', 'участников'])}
-                            </span>
-                            ${icons({ name: 'users_2_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
+                        <div style="display: flex; align-items: center; flex-direction: column; margin-bottom: 10px; margin-right: 10px;">
+                            <div class="members_chat btn-chat-users-show" onmouseover="showTitle(this, 'Открыть')"  style="display: flex; flex-direction: row; gap: 5px; align-items: center;">
+                                <span>
+                                    ${chat.membersCount.toLocaleString('ru-RU')} ${decOfNum(chat.membersCount, ['участник', 'участника', 'участников'])}
+                                </span>
+                                ${icons({ name: 'users_2_outline', size: 16, fill: appearance.get() === 'dark' ? '#949da7' : '#99a2b1' })}
+                            </div>
+
+                            <div style="display: flex; align-items: flex-end; flex-direction: row; gap: 10px;">
+                                ${chat.history?.newUsers?.length ? `
+                                    <span onmouseover="showTitle(this, 'Входов в чат')" style="color: #99a2ad; display: flex; flex-direction: row; gap: 5px; align-items: center; text-align: end;">
+                                        <p style="max-width: 173px; margin: 0px; color: ${appearance.get() === 'dark' ? "#428d49" : '#7db582'};">
+                                            ${chat.history.newUsers.length.toLocaleString()}
+                                        </p>
+                                        ${icons({ name: 'user_add_outline', size: 18, fill: appearance.get() === 'dark' ? '#949da7' : '#99a2b1' })}
+                                    </span>
+                                ` : ''}
+
+                                ${chat.history?.exitedUsers?.length ? `
+                                    <span onmouseover="showTitle(this, 'Выходов из чата')" style="color: #99a2ad; display: flex; flex-direction: row; gap: 5px; align-items: center; text-align: end;">
+                                        <p style="max-width: 173px; margin: 0px; color: ${appearance.get() === 'dark' ? "#8b3e3e" : '#d7a0a0'};">
+                                            ${chat.history.exitedUsers.length.toLocaleString()}
+                                        </p>
+                                        ${icons({ name: 'user_minus_outline', size: 18, fill: appearance.get() === 'dark' ? '#949da7' : '#99a2b1' })}
+                                    </span>`
+                                : ''}
+                            </div>
                         </div>
                     </div>
                     
@@ -145,7 +224,7 @@ function blankChat({ chat, creator, friends }) {
     
                             <div style="display: flex; gap: 5px; font-weight: 400; color: #99a2ad; align-items: center;">
                                 <span>
-                                    ${icons({ name: 'crown_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
+                                    ${icons({ name: 'crown_outline', size: 16 })}
                                 </span>
 
                                 ${blankMention({
@@ -162,7 +241,7 @@ function blankChat({ chat, creator, friends }) {
     
                                 
                             <span style="color: #99a2ad; display: flex; align-items: center; flex-direction: row; gap: 5px">
-                                ${icons({ name: 'add', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
+                                ${icons({ name: 'add', size: 16 })}
                                 <p style="max-width: 173px; margin: 0px;">Добавлен ${moment(chat.added).fromNow().toLowerCase()}</p>
                             </span>
     
@@ -174,15 +253,16 @@ function blankChat({ chat, creator, friends }) {
                                 <p style="max-width: 173px; margin: 0px;">
                                     Обновлен ${moment(chat.lastUpdate).fromNow().toLowerCase()}
                                  </p>
-                                ${icons({ name: 'switch', size: 12, fill: 'var(--vkui--color_icon_secondary)' })}
+                                ${icons({ name: 'switch', size: 12 })}
                             </span>
+
                             ${chat.views ? 
                                 `
-                                    <span style="color: #99a2ad; display: flex; flex-direction: row; gap: 5px; align-items: center; text-align: end;">
-                                        <p style="max-width: 173px; margin: 0px;">
-                                            ${chat.views.toLocaleString('ru-RU')} ${decOfNum(chat.views, ['просмотр', 'просмотра', 'просмотров'])}
-                                        </p>
-                                        ${icons({ name: 'view', size: 14, fill: 'var(--vkui--color_icon_secondary)' })}
+                                    <span onmouseover="showTitle(this, 'Просмотры')" style="color: #99a2ad; display: flex; flex-direction: row; gap: 5px; align-items: center; text-align: end;">
+                                        <span style="max-width: 173px; margin: 0px;">
+                                            ${chat.views.toLocaleString('ru-RU')}
+                                        </span>
+                                        ${icons({ name: 'view', size: 14, fill: '#99a2ad' })}
                                     </span>
                                 ` 
                                 : ''
@@ -198,7 +278,7 @@ function blankChat({ chat, creator, friends }) {
                                 class="btn-chat ${classGroup} copy_link_for_chat">
                             ${icons({ name: 'linked', size: 16 })}
                             <span style="font-size: 13px; font-weight: 500; padding: 0px 4px 0px 4px;">
-                                Скопировать ссылку
+                                Скопировать
                             </span>
                         </a>
 
@@ -219,7 +299,7 @@ function blankChat({ chat, creator, friends }) {
                         >
                             ${icons({ name: 'history_backward_outline', size: 16 })}
                             <span style="font-size: 13px; font-weight: 500; padding: 0px 4px 0px 4px;">
-                                История чата
+                                История
                             </span>
                         </a>
                     </div>
@@ -344,7 +424,7 @@ function blankNotFound(icon, text, button) {
                         <div style="padding-top: 15px;">
                             <button id="${button.id}" class="FlatButton FlatButton--primary FlatButton--size-m" type="button">
                                 <span class="FlatButton__in">
-                                    <span class="FlatButton__content">${button.text}</span>
+                                    <span style="font-weight: 600;" class="FlatButton__content">${button.text}</span>
                                 </span>
                             </button>
                         </div>
@@ -362,7 +442,7 @@ function blankInputSearch({
     value = '', 
     placeholder = 'Поиск', 
     actionFilter = undefined,
-    iconBefore = icons({ name: 'search_stars_outline', size: 18, fill: 'secondary' }),
+    iconBefore = icons({ name: 'text_outline', size: 18, fill: 'secondary' }),
     button = {
         icon: icons({ name: 'search_stars_outline', size: 20 }),
         title: '',
@@ -370,10 +450,11 @@ function blankInputSearch({
         data: ''
     },
     width = '100%',
+    style = ''
 }) {
     return `
         <div style="display: flex; justify-content: center; align-items: center; gap: 5px; margin-bottom: 3px">
-            <div style="width: ${width}" class="vkuiInternalSearch vkuiSearch vkuiSearch--sizeY-compact vkuiSearch--has-after vkuiSearch--has-icon vkuiSearch--withPadding App-module__search--_fJCB">
+            <div style="width: ${width}; ${style}" class="vkuiInternalSearch vkuiSearch vkuiSearch--sizeY-compact vkuiSearch--has-after vkuiSearch--has-icon vkuiSearch--withPadding App-module__search--_fJCB">
                 <div class="vkuiSearch__field">
                     <label for="${id}" class="vkuiSearch__label">
                         ${placeholder}
@@ -456,7 +537,7 @@ function blankPages({ found = undefined, totalPage = 0, currentPage = 0, offset 
     return `
         <div style="display: flex; color: #99a2ad; align-items: center; height: 20px;"> 
             <span style="display: flex; gap: 5px;">
-                ${icons({ name: 'document_text_outline', size: 18, fill: 'var(--vkui--color_icon_secondary)' })}
+                ${icons({ name: 'document_text_outline', size: 18 })}
                 <span style="padding-right: 10px; color: #99a2ad;">
                     Страница ${found !== undefined && found !== 0 ? `${currentPage}/${totalPage}` : found === 0 ? 'пуста' : 'загружается'}
                     ${inOnePage ? ` (${inOnePage.toLocaleString('ru-RU')})` : ''}
@@ -527,13 +608,29 @@ function blankFiltersSearchChats({
             id: 'searchChats_input',
             value: filters.title, 
             placeholder: filters.isHistory ? 'Поиск из старых названий' : 'Найдётся все, ну... почти',
+            button: {
+                icon: icons({ name: 'search_stars_outline', size: 20 }),
+                title: 'Поиск',
+                id: 'searchChats_button',
+                data: ''
+            },
             actionFilter: blankActionsMenu(
                 icons({ name: 'filter_outline', size: 24}),`
-                <div style="display: flex; gap: 8px; flex-direction: column"> 
+                <div style="display: flex; gap: 8px; flex-direction: column; justify-content: center;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 5px; font-weight: 500; font-size: 20px; padding-bottom: 5px; flex-direction: row;">
+                        ${icons({ name: 'filter_outline', size: 24 })}
+                        <span ${appearance.get() === 'dark' ? '' : 'style="color: #000000"'}> Фильтры </span>
+                        <a class="btn" style="text-decoration: none; font-weight: 500;" id="clear_range_users" onmouseover="showTitle(this, 'Сбросить все фильтры')">
+                            ${icons({ name: 'refresh_outline', size: 18 })}
+                        </a>
+                    </div>
+
+                    ${blankSeparator()}
+
                     <div style="display: flex; align-items: center;">
                         <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
                             <span>
-                                ${icons({ name: 'sort_outline', size: 22, fill: 'var(--vkui--color_icon_secondary)' })}
+                                ${icons({ name: 'sort_outline', size: 22 })}
                             </span>
                             <label> Сортировать по</label>
                             <select class="btn" style="display: flex; margin: auto; text-align-last: left; font-weight: 500; font-family: ${fontFamilyVK}; box-sizing: border-box;" name="sort_field" id="sort_field" class="sort-select">
@@ -543,19 +640,17 @@ function blankFiltersSearchChats({
                                 <option value="views" ${filters.sortField === 'views' ? 'style="display:none;" selected' : ''}>количеству просмотров</option>
                             </select>
                             <span class="btn" id="filter_set_sort_order" onmouseover="showTitle(this, 'Порядок сортировки сейчас ${filters.sortOrder === 'desc' ? 'по убыванию' : 'по возрастанию'}')">
-                                ${icons({ name: filters.sortOrder === 'desc' ? 'arrow_down_outline' : 'arrow_up_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
+                                ${icons({ name: filters.sortOrder === 'desc' ? 'arrow_down_outline' : 'arrow_up_outline', size: 16 })}
                             </span>
                         </div>
                     </div>
-
-                    ${blankSeparator()}
         
                     ${user ?
                         `
                             <div style="display: flex; align-items: center; font-height: 500;">
                                 <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
                                     <span>
-                                        ${icons({ name: 'user_outline', size: 20, fill: 'var(--vkui--color_icon_secondary)' })}
+                                        ${icons({ name: 'user_outline', size: 20 })}
                                     </span>
                                     Чаты, в которых ${filters.isHistory ? user.sex !== 2 ? 'была' : 'был' : 'есть'}
 
@@ -569,29 +664,26 @@ function blankFiltersSearchChats({
                                     </a>
         
                                     <span class="btn" onmouseover="showTitle(this, 'Удалить ${typeMention === 'id' ? 'пользователя' : 'группу'} из фильтра')" id="filter_button_delete_user">
-                                        ${icons({ name: 'cross_large_outline', size: 16, fill: 'var(--vkui--color_icon_secondary)' })}
+                                        ${icons({ name: 'cross_large_outline', size: 16 })}
                                     </span>
                                 </div>
                             </div>
 
-                            ${blankSeparator()}
                         ` : ''
                     }
         
 
                     <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
                         <span>
-                            ${icons({ name: 'users_3_outline', size: 20, fill: 'var(--vkui--color_icon_secondary)' })}
+                            ${icons({ name: 'users_3_outline', size: 20 })}
                         </span>
                         Чаты, в которых ${filters.isHistory ? 'были' : 'есть'} <a class="btn" style="text-decoration: none; font-weight: 500;" target="_blank" href="https://vk.com/friends">Ваши друзья</a>
                         ${blankSwitch({ id: 'filter_only_with_friends', checked: filters.onlyWithFriends })}
                     </div>
-
-                    ${blankSeparator()}
                             
                     <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
                         <span>
-                            ${icons({ name: 'poll_outline', size: 20, fill: 'var(--vkui--color_icon_secondary)' })}
+                            ${icons({ name: 'poll_outline', size: 20 })}
                         </span>
                         <label style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;" id="range_users_label" for="range_users_label">
                             Диапазон участников от 
@@ -613,35 +705,45 @@ function blankFiltersSearchChats({
                                 style="width: ${((filters.maxUsers.toString().length + 1) * 8) - 8}px; margin: 0px;"
                             /> 
                         </label>
-                        <a class="btn" style="text-decoration: none; font-weight: 500;" id="clear_range_users">Сбросить</a>
+                        <a class="btn" style="text-decoration: none; font-weight: 500;" id="clear_range_users" onmouseover="showTitle(this, 'Сбросить')">
+                            ${icons({ name: 'cross_large_outline', size: 16 })}
+                        </a>
                     </div>
-
-                    ${blankSeparator()}
         
                     <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
                         <span>
-                            ${icons({ name: 'article_box_outline', size: 20, fill: 'var(--vkui--color_icon_secondary)' })}
+                            ${icons({ name: 'article_box_outline', size: 20 })}
                         </span>
         
-                        Поиск в истории чатов
+                        Поиск из истории чатов
                         ${blankSwitch({ id: 'filter_is_history', checked: filters.isHistory })}
         
                         
-                        ${blankHint('Поиск в истории чатов будет осуществляться по старым названиям, а также по чатам, где участвовал участник или Ваши друзья.')} 
+                        ${blankHint('Поиск из истории чатов будет осуществляться по старым названиям, а также по чатам, где был участник или Ваши друзья.')} 
                     </div>
-
-                    ${blankSeparator()}
         
                     <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
                         <span>
-                            ${icons({ name: 'fire_alt_outline', size: 20, fill: 'var(--vkui--color_icon_secondary)' })}
+                            ${icons({ name: 'fire_alt_outline', size: 20 })}
                         </span>
         
-                        Только активные чаты
+                        Aктивные чаты
                         ${blankSwitch({ id: 'filter_is_active', checked: filters.isActive })}
         
                         ${blankHint('Это те чаты, в которых произошли какие-либо изменения за последние 7 дней.')}
                     </div>
+        
+                    <div style="display: flex; gap: 5px; color: #99a2ad; align-items: center; height: 20px;">
+                        <span>
+                            ${icons({ name: 'archive_outline', size: 20 })}
+                        </span>
+        
+                        Aрхивированные чаты
+                        ${blankSwitch({ id: 'filter_is_achive', checked: filters.isArchive })}  
+        
+                        ${blankHint('Это архивированные чаты, которые были удалены и больше неактивны. В них нельзя зайти, но можно посмотреть всю информацию о чате.')}
+                    </div>
+
                 </div>
             `)
         })}
@@ -716,7 +818,7 @@ function blankHint(content, label = '') {
     const html = deXSS(`<div style="text-wrap: wrap; overflow: visible;"> ${content} </div>`);
 
     return `
-        <div>
+        <div style="margin-bottom: 1px;">
             <span ${!label ? 'class="hint_icon"' : ''} style="margin-left: 0px;" data-title="${html}" onmouseover="showHint(this);">
                 ${label}
             </span>
@@ -724,12 +826,12 @@ function blankHint(content, label = '') {
 }
 
 
-function blankActionsMenu (label, content) {
+function blankActionsMenu (label, content, title = '') {
     return `
     <div style="display: flex; align-items: center; justify-content: center;" class="im-page--header-more im-page--header-menu-button _im_dialog_action_wrapper"> 
         <div class="ui_actions_menu_wrap _ui_menu_wrap" onmouseover="window.uiActionsMenu &amp;&amp; uiActionsMenu.show(this);" onmouseout="window.uiActionsMenu &amp;&amp; uiActionsMenu.hide(this);"> 
-            <div tabindex="0" aria-label="Действия" role="button" onclick="uiActionsMenu.keyToggle(this, event);"> 
-                ${label}
+            <div tabindex="0" aria-label="Действия" role="button" onclick="uiActionsMenu.keyToggle(this, event)" ${title ? `onmouseover="showTitle(this, '${title}')"` : ''}> 
+                    ${label}
                 <span class="blind_label">
                     Действия
                 </span> 
