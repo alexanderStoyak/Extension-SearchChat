@@ -238,6 +238,7 @@ function isLinkPageOrId(searchText) {
     return /^((https?:\/\/)?(vk.(com|ru)\/.+)|((id|club)([0-9]+))|([0-9]+))$/.test(searchText);
 }
 
+let [requiredChatsId, requiredFoundId] = [0, 0];
 async function searchChats({ isCurrent = false, offset = 0 }) {
 
     if (load.chats) return;
@@ -273,13 +274,25 @@ async function searchChats({ isCurrent = false, offset = 0 }) {
 
 
     modalPage.new(
-        title('ищем...', blankFiltersSearchChats({ user }))
+        title('подсчитываем...', blankFiltersSearchChats({ user, foundChats: 'load', offset }))
     ).setLoad(services.pick.searchChats).visible();
+
+
     onClicks('searchChats', { offset });
 
     let foundChats;
+    const promiseFound = SCAPI.call({ 
+        parameters: { 
+            ...parameters, 
+            fieldsResponse: ['found'], 
+            offset: 0,
+            sortField: 'added',
+            sortOrder: 'desc'
+        }
+    });
+
     if (!isCurrent) {
-        foundChats = await SCAPI.call({ parameters });
+        foundChats = await SCAPI.call({ parameters: { ...parameters, fieldsResponse: ['chats'] } });
 
         currentChats = {
             foundChats,
@@ -296,7 +309,7 @@ async function searchChats({ isCurrent = false, offset = 0 }) {
         return load.chats = false;
     }
 
-    if (!foundChats.found) {
+    if (!foundChats.chats.length) {
         load.chats = false;
         modalPage.setContent(
             blankNotFound(
@@ -330,13 +343,28 @@ async function searchChats({ isCurrent = false, offset = 0 }) {
     })
     ).join('<br style="display: block; margin: 10px; content: \'\';">');
 
-    modalPage.setContent(listChatsHTML)
-        .setTitle(
-            title(
-                foundChats.found,
-                blankFiltersSearchChats({ offset, user, foundChats: foundChats.found, countListChats: foundChats.chats.length })
-            )
-        );
+    modalPage.setContent(listChatsHTML);
+
+    requiredChatsId++;
+
+    promiseFound
+        .then(response => {
+            requiredFoundId++;
+
+            currentChats.foundChats.found = response.found;
+
+            if (requiredChatsId === requiredFoundId) {
+
+                modalPage.setTitle(
+                    title(
+                        response.found,
+                        blankFiltersSearchChats({ offset: currentChats.offset, user, foundChats: response.found, countListChats: foundChats.chats.length })
+                    )
+                );
+
+                onClicks('searchChats', { offset: currentChats.offset, friends });
+            }
+        });
 
     onClicks('searchChats', { offset, friends });
 
@@ -551,6 +579,7 @@ async function showUsersChat(indexChatOrChat, friends, backFunction, offset = 0,
 
     onClicks('showUsersChat', { indexChatOrChat, friends, backFunction, offset });
 }
+
 
 function usersStack(arrayLinks) {
     return arrayLinks.map((link, index) => {
@@ -902,10 +931,10 @@ async function showTopViewsChats() {
 
     let htmlUsers = usersFromVK.map((member, index) => {
         const user = users[index];
-        const subTitle = 
+        const subTitle =
             (user.viewChats.self ? ` Просмотрел ${user.viewChats.self.toLocaleString('ru-RU')} ${decOfNum(user.viewChats.self, ['чат', 'чата', 'чатов'])}` : 'Просмотрел 0 чатов')
             + `, использовал расширение ${user.useExtension.toLocaleString('ru-RU')} ${decOfNum(user.useExtension, ['раз', 'раза', 'раза'])}`
-        ;
+            ;
 
         return blankMembersList({ member, creator: 0, friends: [{}], subTitle });
     }).join('');
@@ -1114,7 +1143,7 @@ function showDescriptionProduct(productId) {
     let buttonText = `Купить за ${product.price}₽`;
 
     if (productId === subscription) {
-        
+
     }
 
     const buttons = product.price.map(price => {
@@ -1142,16 +1171,15 @@ function showDescriptionProduct(productId) {
             >
                 <span style="display: flex; font-size: 13px; font-weight: 500; padding: 0px 4px 0px 4px; flex-direction: column;">
                     ${buttonText}
-                    ${
-                        term 
-                            ? `
+                    ${term
+                ? `
                                 <span>
                                     на ${term} ${decOfNum(term, ['день', 'дня', 'дней'])}
                                     ${percent < 100 ? `(-${(100 - percent).toFixed(0)}%)` : ''}
                                 </span>
-                            ` 
-                            : ''
-                    }
+                            `
+                : ''
+            }
                 </span>
             </a>
         `;
@@ -1180,9 +1208,9 @@ async function showProfile({ id }) {
 
     modalPage.new(titleModalPage({
         before: 'Профиль',
-        subTitle: blankInputSearch({ 
-            id: 'search_user_profile', 
-            placeholder: 'Ссылка на страницу', 
+        subTitle: blankInputSearch({
+            id: 'search_user_profile',
+            placeholder: 'Ссылка на страницу',
             value: id,
             iconBefore: icons({ name: 'chain', size: 16, fill: 'secondary' })
         }),
@@ -1225,11 +1253,11 @@ async function showProfile({ id }) {
 
         HTMLNewChat = `
             ${blankChat({
-                chat: userFromSC.newChat,
-                friends: friends,
-                creator: creator,
-                isGroupClass: false
-            })}
+            chat: userFromSC.newChat,
+            friends: friends,
+            creator: creator,
+            isGroupClass: false
+        })}
         `;
     }
 
@@ -1305,40 +1333,40 @@ async function showProfile({ id }) {
                         Блокировка
                     </label>
                     ${blankInputSearch({
-                            id: 'reason_ban',
-                            placeholder: 'Причина блокировки', 
-                            value: '',
-                            button: {
-                                title: 'Заблокировать',
-                                icon: icons({ name: 'gavel_outline', size: 22 }),
-                                id: 'set_ban_user',
-                                data: userFromVK.id
-                            },
-                            width: '210px',
-                            style: 'padding-left: 0px;',
-                            iconBefore: icons({ name: 'text_outline', size: 18, fill: 'secondary'})
-                        }) 
-                    }
+        id: 'reason_ban',
+        placeholder: 'Причина блокировки',
+        value: '',
+        button: {
+            title: 'Заблокировать',
+            icon: icons({ name: 'gavel_outline', size: 22 }),
+            id: 'set_ban_user',
+            data: userFromVK.id
+        },
+        width: '210px',
+        style: 'padding-left: 0px;',
+        iconBefore: icons({ name: 'text_outline', size: 18, fill: 'secondary' })
+    })
+            }
                 </div>
                 `
-                : '' 
-            }
+            : ''
+        }
 
             <div style="display: flex; justify-content: center; flex-direction: column;"> 
                 <label style="display: flex; color: var(--vkui--color_text_secondary); align-items: center; justify-content: center;">
                     Подписка
                 </label>
                 ${blankInputDate({
-                    id: 'date_subscription',
-                    width: '210px', 
-                    value: moment().add(1, 'd').format('YYYY-MM-DD'),
-                    button: {
-                        title: 'Выдать подписку',
-                        data: userFromVK.id,
-                        id: 'add_subscription',
-                        icon: icons({ name: 'add', size: 20 })
-                    }
-                })}
+            id: 'date_subscription',
+            width: '210px',
+            value: moment().add(1, 'd').format('YYYY-MM-DD'),
+            button: {
+                title: 'Выдать подписку',
+                data: userFromVK.id,
+                id: 'add_subscription',
+                icon: icons({ name: 'add', size: 20 })
+            }
+        })}
             </div>
 
         </div>
@@ -1346,28 +1374,27 @@ async function showProfile({ id }) {
 
     modalPage.setContent(`
         ${services.profileFromSC.role > 0
-            ? adminMenu 
+            ? adminMenu
             : ''
         }
 
         <div class="${classGroup}">
 
             ${userFromSC.subscription ?
-                `
+            `
                     <span style="display: flex; flex-direction: row; font-size: 14px; color: #99a2ad; font-weight: bold; justify-content: center; gap: 5px;">
                         ${icons({ name: 'star_circle_fill_yellow', size: 16, fill: 'original' })}
                         <div>
-                            ${
-                                userFromSC.isSubscriptionValid ? 
-                                    `${userFromVK.sex === 1 ? 'Подписчица' : 'Подписчик'}. Активно до ${moment(userFromSC.subscription.expired).format('DD.MM.YYYY')}, оформлено ${moment(userFromSC.subscription.created).fromNow().toLowerCase()}` : 
-                                    `${userFromVK.sex === 1 ? 'Была подписчицей' : 'Был подписчиком'} ${moment(userFromSC.subscription.expired).format('DD.MM.YYYY')}, ${moment(userFromSC.subscription.created).fromNow().toLowerCase()}`
-                            }
+                            ${userFromSC.isSubscriptionValid ?
+                `${userFromVK.sex === 1 ? 'Подписчица' : 'Подписчик'}. Активно до ${moment(userFromSC.subscription.expired).format('DD.MM.YYYY')}, оформлено ${moment(userFromSC.subscription.created).fromNow().toLowerCase()}` :
+                `${userFromVK.sex === 1 ? 'Была подписчицей' : 'Был подписчиком'} ${moment(userFromSC.subscription.expired).format('DD.MM.YYYY')}, ${moment(userFromSC.subscription.created).fromNow().toLowerCase()}`
+            }
                         </div>
                     </span>
                     <div class="separator" style="padding-top: 5px;"></div>
                 `
-                : ''
-            }
+            : ''
+        }
         
             <div style="display: flex; align-items: center; justify-content: space-between; padding-left: 10px; padding-right: 10px;">
 
@@ -1386,24 +1413,24 @@ async function showProfile({ id }) {
 
                 <div style="display: flex; justify-content: center; align-items: center; flex-direction: column; width: 100%; height: 100%;">
                     ${userFromSC.isBanned ?
-                        `
+            `
                         <div style="display: flex; flex-direction: row; gap: 5px;">
                             <span onmouseover="showTitle(this, '${userFromSC.ban.reason}')" style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #fce100; font-weight: bold;"> 
                                 ${icons({ name: 'user_slash_outline', size: 16 })}
                                 Аккаунт заблокирован.
                             </span>
-                            ${services.profileFromSC.role > 0 ? 
-                                `
+                            ${services.profileFromSC.role > 0 ?
+                `
                                     <span class="btn" onmouseover="showTitle(this, 'Разблокировать')" id="set_ban_user" data="${userFromVK.id}">
                                         ${icons({ name: 'cross_large_outline', size: 16 })}
                                     </span>
                                 `
-                                : ''
-                            }
+                : ''
+            }
                         </div>
                         `
-                        : ''
-                    }
+            : ''
+        }
 
                     <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; font-weight: bold;"> 
                         ${role.icon}
@@ -1426,14 +1453,14 @@ async function showProfile({ id }) {
                     </span>
 
                     ${userFromSC.isHide ?
-                        `
+            `
                             <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
                                 ${icons({ name: 'hide_outline', size: 16 })}
                                 Чаты и профиль этого аккаунта скрыты.
                             </span>
                         `
-                        : ''
-                    }
+            : ''
+        }
                 </div>
             </div>
 
@@ -1441,7 +1468,7 @@ async function showProfile({ id }) {
                 <div class="separator" style="padding-top: 5px;"></div> 
                 <div style="display: flex; justify-content: space-between; padding-bottom: 5px;">
                     <span style="display: flex; color: #99a2ad; border-radius: 8px; font-weight: 500; flex-direction: row; align-items: center; gap: 5px; padding: 2px;">
-                        ${icons({ name: 'new', size: 16, fill: '#99a2ad'})}
+                        ${icons({ name: 'new', size: 16, fill: '#99a2ad' })}
                         Самый новый чат с ${userFromVK.sex === 1 ? 'ней' : 'ним'}
                     </span>
                     <span id="full_chats_from_profile" class="btn" style="display: flex; border-radius: 8px; font-weight: 500; flex-direction: row; align-items: center; gap: 5px; padding: 2px; padding-left: 5px; padding-right: 5px;">
@@ -1451,8 +1478,8 @@ async function showProfile({ id }) {
                 </div>
                 ${HTMLNewChat}
                 `
-                : ''
-            }
+            : ''
+        }
 
         </div>
 

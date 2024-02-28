@@ -98,6 +98,12 @@ const SCAPI = {
             return cache;
         }
 
+        APICache.set({
+            key: parametersHashCode,
+            data: {},
+            expired: +new Date + 60_000
+        });
+
         const { response: { response, error } } = await GM_xmlhttpRequest(`https://api.search-for-chats-of-vk.ru/method/${method}`, parameters);
 
         if (error) {

@@ -295,7 +295,7 @@ function blankChat({ chat, creator, friends, isGroupClass = true }) {
 
                         <a target="_blank"
                             style="padding: 2px; text-decoration: none;"
-                                    class="btn-chat ${classGroup} history_chat" 
+                                class="btn-chat ${classGroup} history_chat" 
                         >
                             ${icons({ name: 'history_backward_outline', size: 16 })}
                             <span style="font-size: 13px; font-weight: 500; padding: 0px 4px 0px 4px;">
@@ -539,29 +539,29 @@ function blankPages({ found = undefined, totalPage = 0, currentPage = 0, offset 
             <span style="display: flex; gap: 5px;">
                 ${icons({ name: 'document_text_outline', size: 18 })}
                 <span style="padding-right: 10px; color: #99a2ad;">
-                    Страница ${found !== undefined && found !== 0 ? `${currentPage}/${totalPage}` : found === 0 ? 'пуста' : 'загружается'}
+                    ${found !== undefined && found !== 0 &&  found !== 'load' ? `Страница №${currentPage} из ${totalPage}` : found !== 'load' && found > 0 ? 'Страница пуста' : 'Страницы загружаются'}
                     ${inOnePage ? ` (${inOnePage.toLocaleString('ru-RU')})` : ''}
                 </span>
             </span>
                     
-            ${found ?
+            ${found !== undefined ?
                 `
                     <span style="display: flex; gap: 5px; font-weight: 500;">
                         ${offset > 0 ?
                             `
-                                <a class="btn" id="previous_page_button" style="text-decoration: none; font-weight: 500; ${!(currentPage < totalPage) ? 'padding-right: 15px;' : ''}"> 
+                                <a class="btn" id="previous_page_button" style="text-decoration: none; font-weight: 500;"> 
                                     Назад
                                 </a>
                             `
                             : ''
                         }
-                        ${currentPage < totalPage && offset > 0 ? '<span style="padding-left: 2px; padding-right: 2px; ">•</span>' : ''}
-                        ${currentPage < totalPage ?
+                        ${offset > 0 ? '<span style="padding-left: 2px; padding-right: 2px; ">•</span>' : ''}
+                        ${totalPage > 0 ? 
                             `
                                 <a class="btn" id="next_page_button" style="font-weight: 500; text-decoration: none;">
                                     Далее
                                 </a>
-                            `
+                            ` 
                             : ''
                         }
                     </span>

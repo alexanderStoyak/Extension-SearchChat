@@ -221,8 +221,8 @@ class managingModelPages {
         `);
 
         if (titles.length > 1) {
+            const spanLoad = document.getElementById('spinner_info');
             const updateTitleLoad = setInterval(() => {
-                const spanLoad = document.getElementById('spinner_info');
                 if (!spanLoad) {
                     return clearInterval(updateTitleLoad);
                 } else {
