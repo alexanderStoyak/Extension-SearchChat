@@ -12,6 +12,7 @@ const services = {
     timeStampAuthModalPage: GM_getValue('timeStampAuthModalPage'),
     telegramChannelURL: 'https://t.me/search_chats_for_VK',
     telegramChatURL: 'https://t.me/chatsvkbot_chat',
+    userAgreement: 'https://telegra.ph/Pravila-polzovaniya-bota-API-i-rasshireniya-PoiskCHata-03-03',
     pick: {
         searchChats: [
             "Сортируем...",

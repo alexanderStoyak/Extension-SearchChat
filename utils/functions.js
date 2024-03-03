@@ -379,38 +379,7 @@ async function authModalPage() {
                     <b>Расширение «ПоискЧата»</b> — это инструмент, разработанный для удобного поиска чатов в социальной сети ВКонтакте. Оно предоставляет возможность пользователям быстро найти нужный чат, используя различные фильтры и параметры.
 
                     ${blankSeparator('margin-top: 12px; margin-bottom: 12px;')}
-
-                    <b style="font-width: 20px">
-                        Правила пользования бота, API и расширения.
-                    </b>
-
-                    <br style="margin-top: 6px; margin-bottom: 6px;">
-
-                    <span style="text-transform: uppercase;">
-                        Администрация бота, API и/или расширения предоставляет Вам доступ к использованию бота, API и/или расширения и его функциональности на условиях, являющихся предметом настоящих правил пользования бота, API и/или расширения. В этой связи Вам необходимо внимательно ознакомиться с условиями настоящих Правил, которые рассматриваются Администрацией бота, API и/или расширения как публичная оферта в соответствии со ст. 437 Гражданского кодекса Российской Федерации.
-                    </span>
-
-                    <br style="margin-top: 6px; margin-bottom: 6px;"><br/>
-
-                    <b>1. Статус правил пользования бота, API и/или расширения «ПоискЧата».</b>
-                    <br/>1.1 Пользователь обязан полностью ознакомиться с настоящими правилами до момента регистрации в боте, API и/или расширении. Регистрация или начало использования Пользователя бота, API и/или расширения означает полное и безоговорочное принятие пользователем настоящих правил в соответствии со ст. 438 Гражданского кодекса Российской Федерации.
-                    
-                    <br style="margin-top: 6px; margin-bottom: 6px;"><br/>
-
-                    <b>2. Функционирование бота, API и/или расширения и ответственность при его/их использовании.</b>
-                    
-                    <br/><b>2</b>.1. Администрация бота, API и/или расширения не занимается предварительной модерацией действий пользователей и предпринимает действия по защите прав и интересов лиц и обеспечению соблюдения требований законодательства Российской Федерации только после обращения заинтересованного лица к Администрация бота, API и/или расширения в установленном порядке.
-                    <br/><b>2</b>.2. Администрация бота, API и/или расширения не несёт ответственности за нарушение пользователем настоящих правил и/или законодательства Российской Федерации и оставляет за собой право по своему собственному усмотрению, а также при получении информации от других пользователей либо третьих лиц о нарушении пользователем настоящих правил и/или законодательства Российской Федерации, изменять (модерировать), блокировать или удалять любую информацию, нарушающую запреты, установленные настоящими правилами и/или законодательством Российской Федерации, приостанавливать, ограничивать или прекращать доступ пользователя ко всем или к любому из разделов или функциональности бота, API и/или расширения, исключать из системы поиска и/или заблокировать пользователя в любое время по любой причине или без объяснения причин, с предварительным уведомлением или без такового. Администрация бота, API и/или расширения закрепляет за собой право заблокировать персональный аккаунт пользователя и/или приостановить, ограничить или прекратить доступ пользователя к любой из функциональных возможностей бота, API и/или расширения, если Администрация обнаружит, что по её мнению, пользователь представляет угрозу для бота, API и/или расширения и/или его пользователей. Наряду с указанным в настоящем пункте выше Администрация бота, API и/или расширения вправе блокировать и/или удалять доступ к API, ограничивать доступ к API, сайтам, приложениям, третьим лицам, иным сторонним ресурсам, блокировать и/или удалять, в случае если у Администрации бота, API и/или расширения появятся основания полагать, что такой сайт, приложение, третье лицо, иной ресурс, использующие API представляют или могут представлять угрозу для нормальной работы бота, API и/или расширения и его пользователей. Администрация бота, API и/или расширения реализует описанные выше меры без ответственности за возможные негативные последствия таких мер для пользователя или третьих лиц.
-                    <br/><b>2</b>.3. Ответственность несёт владелец аккаунта и/или токена API, независимо от того, кто совершал действия под этим аккаунтом и/или токеном API.
-
-                    <br style="margin-top: 6px; margin-bottom: 6px;"><br/>
-
-                    <b>3. Заключительные положения.</b>
-
-                    <br/><b>3</b>.1 Настоящие Правила вступают в силу для Пользователя с момента его присоединения к ним и действуют в течение неопределённого срока.
-                    <br/><b>3</b>.2 Если по тем или иным причинам одно или несколько положений настоящих правил будут признаны недействительными или не имеющими юридической силы, это не оказывает влияния на действительность или применимость остальных положений.
-                    <br/><b>3</b>.3 Настоящие Правила могут быть изменены и/или дополнены Администрацией бота, API и/или расширения в одностороннем порядке с уведомления или без такового.
-                    
+                
                     ${blankSeparator('margin-top: 12px; margin-bottom: 12px;')}
                     <span style="color: ${appearance.get() === 'dark' ? '#f6c254' : '#df9700'};">
                         Для использования расширения необходима авторизация, которая будет выполняться путем получения Вашего токена ВКонтакте с помощью приложения «<a style="color: #71aaeb;" target="_blank" href="${services.auth.urlByGetCode}">ПоискЧата</a>».
@@ -424,12 +393,24 @@ async function authModalPage() {
                     ${blankSeparator('margin-top: 12px; margin-bottom: 12px;')}
                     Пожалуйста, нажмите на кнопку — подтвердить регистрацию
                     <br/>В ином случае функционал расширения не будет работать.
-                    <div style="padding-top: 15px;">
-                        <button id="button_auth_for_modal_page" class="FlatButton FlatButton--primary FlatButton--size-m" type="button">
-                            <span class="FlatButton__in">
-                                <span style="font-weight: 600;" class="FlatButton__content">Подтвердить регистрацию</span>
-                            </span>
-                        </button>
+
+                    <div style="display: flex; flex-direction: column;">
+                        <div style="padding-top: 15px;">
+                            <button id="button_auth_for_modal_page" class="FlatButton FlatButton--primary FlatButton--size-m" type="button">
+                                <span class="FlatButton__in">
+                                    <span style="font-weight: 600;" class="FlatButton__content">Подтвердить регистрацию</span>
+                                </span>
+                            </button>
+                        </div>
+                        <div style="padding-top: 15px;">
+                            <a href="${services.userAgreement}" target="_blank">
+                                <button class="FlatButton FlatButton--primary FlatButton--size-m" type="button">
+                                    <span class="FlatButton__in">
+                                        <span style="font-weight: 600;" class="FlatButton__content">Пользовательское соглашение</span>
+                                    </span>
+                                </button>
+                            </a>
+                        </div>
                     </div>
                 </span>
             </div>
@@ -1372,6 +1353,8 @@ async function showProfile({ id }) {
         </div>
     `
 
+    console.log(userFromSC)
+
     modalPage.setContent(`
         ${services.profileFromSC.role > 0
             ? adminMenu
@@ -1413,24 +1396,24 @@ async function showProfile({ id }) {
 
                 <div style="display: flex; justify-content: center; align-items: center; flex-direction: column; width: 100%; height: 100%;">
                     ${userFromSC.isBanned ?
-            `
-                        <div style="display: flex; flex-direction: row; gap: 5px;">
-                            <span onmouseover="showTitle(this, '${userFromSC.ban.reason}')" style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #fce100; font-weight: bold;"> 
-                                ${icons({ name: 'user_slash_outline', size: 16 })}
-                                Аккаунт заблокирован.
-                            </span>
+                        `
+                            <div style="display: flex; flex-direction: row; gap: 5px;">
+                                <span onmouseover="showTitle(this, '${userFromSC.ban.reason}')" style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #fce100; font-weight: bold;"> 
+                                    ${icons({ name: 'user_slash_outline', size: 16 })}
+                                    Аккаунт заблокирован.
+                                </span>
                             ${services.profileFromSC.role > 0 ?
-                `
+                                `
                                     <span class="btn" onmouseover="showTitle(this, 'Разблокировать')" id="set_ban_user" data="${userFromVK.id}">
                                         ${icons({ name: 'cross_large_outline', size: 16 })}
                                     </span>
                                 `
-                : ''
-            }
-                        </div>
+                                : ''
+                            }
+                            </div>
                         `
-            : ''
-        }
+                        : ''
+                    }
 
                     <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; font-weight: bold;"> 
                         ${role.icon}
@@ -1453,14 +1436,14 @@ async function showProfile({ id }) {
                     </span>
 
                     ${userFromSC.isHide ?
-            `
+                        `
                             <span style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
                                 ${icons({ name: 'hide_outline', size: 16 })}
                                 Чаты и профиль этого аккаунта скрыты.
                             </span>
                         `
-            : ''
-        }
+                        : ''
+                    }
                 </div>
             </div>
 
@@ -1478,8 +1461,8 @@ async function showProfile({ id }) {
                 </div>
                 ${HTMLNewChat}
                 `
-            : ''
-        }
+                : ''
+            }
 
         </div>
 
@@ -1522,7 +1505,7 @@ async function showProfile({ id }) {
 
             <span class="${classGroup}" style="display: flex; gap: 5px; flex-direction: row; font-size: 12px; color: #99a2ad; font-weight: bold;"> 
                 ${icons({ name: 'users_3_outline', size: 16 })}
-                ${decOfNum(userFromSC.interested, ['Интересовался', 'Интересовались', 'Интересовались'])} ${userFromVK.sex === 1 ? 'её' : 'его'} чатами ${userFromSC.interested.toLocaleString('ru-RU')} ${decOfNum(userFromSC.interested, ['человек', 'человека', 'человек'])}
+                ${decOfNum(userFromSC.stats.interested, ['Интересовался', 'Интересовались', 'Интересовались'])} ${userFromVK.sex === 1 ? 'её' : 'его'} чатами ${userFromSC.stats.interested.toLocaleString('ru-RU')} ${decOfNum(userFromSC.stats.interested, ['человек', 'человека', 'человек'])}
             </span>
 
         </span>
