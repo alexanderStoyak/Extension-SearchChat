@@ -88,8 +88,24 @@ async function checkValidToken() {
             GM_setValue('VKMainUser', services.VKMainUser = user);
         }
 
-        services.profileFromSC = await SCAPI.call({ method: "extension.getUser" });
+        [services.profileFromSC, services.tags, v] = await Promise.all([
+            SCAPI.call({ method: "extension.getUser" }), 
+            SCAPI.call({ method: "extension.getTags" }),
+            SCAPI.call({ method: "extension.v" })
+        ]);
+
+        if (services.v !== v) {
+            notifiers(`Вышла новая версия V${v}
+                <a target="_blank" href="${services.github.userScriptLink}">
+                    Обновить
+                </a>
+            `);
+        }
+
+        services.tags = services.tags.sort();
+
         if (!services.profileFromSC) {
+            notifiers('Не удалось получить Ваш профиль от «ПоискЧата», попробуйте обновить вкладку (страницу)');
             return false;
         }
     }
@@ -254,6 +270,7 @@ async function searchChats({ isCurrent = false, offset = 0 }) {
         isHistory: filters.isHistory,
         isActive: filters.isActive,
         isArchive: filters.isArchive,
+        tags: filters.tags,
         offset,
     }
 
@@ -313,7 +330,7 @@ async function searchChats({ isCurrent = false, offset = 0 }) {
         load.chats = false;
         modalPage.setContent(
             blankNotFound(
-                icons({ name: 'ghost_simple_outline', size: 86, }),
+                icons({ name: 'ghost_simple_outline', size: 86 }),
                 'По фильтрам ничего не найдено',
                 { id: 'reset_filters', text: 'Сбросить фильтры' }
             )
@@ -439,14 +456,7 @@ async function authModalPage() {
 
 
 async function showUsersChat(indexChatOrChat, friends, backFunction, offset = 0, search) {
-    let chat = {};
-    if (typeof indexChatOrChat === 'object') {
-        chat = indexChatOrChat;
-    } else {
-        chat = currentChats.foundChats.chats[indexChatOrChat];
-    }
-
-    chat = structuredClone(chat);
+    const chat = structuredClone(typeof indexChatOrChat === 'object' ? indexChatOrChat : currentChats.foundChats.chats[indexChatOrChat]);
 
     const chatPhoto = chat.photo
         ? chat.photo['200'] || chat.photo['150'] || chat.photo['50']
@@ -463,7 +473,7 @@ async function showUsersChat(indexChatOrChat, friends, backFunction, offset = 0,
         after: `${chat.membersCount.toLocaleString('ru-RU')}уч.`,
         subTitle: `
             <div style="font-size: 14px; font-weight: 400;"> 
-                ${blankInputSearch({ id: 'search_users_chat', value: search })}
+                ${blankInputSearch({ id: 'search_users_chat', value: search, button: null })}
                 ${subTitle || blankPages({})}
             </div>
         `
@@ -521,7 +531,7 @@ async function showUsersChat(indexChatOrChat, friends, backFunction, offset = 0,
     if (!sortedMembersList.length && !creator) {
         modalPage.setContent(
             blankNotFound(
-                icons({ name: 'ghost_simple_outline', size: 86, }),
+                icons({ name: 'ghost_simple_outline', size: 86 }),
                 search ? 'Пользователи не найдены' : 'Этот чат без участников'
             )
         ).setTitle(title(blankPages({ found: 0 })));
@@ -1517,9 +1527,11 @@ async function showProfile({ id }) {
                     Чьи чаты ${userFromVK.sex === 1 ? 'смотрела' : 'смотрел'} последний раз (${queriesByUsers.length} чел.)
                 </div>
                 <div class="${classGroup}" style="display: flex; flex-direction: fow; justify-content: center;">
-                    <span style="display: flex; word-break: break-all; flex-wrap: wrap; text-align: center; gap: 6px; justify-content: center;">
-                        ${userLastChekUsersChats}
-                    </span>
+                    <div style="display: flex; justify-content: center; max-height: 300px; overflow-y: auto;">
+                        <span style="display: flex; word-break: break-all; flex-wrap: wrap; text-align: center; gap: 6px; justify-content: center;">
+                            ${userLastChekUsersChats}
+                        </span>
+                    </div>
                 </div>
             `
             : ''
@@ -1532,9 +1544,11 @@ async function showProfile({ id }) {
                     Последние запросы по названиям (${userFromSC.history?.queriesByTitle?.length} шт.)
                 </div>
                 <div class="${classGroup}" style="display: flex; flex-direction: fow; justify-content: center;">
-                    <span style="display: flex; word-break: break-all; flex-wrap: wrap; text-align: center; gap: 6px; justify-content: center;">
-                        ${userLastChekByTitleChats}
-                    </span>
+                    <div style="display: flex; justify-content: center; max-height: 300px; overflow-y: auto;">
+                        <span style="display: flex; word-break: break-all; flex-wrap: wrap; text-align: center; gap: 6px; justify-content: center;">
+                            ${userLastChekByTitleChats}
+                        </span>
+                    </div>
                 </div>
             `
             : ''

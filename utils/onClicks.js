@@ -26,7 +26,7 @@ function onClicks(fromWhichFunction, args) {
             }
         },
 
-        'showHistoryChat': ({indexChatOrChat, backFunction, friends}) => {
+        'showHistoryChat': ({ indexChatOrChat, backFunction, friends }) => {
             const input = document.getElementById('search_users_history');
 
             (document.getElementById('back_button_modal_page') ?? {}).onclick = () => {
@@ -196,7 +196,7 @@ function onClicks(fromWhichFunction, args) {
                     }
 
                     [filters.maxUsers, rangeUsersMax.value] = [value, value];
-                    
+
                     if (filters.minUsers >= filters.maxUsers) {
                         const value = +(filters.minUsers = filters.maxUsers - 1);
                         rangeUsersMin.value = value < 0 ? 1 : value;
@@ -220,7 +220,7 @@ function onClicks(fromWhichFunction, args) {
             }
 
             const link = document.getElementById('search_link');
-            if(link) {
+            if (link) {
                 link.onclick = () => {
                     filters.link = link.getAttribute('link');
                     filters.title = '';
@@ -228,6 +228,60 @@ function onClicks(fromWhichFunction, args) {
                     searchChats({});
                 }
             }
+
+            function tagsTriggers() {
+                for (const tag of document.getElementsByClassName('filter_tags')) {
+                    tag.onclick = () => {
+                        const _tag = tag.innerHTML;
+
+                        const indexTag = filters.tags.findIndex(__tag => _tag === __tag);
+
+                        if (indexTag === -1) {
+                            filters.tags.push(_tag);
+                        } else {
+                            filters.tags.splice(indexTag, 1);
+                        };
+
+                        for (const __tag of document.getElementsByClassName(_tag)) {
+                            if (indexTag === -1) {
+                                __tag.style.color = appearance.get() === 'dark' ? '#A8E4A0' : '#258b17';
+                            } else {
+                                __tag.style.color = null;
+                            }
+                        };
+                    }
+                }
+            }
+
+            tagsTriggers();
+
+            const filterTags = document.getElementById('input_filter_tags');
+            if (filterTags) {
+                filterTags.oninput = () => {
+                    const content = document.getElementById('filter_tags');
+
+                    filters.tagsFilter = filterTags.value;
+
+                    const tags = services.tags.filter(tag => new RegExp(noSpecialCharacters(filters.tagsFilter), 'i').test(tag));
+
+                    if (!tags.length) {
+                        content.innerHTML = blankNotFound(icons({ name: 'ghost_simple_outline', size: 86 }), '', undefined, '125px');
+                        return;
+                    } else {
+                        content.innerHTML = services.tags
+                            .filter(tag => new RegExp(noSpecialCharacters(filters.tagsFilter), 'i').test(tag)
+                            ).map(tag => `
+                                <button target="_blank" class="btn" style="gap: 6px; font-weight: 500; align-items: center;">
+                                    <div class="filter_tags ${tag}" style="display: flex; text-decoration: none; ${filters.tags.includes(tag) ? `color: ${appearance.get() === 'dark' ? '#A8E4A0' : '#258b17'};` : ''}">${tag}</div>
+                                </button>
+                            `)
+                            .join('');
+
+                        tagsTriggers();
+                    }
+                };
+            }
+
         },
 
 
@@ -286,7 +340,7 @@ function onClicks(fromWhichFunction, args) {
             for (const donut of donuts) {
                 donut.onclick = () => {
                     const data = JSON.parse(donut.getAttribute('data'));
-                    
+
                     redirectPost('https://yoomoney.ru/quickpay/confirm', {
                         receiver: 4100117442562201,
                         'quickpay-form': 'button',
@@ -316,7 +370,7 @@ function onClicks(fromWhichFunction, args) {
         },
 
 
-        'showProfile': ({ id, friends, chat}) => {
+        'showProfile': ({ id, friends, chat }) => {
             const input = document.getElementById('search_user_profile');
 
             if (input) {

@@ -13,6 +13,10 @@ const services = {
     telegramChannelURL: 'https://t.me/search_chats_for_VK',
     telegramChatURL: 'https://t.me/chatsvkbot_chat',
     userAgreement: 'https://telegra.ph/Pravila-polzovaniya-bota-API-i-rasshireniya-PoiskCHata-03-03',
+    github: {
+        userScriptLink: 'https://github.com/alexanderStoyak/Extension-SearchChat/raw/main/searchChats.user.js'
+    },
+    v: '6.2.0',
     pick: {
         searchChats: [
             "Сортируем...",

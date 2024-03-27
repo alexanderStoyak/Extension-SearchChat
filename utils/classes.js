@@ -11,6 +11,8 @@ class Filters {
         this.isHistory = false;
         this.isActive = false;
         this.isArchive = false;
+        this.tags = [];
+        this.tagsFilter = '';
     }
 
     remove() {
@@ -25,6 +27,7 @@ class Filters {
         this.isActive = false;
         this.isActive = false;
         this.isArchive = false;
+        this.tags = [];
     }
 }
 const filters = new Filters();

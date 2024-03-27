@@ -100,7 +100,7 @@ function blankChat({ chat, creator, friends, isGroupClass = true }) {
     };
 
     const tags = chat.tags.map(tag =>
-        `<span class="btn" style="display: flex; font-weight: 400; color: var(--vkui--color_text_accent_themed); align-items: center;">${deXSS(tag)}</span>`
+        `<span class="btn filter_tags ${tag}" style="display: flex; font-weight: 400; ${filters.tags.findIndex(_tag => _tag === tag) !== -1 ? `color: ${appearance.get() === 'dark' ? '#A8E4A0' : '#258b17'};` : ''} align-items: center;">${deXSS(tag)}</span>`
     ).join('');
 
     return `
@@ -124,8 +124,8 @@ function blankChat({ chat, creator, friends, isGroupClass = true }) {
 
                                 ${tags
                                     ? `
-                                        <div style="display: flex; flex-direction: fow; gap: 5px;">
-                                            <span style="display: flex; word-break: break-all; flex-wrap: wrap; text-align: center; gap: 6px;">
+                                        <div style="display: flex; gap: 5px;">
+                                            <span style="display: flex; justify-content: flex-end; word-break: break-all; flex-wrap: wrap; text-align: center; gap: 6px;">
                                                 ${tags}
                                             </span>
                                             ${icons({ name: 'hashtag_outline', size: 16 })}
@@ -161,7 +161,7 @@ function blankChat({ chat, creator, friends, isGroupClass = true }) {
 
                             <div>
                                 <h4 title="${chatTitleForHTMLTitle}" class="vkuiHeadline vkuiHeadline--sizeY-compact vkuiHeadline--level-1 vkuiTypography--normalize vkuiTypography--weight-1" style="font-size: 15px; max-width: 230px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
-                                    ${chat.membersCount > 7_010
+                                    ${chat.membersCount > 1 && !chat.members.length
                                         ? `<span style="display: flex; flex-direction: row; gap: 5px; align-items: center; font-size: 12px; color: #99a2ad;"> 
                                                 ${icons({ name: 'archive_outline', size: 16 })} Канал
                                             </span>`
@@ -411,9 +411,9 @@ function blankMembersTopList({ member, memberFromVK, index }) {
 }
 
 
-function blankNotFound(icon, text, button) {
+function blankNotFound(icon, text, button, height = '280px') {
     return `
-        <div style="height: 280px; display: flex; justify-content: center">
+        <div style="height: ${height}; display: flex; justify-content: center">
             <div style="display: flex; align-items: center; flex-direction: column; justify-content: center;">
                 ${icon}
                 <span style="font-size: 13px; padding-top: 3px; text-align: center; max-width: 250px;">
@@ -473,9 +473,14 @@ function blankInputSearch({
                     </div>
                 </div>
             </div>
-            <button data="${button.data}" ${button.title ? `onmouseover="showTitle(this, '${button.title}')"` : ''} id="${button.id}" class="input-button">
-                ${button.icon}
-            </button>
+            ${
+                button ? `
+                    <button data="${button.data}" ${button.title ? `onmouseover="showTitle(this, '${button.title}')"` : ''} id="${button.id}" class="input-button">
+                        ${button.icon}
+                    </button>
+                ` 
+                : ''
+            }
             ${
                 actionFilter ? `
                     <span class="btn" style="height: 30px; width: 20px;">
@@ -533,43 +538,72 @@ function blankInputDate({
 }
 
 
-function blankPages({ found = undefined, totalPage = 0, currentPage = 0, offset = 0, inOnePage = undefined }) {
-    return `
-        <div style="display: flex; color: #99a2ad; align-items: center; height: 20px;"> 
+function blankPages({ found, totalPage = 0, currentPage = 0, offset = 0, inOnePage }) {
+
+    let content = '';
+
+    if (found > 0) {
+        content = `
             <span style="display: flex; gap: 5px;">
                 ${icons({ name: 'document_text_outline', size: 18 })}
                 <span style="padding-right: 10px; color: #99a2ad;">
-                    ${found !== undefined && found !== 0 &&  found !== 'load' ? `Страница №${currentPage} из ${totalPage}` : found !== 'load' && found > 0 ? 'Страница пуста' : 'Страницы загружаются'}
+                    Страница №${currentPage} из ${totalPage}
                     ${inOnePage ? ` (${inOnePage.toLocaleString('ru-RU')})` : ''}
                 </span>
             </span>
-                    
-            ${found !== undefined ?
-                `
-                    <span style="display: flex; gap: 5px; font-weight: 500;">
-                        ${offset > 0 ?
-                            `
-                                <a class="btn" id="previous_page_button" style="text-decoration: none; font-weight: 500;"> 
-                                    Назад
-                                </a>
-                            `
-                            : ''
-                        }
-                        ${offset > 0 ? '<span style="padding-left: 2px; padding-right: 2px; ">•</span>' : ''}
-                        ${totalPage > 0 ? 
-                            `
-                                <a class="btn" id="next_page_button" style="font-weight: 500; text-decoration: none;">
-                                    Далее
-                                </a>
-                            ` 
-                            : ''
-                        }
-                    </span>
-                `
-                : ''
-            }
+
+            <span style="display: flex; gap: 5px; font-weight: 500;">
+                ${offset > 0 ?
+                    `
+                        <button class="btn" id="previous_page_button" style="font-weight: 500;"> 
+                            Назад
+                        </button>
+                    `
+                    : ''
+                }
+                ${offset > 0 ? '<span style="padding-left: 2px; padding-right: 2px; ">•</span>' : ''}
+                ${totalPage > 0 && currentPage < totalPage ? 
+                    `
+                        <button class="btn" id="next_page_button" style="font-weight: 500;">
+                            Далее
+                        </button>
+                    ` 
+                    : ''
+                }
+            </span>
+        `;
+    } else if (found === 'load') {
+        content = `
+            <span style="display: flex; gap: 5px;">
+                ${icons({ name: 'document_text_outline', size: 18 })}
+                <span style="padding-right: 10px; color: #99a2ad;">
+                    Страницы загружаются
+                </span>
+            </span>
+
+            <span style="display: flex; gap: 5px; font-weight: 500;">
+                <button class="btn" id="next_page_button" style="font-weight: 500;">
+                    Далее
+                </button>
+            </span>
+        `;
+    } else {
+        content = `
+            <span style="display: flex; gap: 5px;">
+                ${icons({ name: 'document_text_outline', size: 18 })}
+                <span style="padding-right: 10px; color: #99a2ad;">
+                    Страница пуста
+                </span>
+            </span>
+        `
+    }
+
+
+    return `
+        <div style="display: flex; color: #99a2ad; align-items: center; height: 20px;"> 
+            ${content}
         </div>
-    `
+    `;
 }
 
 
@@ -600,6 +634,12 @@ function blankFiltersSearchChats({
     const currentPage = offset / 15 !== 0 ? offset / 15 + 1 : 1;
     const totalPage = Math.ceil(foundChats / 15 || 1);
 
+    const tags = services.tags.filter(tag => new RegExp(noSpecialCharacters(filters.tagsFilter), 'i').test(tag)).map(tag => `
+        <button target="_blank" class="btn" style="gap: 6px; font-weight: 500; align-items: center;">
+            <div class="filter_tags ${tag}" style="display: flex; ${filters.tags.includes(tag) ? `color: ${appearance.get() === 'dark' ? '#A8E4A0' : '#258b17'};` : ''}">${tag}</div>
+        </button>
+    `).join('');
+
     return `
 
     <div style="font-size: 14px; font-weight: 400;">
@@ -620,7 +660,7 @@ function blankFiltersSearchChats({
                     <div style="display: flex; align-items: center; justify-content: space-between; gap: 5px; font-weight: 500; font-size: 20px; padding-bottom: 5px; flex-direction: row;">
                         ${icons({ name: 'filter_outline', size: 24 })}
                         <span ${appearance.get() === 'dark' ? '' : 'style="color: #000000"'}> Фильтры </span>
-                        <a class="btn" style="text-decoration: none; font-weight: 500;" id="clear_range_users" onmouseover="showTitle(this, 'Сбросить все фильтры')">
+                        <a class="btn" style="font-weight: 500;" id="clear_range_users" onmouseover="showTitle(this, 'Сбросить все фильтры')">
                             ${icons({ name: 'refresh_outline', size: 18 })}
                         </a>
                     </div>
@@ -677,7 +717,7 @@ function blankFiltersSearchChats({
                         <span>
                             ${icons({ name: 'users_3_outline', size: 20 })}
                         </span>
-                        Чаты, в которых ${filters.isHistory ? 'были' : 'есть'} <a class="btn" style="text-decoration: none; font-weight: 500;" target="_blank" href="https://vk.com/friends">Ваши друзья</a>
+                        Чаты, в которых ${filters.isHistory ? 'были' : 'есть'} <a class="btn" style="font-weight: 500;" target="_blank" href="https://vk.com/friends">Ваши друзья</a>
                         ${blankSwitch({ id: 'filter_only_with_friends', checked: filters.onlyWithFriends })}
                     </div>
                             
@@ -705,7 +745,7 @@ function blankFiltersSearchChats({
                                 style="width: ${((filters.maxUsers.toString().length + 1) * 8) - 8}px; margin: 0px;"
                             /> 
                         </label>
-                        <a class="btn" style="text-decoration: none; font-weight: 500;" id="clear_range_users" onmouseover="showTitle(this, 'Сбросить')">
+                        <a class="btn" style="font-weight: 500;" id="clear_range_users" onmouseover="showTitle(this, 'Сбросить')">
                             ${icons({ name: 'cross_large_outline', size: 16 })}
                         </a>
                     </div>
@@ -744,12 +784,38 @@ function blankFiltersSearchChats({
                         ${blankHint('Это архивированные чаты, которые были удалены и больше неактивны. В них нельзя зайти, но можно посмотреть всю информацию о чате.')}
                     </div>
 
+                    ${blankSeparator()}
+
+                    ${services.tags.length
+                        ? `
+                            <div style="display: flex; justify-content: center;">
+                                <div class="${classGroup}" style="padding-top: 10px; max-width: 350px;">
+                                    <div style="display: flex; color: #99a2ad; padding-bottom: 5px; font-size: 13px; font-weight: bold; gap: 5px; justify-content: center; align-items: center;">
+                                        ${icons({ name: 'hashtag_outline', size: 20 })}
+                                        Теги (${services.tags.length}шт.)
+                                    </div>
+
+                                    ${blankInputSearch({ id: 'input_filter_tags', width: '300px', button: null, value: filters.tagsFilter })}
+
+                                    ${blankSeparator("padding-bottom: 15px;")}
+
+                                    <div style="display: flex; justify-content: center; max-height: 200px; overflow-y: auto;">
+                                        <span id="filter_tags" style="display: flex; word-break: break-all; flex-wrap: wrap; text-align: center; gap: 6px; justify-content: center;">
+                                            ${tags || blankNotFound(icons({ name: 'ghost_simple_outline', size: 86 }), '', undefined, '125px')}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        `
+                        : ''
+                    }
+
                 </div>
             `)
         })}
         </div>
         
-        <span style="font-size: 15;"> 
+        <span id="search_chats_pages" style="font-size: 15;"> 
             ${blankPages({ found: foundChats, inOnePage: countListChats, offset, currentPage, totalPage })}
         </span>
 

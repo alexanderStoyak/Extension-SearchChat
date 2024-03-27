@@ -50,6 +50,6 @@
 // @updateURL    https://github.com/alexanderStoyak/Extension-SearchChat/raw/main/searchChats.user.js
 // @downloadURL  https://github.com/alexanderStoyak/Extension-SearchChat/raw/main/searchChats.user.js
 
-// @version      6.0.5
+// @version      6.2.0
 
 // ==/UserScript==

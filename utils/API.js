@@ -107,7 +107,7 @@ const SCAPI = {
         const { response: { response, error } } = await GM_xmlhttpRequest(`https://api.search-for-chats-of-vk.ru/method/${method}`, parameters);
 
         if (error) {
-            return errorAPI(error);
+            return APIError(error);
         };
 
         APICache.set({
@@ -157,7 +157,7 @@ async function vkAuth() {
 }
 
 
-function errorAPI(_error) {
+function APIError(_error) {
 
     if (!(_error.code in errors)) {
         console.log(_error);

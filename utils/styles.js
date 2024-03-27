@@ -207,6 +207,7 @@ GM_addStyle(`
         text-align: center; 
         align-items: center; 
         flex-direction: row; 
+        text-decoration: none;
         gap: 5px;
         justify-content: center; 
         cursor: default;
@@ -239,7 +240,8 @@ GM_addStyle(`
 
    .btn {
         display: flex;
-        text-align: center; 
+        text-align: center;
+        text-decoration: none;
         align-items: center; 
         flex-direction: row; 
         gap: 5px;
